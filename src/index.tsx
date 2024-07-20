@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
   RouterProvider,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 import { Provider } from 'react-redux';
-import store from "./store";
+import appstore from './store';
 
 import './general.css';
 import './common.scss';
 import Editor from './pages/Editor';
-import Profile from "./pages/Profile";
+import Profile from './pages/Profile';
 
 import reportWebVitals from './reportWebVitals';
 
@@ -27,15 +27,15 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root') as HTMLElement,
 );
 
 root.render(
-  <Provider store={store}>
+  <Provider store={appstore}>
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>
-  </Provider>
+  </Provider>,
 );
 
 // If you want to start measuring performance in your app, pass a function

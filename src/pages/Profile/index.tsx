@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Header from 'components/Header';
 
 export default function Profile() {
@@ -6,5 +8,5 @@ export default function Profile() {
       <Header />
       <h1>Profile</h1>
     </>
-  )
+  );
 }

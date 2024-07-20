@@ -8,20 +8,21 @@ interface IInitialState {
 const initialState: IInitialState = {
   show: true,
   text: 'ASDF 1024 x QWERTY 768',
-}
+};
 
 const uiSlice = createSlice({
   name: 'todos',
-  initialState: initialState,
+  initialState,
   reducers: {
     uiToggle(state) {
+      // eslint-disable-next-line no-param-reassign
       state.show = !state.show;
-    }
-  }
-})
+    },
+  },
+});
 
-const uiToggle = uiSlice.actions.uiToggle;
+const { uiToggle } = uiSlice.actions;
 
 export { uiToggle };
 
-export default uiSlice.reducer
+export default uiSlice.reducer;

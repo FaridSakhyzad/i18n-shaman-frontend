@@ -1,3 +1,4 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { uiToggle } from 'store/ui';
 import { IRootState } from 'store';
@@ -14,12 +15,12 @@ export default function Header() {
   return (
     <header>
       <div className="container">
-        <button onClick={handleButtonClick}>Button</button>
+        <button type="button" onClick={handleButtonClick}>Button</button>
         <hr />
         {show && (
           <h1>HEADER TEXT: {headerText}</h1>
         )}
       </div>
     </header>
-  )
+  );
 }

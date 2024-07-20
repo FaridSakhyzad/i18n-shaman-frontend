@@ -1,5 +1,9 @@
-import { apiClient } from "./client";
+import { apiClient } from './client';
 
 export const getTranslations = async () => {
-  return await apiClient.get('/');
-}
+  const result = await apiClient.get('/');
+
+  return result;
+};
+
+export default getTranslations;
