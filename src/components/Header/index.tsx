@@ -13,11 +13,13 @@ export default function Header() {
 
   return (
     <header>
-      <button onClick={handleButtonClick}>Button</button>
-      <hr />
-      {show && (
-        <h1>HEADER TEXT: {headerText}</h1>
-      )}
+      <div className="container">
+        <button onClick={handleButtonClick}>Button</button>
+        <hr />
+        {show && (
+          <h1>HEADER TEXT: {headerText}</h1>
+        )}
+      </div>
     </header>
   )
 }

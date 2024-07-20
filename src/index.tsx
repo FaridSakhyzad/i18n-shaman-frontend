@@ -9,7 +9,8 @@ import { Provider } from 'react-redux';
 import store from "./store";
 
 import './general.css';
-import Home from './pages/Home';
+import './common.scss';
+import Editor from './pages/Editor';
 import Profile from "./pages/Profile";
 
 import reportWebVitals from './reportWebVitals';
@@ -17,7 +18,7 @@ import reportWebVitals from './reportWebVitals';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: <Editor />,
   },
   {
     path: '/Profile',
