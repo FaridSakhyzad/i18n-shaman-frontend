@@ -1,0 +1,13 @@
+.popoverTarget {
+  outline: 1px solid red;
+  anchor-name: --myAnchor;
+}
+
+.popopver {
+  outline: 1px solid black;
+  position-anchor: --myAnchor;
+  position: fixed;
+  left: anchor(left);
+  top: anchor(bottom);
+  margin: 0;
+}

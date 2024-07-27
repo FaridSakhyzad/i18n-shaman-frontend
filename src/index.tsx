@@ -1,27 +1,27 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
   RouterProvider,
 } from 'react-router-dom';
 
-import { Provider } from 'react-redux';
 import appstore from './store';
+import Editor from './pages/Editor';
+import Profile from './pages/Profile';
 
 import './general.css';
 import './common.scss';
-import Editor from './pages/Editor';
-import Profile from './pages/Profile';
 
 import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/project/:projectId',
     element: <Editor />,
   },
   {
-    path: '/Profile',
+    path: '/profile',
     element: <Profile />,
   },
 ]);
