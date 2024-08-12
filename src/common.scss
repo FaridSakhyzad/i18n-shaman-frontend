@@ -7,6 +7,10 @@
 
 .input {}
 
+.button {
+  cursor: pointer;
+}
+
 .row {
   display: flex;
   gap: 8px;
@@ -74,4 +78,8 @@
 }
 .col-12 {
   width: 100%;
+}
+
+.main {
+  outline: 1px solid red;
 }

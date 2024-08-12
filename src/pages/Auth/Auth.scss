@@ -1,0 +1,30 @@
+.authFormBox {
+  margin: auto;
+  width: 250px;
+}
+
+.authForm {
+  display: grid;
+  gap: 8px;
+
+  input {
+    display: block;
+    width: 100%;
+  }
+}
+
+.authTabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    min-width: 120px;
+    text-align: center;
+    margin: 5px;
+
+    &.active {
+      font-weight: bold;
+    }
+  }
+}

@@ -7,8 +7,12 @@ import {
 } from 'react-router-dom';
 
 import appstore from './store';
+
+import Auth from './pages/Auth';
 import Editor from './pages/Editor';
 import Profile from './pages/Profile';
+
+import MainLayout from './MainLayout';
 
 import './general.css';
 import './common.scss';
@@ -16,6 +20,10 @@ import './common.scss';
 import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
+  {
+    path: '/auth',
+    element: <Auth />,
+  },
   {
     path: '/project/:projectId',
     element: <Editor />,
@@ -30,11 +38,21 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 
+/*
 root.render(
   <Provider store={appstore}>
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>
+  </Provider>,
+);
+*/
+
+root.render(
+  <Provider store={appstore}>
+    <MainLayout>
+      <RouterProvider router={router} />
+    </MainLayout>
   </Provider>,
 );
 
