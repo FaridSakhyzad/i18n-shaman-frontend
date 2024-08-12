@@ -38,21 +38,13 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 
-/*
 root.render(
   <Provider store={appstore}>
     <React.StrictMode>
-      <RouterProvider router={router} />
+      <MainLayout>
+        <RouterProvider router={router} />
+      </MainLayout>
     </React.StrictMode>
-  </Provider>,
-);
-*/
-
-root.render(
-  <Provider store={appstore}>
-    <MainLayout>
-      <RouterProvider router={router} />
-    </MainLayout>
   </Provider>,
 );
 
