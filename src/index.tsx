@@ -8,11 +8,13 @@ import {
 
 import appstore from './store';
 
+import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Editor from './pages/Editor';
 import Profile from './pages/Profile';
 
 import MainLayout from './MainLayout';
+import PrivateRoute from './PrivateRoute';
 
 import './general.css';
 import './common.scss';
@@ -20,6 +22,10 @@ import './common.scss';
 import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+  },
   {
     path: '/auth',
     element: <Auth />,
@@ -30,7 +36,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/profile',
-    element: <Profile />,
+    element: <PrivateRoute component={<Profile />} />,
   },
 ]);
 
