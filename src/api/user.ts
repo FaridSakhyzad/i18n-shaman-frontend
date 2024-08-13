@@ -36,8 +36,6 @@ export const verifyUser = async () => {
   try {
     return (await apiClient.get('auth/verifyUser')).data;
   } catch (error: any) {
-    console.log('API verifyUser error', error);
-
     return error.response && error.response.data;
   }
 };

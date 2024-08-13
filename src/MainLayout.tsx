@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { verifyUser } from './api/user';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import store, { IRootState } from 'store';
+import { restoreSession } from 'store/user';
 
 interface IProps {
   children: React.ReactNode,
 }
 
 export default function MainLayout({ children }: IProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const { loading: userLoading } = useSelector(({ user }: IRootState) => user);
 
-  const getUserInformation = async () => {
-    const user = await verifyUser();
+  const dispatch = useDispatch<typeof store.dispatch>();
 
-    if (user && user.id) {
-      console.log('user', user);
-    }
-
-    setIsLoading(false);
+  const getUserInformation = () => {
+    dispatch(restoreSession());
   };
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export default function MainLayout({ children }: IProps) {
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      {isLoading ? (
+      {userLoading ? (
         <div>Loading</div>
       ) : (
         // eslint-disable-next-line react/jsx-no-useless-fragment

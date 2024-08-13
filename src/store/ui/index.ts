@@ -14,7 +14,7 @@ const uiSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-    uiToggle(state) {
+    uiToggle: (state) => {
       // eslint-disable-next-line no-param-reassign
       state.show = !state.show;
     },
