@@ -8,6 +8,8 @@ import {
 
 import appstore from './store';
 
+import './i18n';
+
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Editor from './pages/Editor';
