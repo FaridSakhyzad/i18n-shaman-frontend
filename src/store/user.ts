@@ -1,56 +1,94 @@
-import { buildCreateSlice, asyncThunkCreator } from '@reduxjs/toolkit';
-import { verifyUser } from 'api/user';
+/* eslint-disable no-param-reassign */
+import { buildCreateSlice, asyncThunkCreator, createAsyncThunk } from '@reduxjs/toolkit';
+import { verifyUser, setLanguage } from 'api/user';
+
+interface ISettings {
+  language: string | null,
+}
 
 interface IInitialState {
   id: string | null;
   login: string | null;
   loading: boolean;
+  settings: ISettings;
 }
 
 const initialState: IInitialState = {
   id: null,
   login: null,
   loading: true,
+  settings: {
+    language: null,
+  },
 };
 
 export const createAppSlice = buildCreateSlice({
   creators: { asyncThunk: asyncThunkCreator },
 });
 
+export const restoreSession = createAsyncThunk(
+  'user/restoreSession',
+  async () => {
+    const res = await verifyUser();
+
+    return res;
+  },
+);
+
+interface ISetUserLanguageInputArgs {
+  userId: string;
+  language: string
+}
+
+export const setUserLanguage = createAsyncThunk(
+  'user/setUserLanguage',
+  async (data: ISetUserLanguageInputArgs) => {
+    const { userId, language } = data;
+
+    const res = await setLanguage(userId, language);
+
+    return res;
+  },
+);
+
 const userSlice = createAppSlice({
   name: 'user',
   initialState,
-  reducers: (create) => ({
-    restoreSession: create.asyncThunk(
-      async () => {
-        const res = await verifyUser();
+  reducers: {
+    setUserLanguage1: (state, action) => {
+      console.log('action.payload', action.payload);
+      console.log('setUserLanguage');
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(restoreSession.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        const { id, login } = action.payload;
 
-        return res;
-      },
-      {
-        pending: (state) => {
-          // eslint-disable-next-line no-param-reassign
-          state.loading = true;
-        },
-        rejected: (state) => {
-          // eslint-disable-next-line no-param-reassign
-          state.loading = false;
-        },
-        fulfilled: (state, { payload }) => {
-          const { id, login } = payload;
+        state.loading = false;
+        state.id = id;
+        state.login = login;
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        state.loading = false;
+      });
 
-          // eslint-disable-next-line no-param-reassign
-          state.loading = false;
-          state.id = id;
-          state.login = login;
-        },
-      },
-    ),
-  }),
+    builder
+      .addCase(setUserLanguage.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(setUserLanguage.fulfilled, (state, action) => {
+        console.log(action.payload);
+
+        state.loading = false;
+      })
+      .addCase(setUserLanguage.rejected, (state) => {
+        state.loading = false;
+      });
+  },
 });
-
-const { restoreSession } = userSlice.actions;
-
-export { restoreSession };
 
 export default userSlice.reducer;

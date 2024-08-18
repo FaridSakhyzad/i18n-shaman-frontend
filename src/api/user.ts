@@ -39,3 +39,11 @@ export const verifyUser = async () => {
     return error.response && error.response.data;
   }
 };
+
+export const setLanguage = async (userId: string, language: string) => {
+  try {
+    return (await apiClient.post('user/setLanguage', { userId, language })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
