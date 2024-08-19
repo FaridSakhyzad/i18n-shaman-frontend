@@ -54,12 +54,7 @@ export const setUserLanguage = createAsyncThunk(
 const userSlice = createAppSlice({
   name: 'user',
   initialState,
-  reducers: {
-    setUserLanguage1: (state, action) => {
-      console.log('action.payload', action.payload);
-      console.log('setUserLanguage');
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(restoreSession.pending, (state) => {

@@ -12,6 +12,7 @@ import './i18n';
 
 import Home from './pages/Home';
 import Auth from './pages/Auth';
+import Projects from './pages/Projects';
 import Editor from './pages/Editor';
 import Profile from './pages/Profile';
 
@@ -33,12 +34,20 @@ const router = createBrowserRouter([
     element: <Auth />,
   },
   {
+    path: '/projects',
+    element: <Projects />,
+  },
+  {
     path: '/project/:projectId',
     element: <Editor />,
   },
   {
     path: '/profile',
     element: <PrivateRoute component={<Profile />} />,
+  },
+  {
+    path: '*',
+    element: <div>404</div>,
   },
 ]);
 

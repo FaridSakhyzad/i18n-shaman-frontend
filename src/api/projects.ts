@@ -1,19 +1,27 @@
 import { apiClient } from './client';
-import { IKeyValue } from '../pages/Editor/interfaces';
+import { IKeyValue } from '../interfaces';
 
 interface ICreateProject {
+  userId: string;
   projectName: string
   projectId: string
 }
 
-export const createUserProject = async ({ projectName, projectId }: ICreateProject) => {
-  return apiClient.post('/createProject', {
+export const createUserProject = async ({ userId, projectName, projectId }: ICreateProject) => {
+  return (await apiClient.post('/createProject', {
+    userId,
     projectName,
     projectId,
-  });
+  })).data;
 };
 
-export const getUserProjects = () => apiClient.get('getUserProjects');
+export const getUserProjects = async (userId: string) => {
+  try {
+    return (await apiClient.get(`getUserProjects?userId=${userId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
 
 export const getUserProjectsById = (projectId: string) => apiClient.get(`getUserProjectById?projectId=${projectId}`);
 

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import { IRootState } from 'store';
 
 import {
   createUserProject,
@@ -7,17 +10,19 @@ import {
   getUserProjectsById,
   addProjectKey,
   addProjectLanguage,
-} from '../../api/projects';
+} from 'api/projects';
 
 import './Editor.scss';
 import Key from './Key';
 import {
   IKey,
   IProject,
-} from './interfaces';
+} from '../../interfaces';
 
 export default function Editor() {
   const { projectId: currentProjectId = '' } = useParams();
+
+  const { id: userId } = useSelector((state: IRootState) => state.user);
 
   const [newProjectName, setNewProjectName] = useState<string | null>(null);
   const [newLanguage, setNewLanguage] = useState<string | null>(null);
@@ -29,7 +34,11 @@ export default function Editor() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchUserProjects = async () => {
-    const { data: userProjectsData } = await getUserProjects();
+    const { data: userProjectsData } = await getUserProjects(userId as string);
+
+    if (!userProjectsData) {
+      return;
+    }
 
     setProjectsList(userProjectsData.map(({ projectName, projectId }: any) => ({
       projectName,
@@ -60,6 +69,7 @@ export default function Editor() {
     setLoading(true);
 
     const result = await createUserProject({
+      userId: userId as string,
       projectName: newProjectName,
       projectId: Math.random().toString(16).substring(2),
     });

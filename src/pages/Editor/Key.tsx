@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IKeyValue, ILanguage } from './interfaces';
+import { IKeyValue, ILanguage } from '../../interfaces';
 import { updateKey } from '../../api/projects';
 
 interface IProps {
