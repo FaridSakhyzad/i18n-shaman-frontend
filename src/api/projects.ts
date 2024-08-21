@@ -1,5 +1,5 @@
+import { IKeyValue, IProject } from 'interfaces';
 import { apiClient } from './client';
-import { IKeyValue } from '../interfaces';
 
 interface ICreateProject {
   userId: string;
@@ -13,6 +13,22 @@ export const createUserProject = async ({ userId, projectName, projectId }: ICre
     projectName,
     projectId,
   })).data;
+};
+
+export const updateUserProject = async (data: IProject) => {
+  try {
+    return (await apiClient.post('/updateProject', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const deleteUserProject = async (projectId: string) => {
+  try {
+    return (await apiClient.delete(`/deleteProject?projectId=${projectId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
 };
 
 export const getUserProjects = async (userId: string) => {

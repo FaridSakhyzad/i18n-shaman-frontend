@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, AppDispatch } from 'store';
-import { createProject, getProjects } from 'store/projects';
+import {
+  createProject,
+  updateProject,
+  deleteProject,
+  getProjects,
+} from 'store/projects';
+
 import {
   IProject,
-} from '../../interfaces';
+} from 'interfaces';
+import EditProject from './EditProject';
 
 export default function Projects() {
   const { id: userId } = useSelector((state: IRootState) => state.user);
@@ -12,7 +19,9 @@ export default function Projects() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const [newProjectName, setNewProjectName] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState<string>('');
+
+  const [projectInEdit, setProjectInEdit] = useState<string | null>(null);
 
   const handleNewProjectNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setNewProjectName(value);
@@ -27,6 +36,21 @@ export default function Projects() {
       userId: userId as string,
       newProjectName,
     }));
+
+    setNewProjectName('');
+  };
+
+  const handleDeleteClick = (projectId: string) => {
+    dispatch(deleteProject(projectId));
+  };
+
+  const handleEditClick = (projectId: string) => {
+    setProjectInEdit(projectId);
+  };
+
+  const handleProjectSave = (data: IProject) => {
+    dispatch(updateProject(data));
+    setProjectInEdit(null);
   };
 
   useEffect(() => {
@@ -37,12 +61,40 @@ export default function Projects() {
     <div className="container">
       <h1>Projects</h1>
       <hr />
-      {projects && projects.map((project: IProject) => (
-        <div key={project.projectId}>{project.projectName}</div>
-      ))}
+      <div className="grid">
+        {projects && projects.map((project: IProject) => (
+          <div className="row" key={project.projectId}>
+            <div className="col-8">
+              {projectInEdit === project.projectId ? (
+                <EditProject
+                  project={project}
+                  onProjectSave={handleProjectSave}
+                />
+              ) : (
+                <span>{project.projectName}</span>
+              )}
+            </div>
+            <div className="col-4">
+              <div className="row">
+                <div className="col">
+                  <button type="button" onClick={() => handleDeleteClick(project.projectId)}>Delete</button>
+                </div>
+                <div className="col">
+                  <button type="button" onClick={() => handleEditClick(project.projectId)}>Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       <hr />
       <form onSubmit={(e) => e.preventDefault()}>
-        <input placeholder="New Project Name" type="text" onChange={handleNewProjectNameChange} />
+        <input
+          placeholder="New Project Name"
+          type="text"
+          onChange={handleNewProjectNameChange}
+          value={newProjectName}
+        />
         <button type="submit" onClick={handleCreateNewProjectButton}>Create New Project</button>
       </form>
     </div>

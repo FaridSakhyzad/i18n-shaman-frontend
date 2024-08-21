@@ -11,6 +11,11 @@
   cursor: pointer;
 }
 
+.grid {
+  display: grid;
+  gap: 8px;
+}
+
 .row {
   display: flex;
   gap: 8px;
