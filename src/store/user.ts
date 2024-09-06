@@ -61,6 +61,10 @@ const userSlice = createAppSlice({
         state.loading = true;
       })
       .addCase(restoreSession.fulfilled, (state, action) => {
+        if (!action.payload) {
+          return;
+        }
+
         const { id, login } = action.payload;
 
         state.loading = false;
@@ -76,8 +80,6 @@ const userSlice = createAppSlice({
         state.loading = true;
       })
       .addCase(setUserLanguage.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.loading = false;
       })
       .addCase(setUserLanguage.rejected, (state) => {

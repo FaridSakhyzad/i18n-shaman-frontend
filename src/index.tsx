@@ -6,6 +6,10 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+import './assets/styles/fonts.css';
+import './assets/styles/general.css';
+import './assets/styles/common.scss';
+
 import appstore from './store';
 
 import './i18n';
@@ -19,8 +23,6 @@ import Profile from './pages/Profile';
 import MainLayout from './MainLayout';
 import PrivateRoute from './PrivateRoute';
 
-import './general.css';
-import './common.scss';
 
 import reportWebVitals from './reportWebVitals';
 
@@ -35,11 +37,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/projects',
-    element: <Projects />,
+    element: <PrivateRoute component={<Projects />} />,
   },
   {
     path: '/project/:projectId',
-    element: <Editor />,
+    element: <PrivateRoute component={<Editor />} />,
   },
   {
     path: '/profile',

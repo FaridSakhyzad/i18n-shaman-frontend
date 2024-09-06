@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { IKeyValue, ILanguage } from '../../interfaces';
 import { updateKey } from '../../api/projects';
+
+import './Key.scss';
 
 interface IProps {
   id: string;
@@ -25,15 +27,18 @@ export default function Key(props: IProps) {
     const valuesMap = {} as { [key: string]: IKeyValueMapItem };
 
     for (let i = 0; i < valuesFromProps.length; i += 1) {
-      valuesMap[valuesFromProps[i].languageId] = {
-        ...valuesFromProps[i],
-        index: i,
-      };
+      if (valuesFromProps[i]) {
+        valuesMap[valuesFromProps[i].languageId] = {
+          ...valuesFromProps[i],
+          index: i,
+        };
+      }
     }
 
     return valuesMap;
   };
 
+  const [loading, setLoading] = useState(false);
   const [values, setValues] = useState(generateValuesMap());
 
   const getValuesArray = () => {
@@ -48,7 +53,7 @@ export default function Key(props: IProps) {
     return valuesArray;
   };
 
-  const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>, valueLanguageId: string, idx: number) => {
+  const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>, valueLanguageId: string, idx: number) => {
     if (values[valueLanguageId] && values[valueLanguageId].value) {
       values[valueLanguageId].value = value;
     } else {
@@ -63,44 +68,79 @@ export default function Key(props: IProps) {
   };
 
   const handleValueSave = async () => {
+    setLoading(true);
+
     const result = await updateKey({
       id,
       label,
       values: getValuesArray(),
     });
 
-    console.log(result, result);
+    console.log('result', result);
+
+    setLoading(false);
+  };
+
+  const handleKeyNameClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+  };
+
+  const handleValueEditCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
   };
 
   return (
-    <div className="row">
-      <div className="col-2">
-        <strong>Key: {label}</strong>
+    <section className="key">
+      <div className="keyHeader">
+        <button type="button" className="keyName" onClick={handleKeyNameClick}>{label}</button>
       </div>
-      <div className="col-6 row">
+      <div className="keyContent">
         {languages && languages.map((language: ILanguage, idx) => {
           return (
-            <div key={language.id} className="row">
-              <div className="col">
+            <Fragment key={language.id}>
+              <div className="keyContent-lang">
                 {language.label}
               </div>
 
-              <div className="col">
-                <input
-                  type="text"
-                  onChange={(e) => handleValueChange(e, language.id, idx)}
-                  value={values && values[language.id] && values[language.id].value}
-                  data-index={(values && values[language.id] && values[language.id].index) || idx}
-                />
-              </div>
+              <div className="keyContent-value">
+                <span className="keyContent-valueName">
+                  {values && values[language.id] && values[language.id].value}
+                </span>
 
-              <div className="col">
-                <button type="button" onClick={() => handleValueSave()}>Save Value</button>
+                <div className="keyEdit">
+                  {loading && <div className="loading" />}
+                  <div className="keyEdit-valueFieldBox">
+                    <textarea
+                      className="textarea keyEdit-valueField"
+                      value={values && values[language.id] && values[language.id].value}
+                      onChange={(e) => handleValueChange(e, language.id, idx)}
+                    />
+                    <span className="keyEdit-valueSymbolsCount">1024</span>
+                  </div>
+
+                  <div className="keyEdit-controls">
+                    <button
+                      type="button"
+                      className="button primary keyEdit-saveButton"
+                      onClick={handleValueSave}
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      type="button"
+                      className="button secondary keyEdit-cancelButton"
+                      onClick={handleValueEditCancel}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            </Fragment>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

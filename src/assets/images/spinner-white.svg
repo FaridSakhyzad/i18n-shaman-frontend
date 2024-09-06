@@ -1,0 +1,26 @@
+<svg id="spinner.svg" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .spin {
+        transform-origin: center;
+        animation: spin 3s linear infinite;
+      }
+    </style>
+  </defs>
+  <g class="spin">
+    <circle id="Ellipse1" class="cls-1" cx="15" cy="32" r="10"/>
+    <circle id="Ellipse2" class="cls-1" cx="32" cy="15" r="10"/>
+    <circle id="Ellipse3" class="cls-1" cx="49" cy="33" r="10"/>
+    <circle id="Ellipse4" class="cls-1" cx="32" cy="49" r="10"/>
+    <circle id="Ellipse5" class="cls-1" cx="32" cy="32" r="3"/>
+  </g>
+</svg>

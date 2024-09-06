@@ -39,7 +39,13 @@ export const getUserProjects = async (userId: string) => {
   }
 };
 
-export const getUserProjectsById = (projectId: string) => apiClient.get(`getUserProjectById?projectId=${projectId}`);
+export const getUserProjectsById = async (projectId: string) => {
+  try {
+    return (await apiClient.get(`getUserProjectById?projectId=${projectId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
 
 interface IAddLanguage {
   projectId: string

@@ -1,85 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { IRootState } from 'store';
+import { AppDispatch, IRootState } from 'store';
+import { getProjects } from 'store/projects';
+
+import { IKey, IProject } from 'interfaces';
 
 import {
-  createUserProject,
-  getUserProjects,
   getUserProjectsById,
   addProjectKey,
   addProjectLanguage,
 } from 'api/projects';
 
-import './Editor.scss';
 import Key from './Key';
-import {
-  IKey,
-  IProject,
-} from '../../interfaces';
+
+import './Editor.scss';
 
 export default function Editor() {
-  const { projectId: currentProjectId = '' } = useParams();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
+  const { projectId: currentProjectId = '' } = useParams();
 
-  const [newProjectName, setNewProjectName] = useState<string | null>(null);
+  const { projects } = useSelector((state: IRootState) => state.projects);
+
   const [newLanguage, setNewLanguage] = useState<string | null>(null);
   const [newKeyName, setNewKeyName] = useState<string | null>(null);
 
   const [project, setProject] = useState<IProject | null>(null);
 
-  const [projectsList, setProjectsList] = useState<IProject[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const fetchUserProjects = async () => {
-    const { data: userProjectsData } = await getUserProjects(userId as string);
-
-    if (!userProjectsData) {
-      return;
-    }
-
-    setProjectsList(userProjectsData.map(({ projectName, projectId }: any) => ({
-      projectName,
-      projectId,
-    })));
-  };
 
   const fetchProjectData = async () => {
     const result = await getUserProjectsById(currentProjectId);
 
-    setProject(result.data);
+    setProject(result);
   };
 
   useEffect(() => {
-    fetchUserProjects();
+    dispatch(getProjects(userId as string));
     fetchProjectData();
-  }, []);
-
-  const handleNewProjectNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-    setNewProjectName(value);
-  };
-
-  const handleCreateProjectClick = async () => {
-    if (!newProjectName) {
-      return;
-    }
-
-    setLoading(true);
-
-    const result = await createUserProject({
-      userId: userId as string,
-      projectName: newProjectName,
-      projectId: Math.random().toString(16).substring(2),
-    });
-
-    setNewProjectName(null);
-
-    await fetchUserProjects();
-
-    setLoading(false);
-  };
+  }, [currentProjectId]);
 
   const handleNewLanguageChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setNewLanguage(value);
@@ -98,6 +61,8 @@ export default function Editor() {
       label: newLanguage,
       baseLanguage: false,
     });
+
+    fetchProjectData();
 
     setNewLanguage(null);
 
@@ -122,36 +87,44 @@ export default function Editor() {
       values: [],
     });
 
+    fetchProjectData();
+
     setNewKeyName(null);
 
     setLoading(false);
   };
 
+  const handleProjectChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+    navigate(`/project/${value}`);
+  };
+
   return (
     <div className="container">
       <header>
-        <h1>Project: {currentProjectId}</h1>
-        <select disabled={loading}>
-          {projectsList && projectsList.map(({ projectName, projectId }) => (
-            <option key={projectId}>{projectName}</option>
+        <h1>Project: {project?.projectName} | {currentProjectId}</h1>
+        <select
+          disabled={loading}
+          value={currentProjectId}
+          onChange={handleProjectChange}
+        >
+          {projects && projects.map(({ projectName, projectId }) => (
+            <option
+              key={projectId}
+              value={projectId}
+            >
+              {projectName}
+            </option>
           ))}
         </select>
       </header>
       <hr />
       <div>
         <input
-          type="text"
-          onChange={handleNewProjectNameChange}
-          value={newProjectName || ''}
-        />
-        <button type="button" onClick={handleCreateProjectClick}>Create Project</button>
-      </div>
-      <hr />
-      <div>
-        <input
+          className="input"
           type="text"
           onChange={handleNewLanguageChange}
           value={newLanguage || ''}
+          placeholder="New Project Name"
         />
         <button type="button" onClick={handleAddLanguageClick}>Add Language</button>
       </div>
@@ -165,10 +138,10 @@ export default function Editor() {
         <button type="button" onClick={handleCreateKeyClick}>Create Key</button>
       </div>
 
-      <section>
+      <section className="keysList">
+        <h2>Project</h2>
         {project && project.keys.map((key: IKey) => (
           <div key={key.id}>
-            <hr />
             <Key
               id={key.id}
               label={key.label}

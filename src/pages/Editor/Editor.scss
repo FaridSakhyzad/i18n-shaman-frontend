@@ -11,3 +11,9 @@
   top: anchor(bottom);
   margin: 0;
 }
+
+.keysList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}

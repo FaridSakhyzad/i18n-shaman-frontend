@@ -1,0 +1,108 @@
+.key {}
+
+.keyHeader {
+  background-color: #faf9fb;
+  padding: 9px 30px;
+  min-height: 48px;
+  margin-bottom: 2px;
+}
+
+.keyName {
+  font-size: 20px;
+  line-height: 30px;
+  text-decoration: none;
+  color: var(--link-text-color-2);
+  cursor: pointer;
+  background: transparent;
+  display: inline;
+  border: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.keyContent {
+  display: grid;
+  grid-template-columns: 177px 1fr;
+  gap: 1px;
+}
+
+.keyContent-lang {
+  background-color: #faf9fb;
+  text-align: right;
+  padding: 10px 10px;
+  font-size: 16px;
+  line-height: 20px;
+  min-height: 40px;
+}
+
+.keyContent-value {
+  background-color: #ffffff;
+}
+
+.keyContent-valueName {
+  display: block;
+  padding: 10px 10px;
+  font-size: 16px;
+  line-height: 20px;
+  min-height: 40px;
+  color: #2944cc;
+  cursor: pointer;
+  width: 100%;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.keyEdit {
+  padding: 13px 16px 15px 16px;
+  position: relative;
+}
+
+.keyEdit-valueFieldBox {
+  position: relative;
+  margin-bottom: 12px;
+  width: 100%;
+  z-index: 1;
+}
+
+.keyEdit-valueField {
+  width: 100%;
+  font-size: 16px;
+  color: #2944cc;
+  resize: none;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.keyEdit-valueSymbolsCount {
+  display: block;
+  color: white;
+  font-size: 12px;
+  line-height: 15px;
+  background-color: #5ca1e5;
+  border-radius: 10px;
+  padding: 3px 6px 1px 6px;
+  position: absolute;
+  right: 15px;
+  bottom: -9px;
+  z-index: 10;
+  min-width: 27px;
+  text-align: center;
+}
+
+.keyEdit-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.keyEdit-saveButton {
+  width: 71px;
+}
+
+.keyEdit-cancelButton {
+  width: 71px;
+}

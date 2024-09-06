@@ -1,0 +1,192 @@
+.container {
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+.input {
+  font: var(--main-font);
+  line-height: 19px;
+  height: 31px;
+  border: 1px solid #5ca1e5;
+  border-radius: 65536px;
+  padding: 5px 14px 2px 14px;
+  outline: none;
+
+  &:hover {
+    border-color: #527acc;
+  }
+
+  &:focus {
+    border-color: #295fcc;
+  }
+}
+
+.textarea {
+  font: var(--main-font);
+  border: 1px solid #5ca1e5;
+  border-radius: 15px;
+  resize: vertical;
+  min-height: 100px;
+  padding: 14px;
+  outline: none;
+
+  &:hover {
+    border-color: #527acc;
+  }
+
+  &:focus {
+    border-color: #295fcc;
+  }
+}
+
+.button {
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  line-height: 19px;
+  border-radius: 65536px;
+  padding: 6px 12px;
+  background-clip: padding-box;
+
+  &.primary {
+    color: white;
+    background-color: #388ff3;
+    background-image: linear-gradient(0deg, rgb(47,91,233) 0%, rgb(60,143,242) 55%, rgb(73,195,251) 100%);
+    box-shadow: 0 10px 20px 0 rgba(46, 124, 232, 0.5);
+
+    &:hover {
+      background-image: linear-gradient(0deg, rgb(33,76,219) 0%, rgb(46,123,230) 55%, rgb(58,170,240) 100%);
+    }
+
+    &:focus-visible {
+      outline: 1px solid #527acc;
+      outline-offset: 2px;
+    }
+
+    &:active:not([disabled]) {
+      box-shadow: 0 5px 15px 0 rgba(46, 124, 232, 0.5);
+      transform: translateY(1px);
+    }
+
+    &[disabled] {
+      background-image: linear-gradient(0deg, rgb(130,158,242) 0%, rgb(146,219,253) 100%);
+      color: rgba(255 255 255 / 0.5);
+    }
+  }
+
+  &.secondary {
+    color: #333333;
+    border: 1px solid rgb(189, 189, 187);
+    background-image: linear-gradient(0deg, rgb(198,197,196) 0%, rgb(223,223,222) 55%, rgb(248,248,248) 100%);
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.15);
+    padding: 5px 11px;
+
+    &:hover {
+      border-color: rgb(189, 189, 187);
+      background-image: linear-gradient(0deg, rgb(219,219,219) 0%, rgb(237,237,237) 55%, rgb(255,255,255) 100%);
+    }
+
+    &:focus-visible {
+      outline: 1px solid #bebebe;
+      outline-offset: 2px;
+    }
+
+    &:active:not([disabled]) {
+      box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.15);
+      transform: translateY(1px);
+    }
+
+    &[disabled] {
+      border-color: #dbdbd9;
+      background-image: linear-gradient(0deg, rgb(227,226,226) 0%, rgb(239,239,239) 55%, rgb(251,251,251) 100%);
+      color: #808080;
+      cursor: default;
+    }
+  }
+}
+
+.loading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.85) url("../images/spinner.svg") center center  / 48px 48px no-repeat;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.grid {
+  display: grid;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.col {
+  flex: 1 0 0;
+}
+
+.col-1,
+.col-2,
+.col-3,
+.col-4,
+.col-5,
+.col-6,
+.col-7,
+.col-8,
+.col-9,
+.col-10,
+.col-11,
+.col-12 {
+  flex: 0 0 auto;
+
+  &.row {
+    flex-direction: column;
+
+    & > .row {
+      flex: 1 1 100%;
+    }
+  }
+}
+
+.col-1 {
+  width: 8.33333333%;
+}
+.col-2 {
+  width: 16.66666667%;
+}
+.col-3 {
+  width: 25%;
+}
+.col-4 {
+  width: 33.33333333%;
+}
+.col-5 {
+  width: 41.66666667%;
+}
+.col-6 {
+  width: 50%;
+}
+.col-7 {
+  width: 58.33333333%;
+}
+.col-8 {
+  width: 66.66666667%;
+}
+.col-9 {
+  width: 75%;
+}
+.col-10 {
+  width: 83.33333333%;
+}
+.col-11 {
+  width: 91.66666667%;
+}
+.col-12 {
+  width: 100%;
+}

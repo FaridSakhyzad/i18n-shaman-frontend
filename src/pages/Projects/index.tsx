@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { IRootState, AppDispatch } from 'store';
 import {
   createProject,
@@ -71,7 +72,9 @@ export default function Projects() {
                   onProjectSave={handleProjectSave}
                 />
               ) : (
-                <span>{project.projectName}</span>
+                <span>
+                  <Link to={`/project/${project.projectId}`}>{project.projectName}</Link>
+                </span>
               )}
             </div>
             <div className="col-4">
