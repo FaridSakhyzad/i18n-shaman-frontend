@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="19" height="11" viewBox="0 0 19 11">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #5ca1e5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="icon--drop-down-arrow-big.svg" class="cls-1" d="M3497,100l8.5,9,8.5-9" transform="translate(-3496 -99)"/>
+</svg>

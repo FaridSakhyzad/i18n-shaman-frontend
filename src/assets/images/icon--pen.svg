@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="icon--pen.svg" class="cls-1" d="M1829,1679l7-7,2,2-7,7h-2v-2Zm8-8,1-1,2,2-1,1Z" transform="translate(-1829 -1670)"/>
+</svg>

@@ -13,6 +13,7 @@ export interface IKey {
 export interface ILanguage {
   id: string,
   label: string,
+  code: string,
   baseLanguage: boolean,
 }
 
@@ -22,4 +23,10 @@ export interface IProject {
   userId: string;
   keys: [IKey];
   languages: [ILanguage];
+}
+
+export interface IDeleteError {
+  message: string;
+  error: string;
+  statusCode: number;
 }

@@ -47,25 +47,6 @@ export const getUserProjectsById = async (projectId: string) => {
   }
 };
 
-interface IAddLanguage {
-  projectId: string
-  id: string
-  label: string
-  baseLanguage: boolean
-}
-
-export const addProjectLanguage = async ({
-  projectId,
-  id,
-  label,
-  baseLanguage,
-}: IAddLanguage) => apiClient.post('/addProjectLanguage', {
-  projectId,
-  id,
-  label,
-  baseLanguage,
-});
-
 interface IAddKey {
   projectId: string
   id: string

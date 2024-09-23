@@ -40,6 +40,7 @@ export default function Key(props: IProps) {
 
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState(generateValuesMap());
+  const [editValueId, setEditValueId] = useState('');
 
   const getValuesArray = () => {
     const valuesArray = [] as IKeyValueMapItem[];
@@ -78,7 +79,13 @@ export default function Key(props: IProps) {
 
     console.log('result', result);
 
+    setEditValueId('');
     setLoading(false);
+  };
+
+  const handleValueNameClick = (e: React.MouseEvent<HTMLSpanElement>, languageId: string) => {
+    e.preventDefault();
+    setEditValueId(languageId);
   };
 
   const handleKeyNameClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -87,6 +94,7 @@ export default function Key(props: IProps) {
 
   const handleValueEditCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setEditValueId('');
   };
 
   return (
@@ -95,18 +103,20 @@ export default function Key(props: IProps) {
         <button type="button" className="keyName" onClick={handleKeyNameClick}>{label}</button>
       </div>
       <div className="keyContent">
-        {languages && languages.map((language: ILanguage, idx) => {
-          return (
-            <Fragment key={language.id}>
-              <div className="keyContent-lang">
-                {language.label}
-              </div>
+        {languages && languages.map((language: ILanguage, idx) => (
+          <Fragment key={language.id}>
+            <div className="keyContent-lang">
+              {language.label}
+            </div>
 
-              <div className="keyContent-value">
-                <span className="keyContent-valueName">
+            <div className="keyContent-value">
+              {language.id !== editValueId && (
+                <span className="keyContent-valueName" onClick={(e) => handleValueNameClick(e, language.id)}>
                   {values && values[language.id] && values[language.id].value}
                 </span>
+              )}
 
+              {language.id === editValueId && (
                 <div className="keyEdit">
                   {loading && <div className="loading" />}
                   <div className="keyEdit-valueFieldBox">
@@ -136,10 +146,10 @@ export default function Key(props: IProps) {
                     </button>
                   </div>
                 </div>
-              </div>
-            </Fragment>
-          );
-        })}
+              )}
+            </div>
+          </Fragment>
+        ))}
       </div>
     </section>
   );

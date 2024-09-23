@@ -1,0 +1,138 @@
+.projectLangsModal {
+  width: 508px;
+}
+
+.projectLangsModal-loading {
+  border-radius: 26px;
+  border-bottom-left-radius: 44px;
+  border-bottom-right-radius: 44px;
+  inset: 5px;
+  width: auto;
+  height: auto;
+}
+
+.projectLangs {
+
+}
+
+.projectLangs-quickAddButton {
+  margin-right: auto;
+  min-width: 161px;
+}
+
+.projectLangs-closeButton {
+  min-width: 71px;
+}
+
+.projectLangs-hideAllButton {
+  margin: 1px 6px 0 auto;
+  outline: none;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.projectLangs-hideAllIcon {
+  display: block;
+  position: relative;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #cdcfd4 url("../../assets/images/icon--eye.svg") center center no-repeat;
+  border: 1px solid #fff;
+  margin-top: -2px;
+
+  &:nth-child(1) {
+    z-index: 3;
+  }
+
+  &:nth-child(2) {
+    margin-left: -20px;
+    z-index: 2;
+  }
+
+  &:nth-child(3) {
+    margin-right: 6px;
+    margin-left: -20px;
+    z-index: 1;
+  }
+}
+
+.projectLangs-item {
+  border-top: 1px solid #ebedf2;
+  padding: 11px 0 11px 0;
+  display: flex;
+  align-items: center;
+
+  &:last-child {
+    border-top: 1px solid #ebedf2;
+  }
+}
+
+.projectLangs-itemIcon {
+  background-color: #f4f3f6;
+  border: 2px solid #e8e6ed;
+  width: 41px;
+  height: 41px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.projectLangs-itemName {
+  display: block;
+  line-height: 16px;
+}
+
+.projectLangs-itemCode {
+  display: block;
+  line-height: 16px;
+  color: #c6c8cc;
+}
+
+.projectLangs-itemControls {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: 6px;
+}
+
+.projectLangs-itemControl {
+  display: block;
+  width: 23px;
+  height: 23px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  background-color: #cdcfd4;
+  appearance: none;
+
+  &:focus-visible {
+    outline: 1px solid #cdcfd4;
+    outline-offset: 2px;
+  }
+}
+
+.projectLangs-itemControl_hide {
+  background: #cdcfd4 url("../../assets/images/icon--eye.svg") center center no-repeat;
+
+  &:hover {
+    background-color: #388ff3;
+  }
+}
+
+.projectLangs-itemControl_edit {
+  background: #cdcfd4 url("../../assets/images/icon--pen.svg") center center no-repeat;
+
+  &:hover {
+    background-color: #388ff3;
+  }
+}
+
+.projectLangs-itemControl_delete {
+  background: #cdcfd4 url("../../assets/images/icon--dumpster.svg") center center no-repeat;
+
+  &:hover {
+    background-color: #e62e2e;
+  }
+}

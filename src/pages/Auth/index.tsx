@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './Auth.scss';
+import { useNavigate } from 'react-router-dom';
+
 import {
   ILoginUserDto,
   IRegisterUserDto,
@@ -7,7 +8,11 @@ import {
   registerUser,
 } from 'api/user';
 
+import './Auth.scss';
+
 export default function Auth() {
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabClick = (tab: number) => {
@@ -26,10 +31,10 @@ export default function Auth() {
 
     const result = await loginUser(data);
 
-    console.log('login result', result);
-
     if (result.error) {
       alert(result.message);
+    } else {
+      navigate('/projects');
     }
   };
 
