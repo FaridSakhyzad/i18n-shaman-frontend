@@ -15,6 +15,7 @@ export interface ILanguage {
   label: string,
   code: string,
   baseLanguage: boolean,
+  visible: boolean,
 }
 
 export interface IProject {
@@ -25,7 +26,7 @@ export interface IProject {
   languages: [ILanguage];
 }
 
-export interface IDeleteError {
+export interface IProjectUpdateError {
   message: string;
   error: string;
   statusCode: number;

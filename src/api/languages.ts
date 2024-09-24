@@ -1,4 +1,4 @@
-import { IProject, IDeleteError } from 'interfaces';
+import { IProject, IProjectUpdateError } from 'interfaces';
 
 import { apiClient } from './client';
 
@@ -29,15 +29,15 @@ export const hideAllLanguages = async (): Promise<void> => {
   }
 };
 
-export const hideLanguage = async (languageId: string): Promise<void> => {
+export const setLanguageVisibility = async (projectId: string, languageId: string, visible: boolean): Promise<IProject | IProjectUpdateError> => {
   try {
-    return (await apiClient.post('/hideLanguage', { languageId })).data;
+    return (await apiClient.post('/setLanguageVisibility', { projectId, languageId, visible })).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }
 };
 
-export const deleteLanguage = async (projectId: string, languageId: string): Promise<IProject | IDeleteError> => {
+export const deleteLanguage = async (projectId: string, languageId: string): Promise<IProject | IProjectUpdateError> => {
   try {
     return (await apiClient.delete(`/deleteLanguage?projectId=${projectId}&languageId=${languageId}`)).data;
   } catch (error: any) {

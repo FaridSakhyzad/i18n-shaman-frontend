@@ -114,6 +114,14 @@
 }
 
 .projectLangs-itemControl_hide {
+  background: #cdcfd4 url("../../assets/images/icon--eye-disabled.svg") center center no-repeat;
+
+  &:hover {
+    background-color: #388ff3;
+  }
+}
+
+.projectLangs-itemControl_show {
   background: #cdcfd4 url("../../assets/images/icon--eye.svg") center center no-repeat;
 
   &:hover {

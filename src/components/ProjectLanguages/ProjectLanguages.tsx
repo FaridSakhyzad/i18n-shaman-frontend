@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { ILanguage, IDeleteError, IProject } from 'interfaces';
+import { ILanguage, IProjectUpdateError, IProject } from 'interfaces';
 
 import Modal from 'components/Modal';
 
-import { deleteLanguage, hideAllLanguages, hideLanguage } from 'api/languages';
+import {
+  hideAllLanguages,
+  setLanguageVisibility,
+  deleteLanguage,
+} from 'api/languages';
 
 import './ProjectLanguages.scss';
 
@@ -24,7 +28,6 @@ export default function ProjectLanguages({
   onDelete,
   onClose,
 }: IProps) {
-
   const [languages, setLanguages] = useState(project.languages);
   const [showLoading, setShowLoading] = useState<boolean>(false);
 
@@ -41,7 +44,29 @@ export default function ProjectLanguages({
   const handleHideLangClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
     setShowLoading(true);
 
-    await hideLanguage(langId);
+    const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, false);
+
+    if ('error' in result) {
+      console.error(result.message);
+    } else {
+      setLanguages(result.languages);
+    }
+
+    setShowLoading(false);
+
+    onHide(langId);
+  };
+
+  const handleShowLangClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
+    setShowLoading(true);
+
+    const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, true);
+
+    if ('error' in result) {
+      console.error(result.message);
+    } else {
+      setLanguages(result.languages);
+    }
 
     setShowLoading(false);
 
@@ -55,7 +80,7 @@ export default function ProjectLanguages({
   const handleDeleteClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
     setShowLoading(true);
 
-    const result: IProject | IDeleteError = await deleteLanguage(project.projectId, langId);
+    const result: IProject | IProjectUpdateError = await deleteLanguage(project.projectId, langId);
 
     if ('error' in result) {
       console.error(result.message);
@@ -100,12 +125,21 @@ export default function ProjectLanguages({
                 <span className="projectLangs-itemCode">{lang.code}</span>
               </div>
               <div className="projectLangs-itemControls">
-                <button
-                  type="button"
-                  className="projectLangs-itemControl projectLangs-itemControl_hide"
-                  aria-label="Hide Language"
-                  onClick={(e) => handleHideLangClick(e, lang.id)}
-                />
+                {lang.visible ? (
+                  <button
+                    type="button"
+                    className="projectLangs-itemControl projectLangs-itemControl_hide"
+                    aria-label="Hide Language"
+                    onClick={(e) => handleHideLangClick(e, lang.id)}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="projectLangs-itemControl projectLangs-itemControl_show"
+                    aria-label="Hide Language"
+                    onClick={(e) => handleShowLangClick(e, lang.id)}
+                  />
+                )}
                 <button
                   type="button"
                   className="projectLangs-itemControl projectLangs-itemControl_edit"
