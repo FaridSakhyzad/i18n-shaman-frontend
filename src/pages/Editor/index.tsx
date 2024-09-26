@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
 
-import { IKey, ILanguage, IProject } from 'interfaces';
+import { IKey, IProject } from 'interfaces';
 
 import {
   getUserProjectsById,
@@ -19,7 +19,9 @@ import {
 import Key from './Key';
 
 import './Editor.scss';
-import ProjectLanguages from '../../components/ProjectLanguages/ProjectLanguages';
+
+import ProjectLanguages from 'components/ProjectLanguages';
+import AddProjectLanguage from 'components/AddProjectLanguage';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -234,6 +236,8 @@ export default function Editor() {
         >
           Add Language
         </button>
+
+        <AddProjectLanguage />
 
         {isAddLanguageModalVisible && (
           <dialog

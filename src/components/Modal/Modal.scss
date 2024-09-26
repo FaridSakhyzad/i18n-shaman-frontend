@@ -29,6 +29,49 @@
   margin-bottom: 20px;
 }
 
+.modal-closeButton {
+  display: block;
+  padding: 0;
+  width: 35px;
+  height: 35px;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  border-radius: 50%;
+  background-color: transparent;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    height: 1px;
+    width: 16px;
+    background-color: #333333;
+    scale: 1 2.04;
+    border-radius: 1px;
+  }
+
+  &:before {
+    rotate: 45deg;
+  }
+
+  &:after {
+    rotate: -45deg;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
 .modal-title {
   font-size: 20px;
   line-height: 24px;

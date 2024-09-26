@@ -19,6 +19,7 @@ import Auth from './pages/Auth';
 import Projects from './pages/Projects';
 import Editor from './pages/Editor';
 import Profile from './pages/Profile';
+import Storybook from './pages/Storybook';
 
 import MainLayout from './MainLayout';
 import PrivateRoute from './PrivateRoute';
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
   {
     path: '/profile',
     element: <PrivateRoute component={<Profile />} />,
+  },
+  {
+    path: '/storybook',
+    element: <PrivateRoute component={<Storybook />} />,
   },
   {
     path: '*',

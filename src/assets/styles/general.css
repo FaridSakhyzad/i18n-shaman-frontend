@@ -13,6 +13,8 @@
 
   --main-background-color: #f4f3f6;
   --input-background-color: #fff;
+
+  --color-error: #e62e2e;
 }
 
 *, :before, :after {
