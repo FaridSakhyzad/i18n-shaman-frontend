@@ -71,7 +71,7 @@ export default function Storybook() {
         <div className="form-row">
           <div className="formControl">
             <div className="formControl-header">
-              <label className="formControl-label">Second Name*</label>
+              <label className="formControl-label">Second Name* <i className="formControl-infoIcon"/></label>
             </div>
             <div className="formControl-body">
               <div className="formControl-wrapper">
@@ -104,6 +104,35 @@ export default function Storybook() {
       <hr/>
 
       <input type="checkbox" className="switcher"/>
+
+      <hr/>
+
+      <label className="checkboxControl">
+        <input type="checkbox" className="checkbox"/>
+        <span className="checkboxControl-text">Checkbox + Label</span>
+      </label>
+
+      <hr/>
+
+      <label className="radioControl">
+        <input type="radio" className="radio" name="radio-1"/>
+        <span className="radioControl-text">Radio + Label</span>
+      </label>
+      <br/>
+      <label className="radioControl">
+        <input type="radio" className="radio" name="radio-1"/>
+        <span className="radioControl-text">Radio + Label</span>
+      </label>
+      <br/>
+      <label className="radioControl">
+        <input type="radio" className="radio" name="radio-1"/>
+        <span className="radioControl-text">Radio + Label</span>
+      </label>
+      <br/>
+      <label className="radioControl">
+        <input type="radio" className="radio" name="radio-1"/>
+        <span className="radioControl-text">Radio + Label</span>
+      </label>
     </div>
   )
 }
