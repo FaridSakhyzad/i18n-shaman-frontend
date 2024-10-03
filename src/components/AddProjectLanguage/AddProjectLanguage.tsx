@@ -2,39 +2,45 @@ import React, { useEffect, useState, useRef } from 'react';
 import Modal from 'components/Modal';
 
 import './AddProjectLanguage.scss';
-import getLanguages, { ILanguage } from './languages';
+import getLanguages from './languages';
 
-interface ILanguageListItemData {
-  id: string;
+import { ILanguage } from 'interfaces';
+import { addMultipleLanguages } from '../../api/languages';
+
+interface IProps {
+  projectId: string;
+  onClose: () => void;
+  onCancel: () => void;
+  onConfirm: () => void;
 }
 
-interface ISelectedLanguage {
-  [key: string]: number;
-}
-
-export default function AddProjectLanguage() {
+export default function AddProjectLanguage({ projectId, onClose, onCancel, onConfirm }: IProps) {
   const fullLanguagesList = getLanguages();
 
+  const [ loading, setLoading ] = useState<boolean>(false);
   const [ languages, setLanguages ] = useState(getLanguages());
+  const [ selectedLanguages, setSelectedLanguages ] = useState<ILanguage[]>([]);
   const [ languagesPanelVisible, setLanguagesPanelVisible ] = useState<boolean>(false);
-  const [ selectedLanguageMap, setSelectedLanguageMap ] = useState<ISelectedLanguage>({});
   const [ languageSearchQuery, setLanguageSearchQuery ] = useState('');
   const [ searchQueryPrevValue, setSearchQueryPrevValue ] = useState('');
 
-  const languageSearchFieldRef = useRef<HTMLInputElement>(null);
-  const languageSearchFieldWrapperRef = useRef<HTMLLabelElement>(null);
-
-  const languagesMap = (() => {
+  const generateMap = (languagesArray: ILanguage[]) => {
     const result = {} as { [key: string]: number };
 
-    for (let i = 0; i < fullLanguagesList.length; i++) {
-      const { code } = fullLanguagesList[i];
+    for (let i = 0; i < languagesArray.length; i++) {
+      const { code } = languagesArray[i];
 
       result[code] = i;
     }
 
     return result;
-  })();
+  };
+
+  const languagesMap = generateMap(languages);
+  const selectedLanguageMap = generateMap(selectedLanguages);
+
+  const languageSearchFieldRef = useRef<HTMLInputElement>(null);
+  const languageSearchFieldWrapperRef = useRef<HTMLLabelElement>(null);
 
   const handleOutsideClick = (e: MouseEvent) => {
     if (e.target !== languageSearchFieldRef.current && e.target !== languageSearchFieldWrapperRef.current) {
@@ -48,7 +54,7 @@ export default function AddProjectLanguage() {
     e.stopPropagation();
 
     languageSearchFieldRef.current && languageSearchFieldRef.current.focus();
-  }
+  };
 
   const handleLanguagesListFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     e.stopPropagation();
@@ -106,62 +112,63 @@ export default function AddProjectLanguage() {
       return;
     }
 
-    const elToDelete = selectedLanguages[selectedLanguages.length - 1];
-
-    if (elToDelete) {
-      delete selectedLanguageMap[elToDelete.code];
-
-      setSelectedLanguageMap({ ...selectedLanguageMap });
+    if ((selectedLanguages.length - 1) === currentLanguageIdx) {
+      setCurrentLanguageIdx(-1);
     }
+
+    setCurrentLanguageIdx(-1);
+
+    selectedLanguages.pop();
+    setSelectedLanguages([...selectedLanguages]);
   }
 
   const handleLanguagesListItemClick = (e: React.MouseEvent<HTMLUListElement>) => {
     const { target } = e;
     const { id } = target as HTMLLIElement;
+
     const langIndex: number = languagesMap[id];
 
-    const result: ISelectedLanguage = {
-      ...selectedLanguageMap
-    }
+    selectedLanguages.push(languages[langIndex])
 
-    if (result[id] !== undefined) {
-      delete result[id];
-    } else {
-      result[id] = langIndex;
-    }
+    setSelectedLanguages([...selectedLanguages]);
 
-    setSelectedLanguageMap(result);
     setLanguagesPanelVisible(false);
     setLanguageSearchQuery('');
+    setLanguages(fullLanguagesList);
 
     languageSearchFieldRef.current && languageSearchFieldRef.current.focus();
   }
 
-  const getSelectedLanguages = () => {
-    const result: ILanguage[] = [];
+  const [ currentLanguageIdx, setCurrentLanguageIdx] = useState<number>(-1);
 
-    Object.values(selectedLanguageMap).forEach((languageIndex) => {
-      if (fullLanguagesList[languageIndex]) {
-        result.push(fullLanguagesList[languageIndex])
-      }
-    })
+  const currentLanguage = selectedLanguages[currentLanguageIdx];
 
-    return result;
-  }
-
-  const selectedLanguages = getSelectedLanguages();
-
-  const handleChipClick = (e: React.MouseEvent<HTMLSpanElement>) => {
+  const handleChipClick = (e: React.MouseEvent<HTMLSpanElement>, code: string) => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('handleChipClick');
+    const selectedLanguageIdx = selectedLanguageMap[code];
+
+    setCurrentLanguageIdx(selectedLanguageIdx);
   }
 
-  const handleChipDelete = (id: string) => {
-    delete selectedLanguageMap[id];
+  const handleChipDelete = (e: React.MouseEvent<HTMLElement>, code: string) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    setSelectedLanguageMap({ ...selectedLanguageMap });
+    const indexOfElToDelete = selectedLanguages.findIndex((item) => item.code === code);
+
+    if (indexOfElToDelete < 0) {
+      return;
+    }
+
+    if (indexOfElToDelete === currentLanguageIdx) {
+      setCurrentLanguageIdx(-1);
+    }
+
+    const result = selectedLanguages.splice(indexOfElToDelete, 1);
+
+    setSelectedLanguages([...selectedLanguages]);
   }
 
   const theresMatchesToDisplay = () => {
@@ -172,13 +179,72 @@ export default function AddProjectLanguage() {
     return languages.length > 0 && !allMatchesAreSelected;
   }
 
+  const handleCustomCodeSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedLanguages || !selectedLanguages[currentLanguageIdx]) {
+      return;
+    }
+
+    selectedLanguages[currentLanguageIdx].customCodeEnabled = e.currentTarget.checked;
+
+    setSelectedLanguages([...selectedLanguages]);
+  }
+
+  const handleCustomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    selectedLanguages[currentLanguageIdx].customCode = e.currentTarget.value;
+
+    setSelectedLanguages([...selectedLanguages]);
+  }
+
+  const handleCustomLabelSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedLanguages || !selectedLanguages[currentLanguageIdx]) {
+      return;
+    }
+
+    selectedLanguages[currentLanguageIdx].customLabelEnabled = e.currentTarget.checked;
+
+    setSelectedLanguages([...selectedLanguages]);
+  }
+
+  const handleCustomLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    selectedLanguages[currentLanguageIdx].customLabel = e.currentTarget.value;
+
+    setSelectedLanguages([...selectedLanguages]);
+  }
+
+  const handleBaseLanguageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    selectedLanguages[currentLanguageIdx].baseLanguage = e.currentTarget.checked;
+
+    setSelectedLanguages([...selectedLanguages]);
+  }
+
+  const handleCloseButtonClick = () => {
+    onCancel();
+  }
+
+  const handleAddButtonClick = async () => {
+    setLoading(true);
+
+    const result = await addMultipleLanguages({
+      languages: selectedLanguages,
+      projectId
+    });
+
+    setLoading(false);
+
+    onConfirm();
+  }
+
   return (
     <Modal customClassNames="modal_withBottomButtons modal_addProjectLang">
+      {loading && (
+        <div className="addProjectLang-loading"/>
+      )}
       <div className="modal-header">
-        <h4 className="modal-title">Add New Language</h4>
+      <h4 className="modal-title">Add New Language</h4>
         <button
           type="button"
           className="modal-closeButton"
+          onClick={handleCloseButtonClick}
         />
       </div>
       <div className="modal-content">
@@ -193,14 +259,14 @@ export default function AddProjectLanguage() {
                 >
                   {selectedLanguages.length > 0 && selectedLanguages.map(({code, label}: ILanguage) => (
                     <span
-                      className="languagesSelector-chip"
+                      className={`languagesSelector-chip ${currentLanguage && currentLanguage.code === code ? 'isActive' : ''}`}
                       key={code}
-                      onClick={handleChipClick}
+                      onClick={(e) => handleChipClick(e, code)}
                     >
                         {label}
                       <i
                         className="languagesSelector-chipDelete"
-                        onClick={() => handleChipDelete(code)}
+                        onClick={(e) => handleChipDelete(e, code)}
                       />
                       </span>
                   ))}
@@ -246,55 +312,100 @@ export default function AddProjectLanguage() {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="formControl">
-              <div className="formControl-header">
-                <label className="formControl-label">Custom language code <i className="formControl-infoIcon"/></label>
-              </div>
-              <div className="formControl-body addProjectLang-switchableControl">
-                <input type="checkbox" className="switcher"/>
-
-                <div className="formControl-wrapper">
-                <input type="text" className="input formControl-input" disabled />
+          <div className={`languagesOptionsBox ${selectedLanguages[currentLanguageIdx] ? 'isActive' : ''}`}>
+            {selectedLanguages[currentLanguageIdx] && (
+              <section key={currentLanguageIdx} className="form languagesOptions">
+                <div className="row">
+                  <h3 className="h3">Options
+                    for <b>{selectedLanguages[currentLanguageIdx].label} ({selectedLanguages[currentLanguageIdx].code})</b></h3>
                 </div>
-              </div>
-            </div>
-          </div>
+                <div className="form-row">
+                  <div className="formControl">
+                    <div className="formControl-header">
+                      <label className="formControl-label">Custom language code <i
+                        className="formControl-infoIcon"/></label>
+                    </div>
+                    <div className="formControl-body addProjectLang-switchableControl">
+                      <input
+                        type="checkbox"
+                        className="switcher"
+                        onChange={handleCustomCodeSwitcherChange}
+                        disabled={!selectedLanguages[currentLanguageIdx]}
+                        checked={selectedLanguages[currentLanguageIdx] && selectedLanguages[currentLanguageIdx].customCodeEnabled}
+                      />
 
-          <div className="form-row">
-            <div className="formControl">
-              <div className="formControl-header">
-                <label className="formControl-label">Custom language name <i className="formControl-infoIcon"/></label>
-              </div>
-              <div className="formControl-body addProjectLang-switchableControl">
-                <input type="checkbox" className="switcher"/>
-
-                <div className="formControl-wrapper">
-                  <input type="text" className="input formControl-input" disabled />
+                      <div className="formControl-wrapper">
+                        <input
+                          type="text"
+                          className="input formControl-input"
+                          disabled={!selectedLanguages[currentLanguageIdx] || !selectedLanguages[currentLanguageIdx].customCodeEnabled}
+                          value={selectedLanguages[currentLanguageIdx] ? (selectedLanguages[currentLanguageIdx].customCode || selectedLanguages[currentLanguageIdx].code) : ''}
+                          onChange={handleCustomCodeChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="form-row">
-            <label className="checkboxControl">
-              <input type="checkbox" className="checkbox"/>
-              <span className="checkboxControl-text">Main Language</span>
-            </label>
-          </div>
+                <div className="form-row">
+                  <div className="formControl">
+                    <div className="formControl-header">
+                      <label className="formControl-label">Custom language name <i
+                        className="formControl-infoIcon"/></label>
+                    </div>
+                    <div className="formControl-body addProjectLang-switchableControl">
+                      <input
+                        type="checkbox"
+                        className="switcher"
+                        onChange={handleCustomLabelSwitcherChange}
+                        disabled={!selectedLanguages[currentLanguageIdx]}
+                        checked={selectedLanguages[currentLanguageIdx] && selectedLanguages[currentLanguageIdx].customLabelEnabled}
+                      />
 
+                      <div className="formControl-wrapper">
+                        <input
+                          type="text"
+                          className="input formControl-input"
+                          disabled={!selectedLanguages[currentLanguageIdx] || !selectedLanguages[currentLanguageIdx].customLabelEnabled}
+                          value={selectedLanguages[currentLanguageIdx] ? (selectedLanguages[currentLanguageIdx].customLabel || selectedLanguages[currentLanguageIdx].label) : ''}
+                          onChange={handleCustomLabelChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <label className="checkboxControl">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      disabled={!selectedLanguages[currentLanguageIdx]}
+                      checked={selectedLanguages[currentLanguageIdx] && selectedLanguages[currentLanguageIdx].baseLanguage}
+                      onChange={handleBaseLanguageChange}
+                    />
+                    <span className="checkboxControl-text">Main Language</span>
+                    <i className="formControl-infoIcon"/>
+                  </label>
+                </div>
+              </section>
+            )}
+          </div>
         </form>
       </div>
       <div className="modal-buttonBox">
-        <button
+      <button
           type="button"
           className="button secondary addProjectLang-cancelButton"
+          onClick={handleCloseButtonClick}
         >
           Close
         </button>
         <button
           type="button"
           className="button primary addProjectLang-addButton"
+          onClick={handleAddButtonClick}
+          disabled={selectedLanguages.length === 0}
         >
           Add
         </button>

@@ -2,6 +2,18 @@
   width: 600px;
 }
 
+.addProjectLang-loading {
+  position: absolute;
+  inset: 1px;
+  z-index: 100;
+
+  background: rgba(255, 255, 255, 0.95) url("../../assets/images/spinner.svg") center center  / 32px 32px no-repeat;
+
+  border-radius: 26px;
+  border-bottom-left-radius: 44px;
+  border-bottom-right-radius: 44px;
+}
+
 .addProjectLang-cancelButton {
   min-width: 71px;
 }
@@ -42,11 +54,37 @@
   line-height: 17px;
   border-radius: 12px;
   background-color: #f4f3f6;
-  padding: 4px 12px 2px 12px;
+  border: 1px solid transparent;
+  padding: 3px 11px 1px 11px;
   color: #295fcc;
   position: relative;
   align-items: center;
   cursor: pointer;
+
+  &:hover:not(:has(.languagesSelector-chipDelete:hover)) {
+    border-color: #388ff3;
+  }
+
+  &.isActive {
+    background-color: #388ff3;
+    color: #fff;
+
+    .languagesSelector-chipDelete {
+      &:before,
+      &:after {
+        background-color: #fff;
+      }
+
+      &:hover {
+        background-color: #fff;
+
+        &:before,
+        &:after {
+          background-color: #388ff3;
+        }
+      }
+    }
+  }
 }
 
 .languagesSelector-chipDelete {
@@ -182,4 +220,32 @@
 .languagesSelector-noMatches {
   color: #a6a6a6;
   padding: 18px 15px 12px 15px;
+}
+
+.languagesOptionsBox {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: 250ms grid-template-rows ease;
+
+  &.isActive {
+    grid-template-rows: 1fr;
+  }
+
+  &:empty {
+    margin-bottom: -24px;
+  }
+}
+
+.languagesOptions {
+  overflow: hidden;
+  animation: fade-in 0.3s ease-in;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

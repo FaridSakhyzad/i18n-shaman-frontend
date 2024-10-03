@@ -12,10 +12,6 @@ import {
   addProjectKey,
 } from 'api/projects';
 
-import {
-  addLanguage,
-} from 'api/languages';
-
 import Key from './Key';
 
 import './Editor.scss';
@@ -36,7 +32,6 @@ export default function Editor() {
 
   const { projects } = useSelector((state: IRootState) => state.projects);
 
-  const [newLanguage, setNewLanguage] = useState<string | null>(null);
   const [newKeyName, setNewKeyName] = useState<string | null>(null);
 
   const [project, setProject] = useState<IProject | null>(null);
@@ -53,12 +48,19 @@ export default function Editor() {
   const createKeyModalRef = useRef<HTMLDialogElement>(null);
 
   const [isAddLanguageModalVisible, setAddLanguageModalVisible] = useState<boolean>(false);
-  const addLangModalRef = useRef<HTMLDialogElement>(null);
 
   const fetchProjectData = async () => {
+    setLoading(true);
+
     const result = await getUserProjectsById(currentProjectId);
 
-    setProject(result);
+    if ('error' in result) {
+      console.error(result.message);
+    } else {
+      setProject(result);
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -66,47 +68,8 @@ export default function Editor() {
     fetchProjectData();
   }, [currentProjectId]);
 
-  const handleNewLanguageChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-    setNewLanguage(value);
-  };
-
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
-  };
-
-  useEffect(() => {
-    if (!addLangModalRef || !addLangModalRef.current) {
-      return;
-    }
-
-    addLangModalRef.current.showModal();
-  }, [isAddLanguageModalVisible]);
-
-  const handleAddLanguageConfirmClick = async () => {
-    if (!currentProjectId || !newLanguage) {
-      return;
-    }
-
-    setLoading(true);
-
-    await addLanguage({
-      projectId: currentProjectId,
-      id: Math.random().toString(16).substring(2),
-      label: newLanguage,
-      baseLanguage: false,
-    });
-
-    fetchProjectData();
-
-    setNewLanguage(null);
-
-    setLoading(false);
-
-    setAddLanguageModalVisible(false);
-  };
-
-  const handleAddLanguageCancelClick = () => {
-    setAddLanguageModalVisible(false);
   };
 
   const handleNewKeyNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
@@ -237,30 +200,13 @@ export default function Editor() {
           Add Language
         </button>
 
-        <AddProjectLanguage />
-
         {isAddLanguageModalVisible && (
-          <dialog
-            className="dialog"
-            ref={addLangModalRef}
-            onCancel={() => {
-              setAddLanguageModalVisible(false);
-            }}
-          >
-            <input
-              className="input"
-              type="text"
-              onChange={handleNewLanguageChange}
-              value={newLanguage || ''}
-              placeholder="New Language"
-            />
-            <div>
-              <button type="button" className="button primary" onClick={handleAddLanguageConfirmClick}>Add New
-                Language
-              </button>
-              <button type="button" className="button secondary" onClick={handleAddLanguageCancelClick}>Cancel</button>
-            </div>
-          </dialog>
+          <AddProjectLanguage
+            projectId={currentProjectId}
+            onClose={() => { setAddLanguageModalVisible(false); }}
+            onCancel={() => { setAddLanguageModalVisible(false); }}
+            onConfirm={() => { setAddLanguageModalVisible(false); }}
+          />
         )}
       </div>
 

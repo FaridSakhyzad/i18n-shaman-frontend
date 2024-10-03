@@ -1,4 +1,4 @@
-import { IProject, IProjectUpdateError } from 'interfaces';
+import { ILanguage, IProject, IProjectUpdateError } from 'interfaces';
 
 import { apiClient } from './client';
 
@@ -20,6 +20,19 @@ export const addLanguage = async ({
   label,
   baseLanguage,
 });
+
+interface IUpdateMultipleLanguages {
+  projectId: string,
+  languages: ILanguage[],
+}
+
+export const addMultipleLanguages = async (data: IUpdateMultipleLanguages) => {
+  try {
+    return (await apiClient.post('/addMultipleLanguages', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+}
 
 export const hideAllLanguages = async (): Promise<void> => {
   try {
