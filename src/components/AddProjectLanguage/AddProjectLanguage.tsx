@@ -323,8 +323,9 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                 <div className="form-row">
                   <div className="formControl">
                     <div className="formControl-header">
-                      <label className="formControl-label">Custom language code <i
-                        className="formControl-infoIcon"/></label>
+                      <label className="formControl-label" htmlFor="custom_code">
+                        Custom language code <i className="formControl-infoIcon" />
+                      </label>
                     </div>
                     <div className="formControl-body addProjectLang-switchableControl">
                       <input
@@ -338,6 +339,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                       <div className="formControl-wrapper">
                         <input
                           type="text"
+                          id="custom_code"
                           className="input formControl-input"
                           disabled={!selectedLanguages[currentLanguageIdx] || !selectedLanguages[currentLanguageIdx].customCodeEnabled}
                           value={selectedLanguages[currentLanguageIdx] ? (selectedLanguages[currentLanguageIdx].customCode || selectedLanguages[currentLanguageIdx].code) : ''}
@@ -351,8 +353,9 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                 <div className="form-row">
                   <div className="formControl">
                     <div className="formControl-header">
-                      <label className="formControl-label">Custom language name <i
-                        className="formControl-infoIcon"/></label>
+                      <label className="formControl-label" htmlFor="custom_language">
+                        Custom language name <i className="formControl-infoIcon" />
+                      </label>
                     </div>
                     <div className="formControl-body addProjectLang-switchableControl">
                       <input
@@ -366,6 +369,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                       <div className="formControl-wrapper">
                         <input
                           type="text"
+                          id="custom_language"
                           className="input formControl-input"
                           disabled={!selectedLanguages[currentLanguageIdx] || !selectedLanguages[currentLanguageIdx].customLabelEnabled}
                           value={selectedLanguages[currentLanguageIdx] ? (selectedLanguages[currentLanguageIdx].customLabel || selectedLanguages[currentLanguageIdx].label) : ''}
@@ -386,7 +390,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                       onChange={handleBaseLanguageChange}
                     />
                     <span className="checkboxControl-text">Main Language</span>
-                    <i className="formControl-infoIcon"/>
+                    <i className="formControl-infoIcon" />
                   </label>
                 </div>
               </section>
@@ -395,7 +399,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
         </form>
       </div>
       <div className="modal-buttonBox">
-      <button
+        <button
           type="button"
           className="button secondary addProjectLang-cancelButton"
           onClick={handleCloseButtonClick}
