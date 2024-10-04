@@ -245,6 +245,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
           type="button"
           className="modal-closeButton"
           onClick={handleCloseButtonClick}
+          aria-label="Close modal"
         />
       </div>
       <div className="modal-content">
