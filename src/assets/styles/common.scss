@@ -84,7 +84,7 @@
   padding: 6px 34px 4px 14px;
   outline: none;
   appearance: none;
-  background: var(--input-background-color) url("../images/icon--drop-down-arrow.svg") center right 12px no-repeat;
+  background: var(--input-background-color) url("../images/icon--drop-down-arrow.svg") calc(100% - 12px) calc(50% + 1px) no-repeat;
 
   &:hover {
     border-color: #527acc;

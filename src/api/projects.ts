@@ -48,9 +48,10 @@ export const getUserProjectsById = async (projectId: string) => {
 };
 
 interface IAddKey {
-  projectId: string
-  id: string
-  label: string
+  projectId: string;
+  id: string;
+  label: string;
+  description: string;
   values: []
 }
 

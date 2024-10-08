@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Modal from 'components/Modal';
 
 import './AddProjectLanguage.scss';
@@ -218,7 +218,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
   }
 
   const handleCloseButtonClick = () => {
-    onCancel();
+    onClose();
   }
 
   const handleAddButtonClick = async () => {
@@ -235,12 +235,15 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
   }
 
   return (
-    <Modal customClassNames="modal_withBottomButtons modal_addProjectLang">
+    <Modal
+      customClassNames="modal_withBottomButtons modal_addProjectLang"
+      onEscapeKeyPress={onClose}
+    >
       {loading && (
         <div className="addProjectLang-loading"/>
       )}
       <div className="modal-header">
-      <h4 className="modal-title">Add New Language</h4>
+        <h4 className="modal-title">Add New Language</h4>
         <button
           type="button"
           className="modal-closeButton"

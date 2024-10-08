@@ -19,9 +19,23 @@
   position: relative;
 }
 
+.modal-loading {
+  border-radius: 26px;
+  inset: 5px;
+  width: auto;
+  height: auto;
+  z-index: 100;
+}
+
 .modal_withBottomButtons {
   border-bottom-left-radius: 44px;
   border-bottom-right-radius: 44px;
+
+  .modal-loading {
+    border-radius: 26px;
+    border-bottom-left-radius: 44px;
+    border-bottom-right-radius: 44px;
+  }
 }
 
 .modal-header {
@@ -95,4 +109,9 @@
 .modal-buttonBox {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-button {
+  min-width: 71px;
 }

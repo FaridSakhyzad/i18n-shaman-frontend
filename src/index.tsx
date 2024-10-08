@@ -30,7 +30,7 @@ import reportWebVitals from './reportWebVitals';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: <Auth />,
   },
   {
     path: '/auth',

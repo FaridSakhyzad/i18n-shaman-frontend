@@ -98,7 +98,10 @@ export default function ProjectLanguages({
   };
 
   return (
-    <Modal customClassNames="modal_withBottomButtons projectLangsModal">
+    <Modal
+      customClassNames="modal_withBottomButtons projectLangsModal"
+      onEscapeKeyPress={onClose}
+    >
       {showLoading && (<div className="loading projectLangsModal-loading" />)}
 
       <div className="modal-header">

@@ -18,6 +18,7 @@ import './Editor.scss';
 
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
+import CreateKey from 'components/CreateKey';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -45,8 +46,6 @@ export default function Editor() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const createKeyModalRef = useRef<HTMLDialogElement>(null);
-
   const [isAddLanguageModalVisible, setAddLanguageModalVisible] = useState<boolean>(false);
 
   const fetchProjectData = async () => {
@@ -66,7 +65,7 @@ export default function Editor() {
   useEffect(() => {
     dispatch(getProjects(userId as string));
     fetchProjectData();
-  }, [currentProjectId]);
+  }, [ currentProjectId ]);
 
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
@@ -79,41 +78,6 @@ export default function Editor() {
   const handleNewKeyClick = () => {
     setIsCreateKeyModalVisible(true);
   };
-
-  const handleCreateKeyCancelClick = () => {
-    setIsCreateKeyModalVisible(false);
-  };
-
-  const handleCreateKeyConfirmClick = async () => {
-    if (!currentProjectId || !newKeyName) {
-      return;
-    }
-
-    setLoading(true);
-
-    await addProjectKey({
-      projectId: currentProjectId,
-      id: Math.random().toString(16).substring(2),
-      label: newKeyName,
-      values: [],
-    });
-
-    fetchProjectData();
-
-    setNewKeyName(null);
-
-    setLoading(false);
-
-    setIsCreateKeyModalVisible(false);
-  };
-
-  useEffect(() => {
-    if (!isCreateKeyModalVisible || !createKeyModalRef.current) {
-      return;
-    }
-
-    createKeyModalRef.current.showModal();
-  }, [isCreateKeyModalVisible]);
 
   const handleProjectNameClick = ({ currentTarget }: React.MouseEvent<HTMLElement>) => {
     setIsProjectsMenuVisible(!isProjectsMenuVisible);
@@ -135,6 +99,15 @@ export default function Editor() {
 
   return (
     <div className="container">
+      {isAddLanguageModalVisible && (
+        <AddProjectLanguage
+          projectId={currentProjectId}
+          onClose={() => { setAddLanguageModalVisible(false); }}
+          onCancel={() => { setAddLanguageModalVisible(false); }}
+          onConfirm={() => { setAddLanguageModalVisible(false); }}
+        />
+      )}
+
       {isLanguagesModalVisible && (
         <ProjectLanguages
           project={project}
@@ -143,6 +116,15 @@ export default function Editor() {
           onEdit={() => {}}
           onDelete={() => {}}
           onClose={() => { setIsLanguagesModalVisible(false); }}
+        />
+      )}
+
+      {isCreateKeyModalVisible && (
+        <CreateKey
+          projectId={currentProjectId}
+          onClose={() => { setIsCreateKeyModalVisible(false); }}
+          onCancel={() => { setIsCreateKeyModalVisible(false); }}
+          onConfirm={() => { setIsCreateKeyModalVisible(false); }}
         />
       )}
 
@@ -199,15 +181,6 @@ export default function Editor() {
         >
           Add Language
         </button>
-
-        {isAddLanguageModalVisible && (
-          <AddProjectLanguage
-            projectId={currentProjectId}
-            onClose={() => { setAddLanguageModalVisible(false); }}
-            onCancel={() => { setAddLanguageModalVisible(false); }}
-            onConfirm={() => { setAddLanguageModalVisible(false); }}
-          />
-        )}
       </div>
 
       <section className="editorToolbar">
@@ -218,25 +191,6 @@ export default function Editor() {
         >New Key
         </button>
       </section>
-
-      {isCreateKeyModalVisible && (
-        <dialog
-          className="dialog"
-          ref={createKeyModalRef}
-          onCancel={() => { setIsCreateKeyModalVisible(false); }}
-        >
-          <input
-            className="input"
-            type="text"
-            onChange={handleNewKeyNameChange}
-            value={newKeyName || ''}
-          />
-          <div>
-            <button type="button" className="button primary" onClick={handleCreateKeyConfirmClick}>Create New Key</button>
-            <button type="button" className="button secondary" onClick={handleCreateKeyCancelClick}>Cancel</button>
-          </div>
-        </dialog>
-      )}
 
       <section className="keysList">
         {project && project.keys.map((key: IKey) => (
