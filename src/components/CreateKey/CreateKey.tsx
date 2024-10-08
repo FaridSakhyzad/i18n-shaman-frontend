@@ -21,27 +21,27 @@ export default function CreateKey ({ projectId, onCancel, onConfirm, onClose }: 
     const { value } = e.target;
 
     setName(value);
-  }
+  };
 
   const handleValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
 
     setValue(value);
-  }
+  };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
 
     setDescription(value);
-  }
+  };
 
   const handleCloseButtonClick = () => {
     onClose();
-  }
+  };
 
   const handleCancelClick = () => {
     onCancel();
-  }
+  };
 
   const handleCreateClick = async () => {
     setLoading(true);
@@ -55,7 +55,7 @@ export default function CreateKey ({ projectId, onCancel, onConfirm, onClose }: 
     });
 
     onConfirm();
-  }
+  };
 
   return (
     <Modal
