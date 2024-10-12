@@ -33,8 +33,6 @@ export default function Editor() {
 
   const { projects } = useSelector((state: IRootState) => state.projects);
 
-  const [newKeyName, setNewKeyName] = useState<string | null>(null);
-
   const [project, setProject] = useState<IProject | null>(null);
 
   const [isCreateKeyModalVisible, setIsCreateKeyModalVisible] = useState<boolean>(false);
@@ -69,10 +67,6 @@ export default function Editor() {
 
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
-  };
-
-  const handleNewKeyNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-    setNewKeyName(value);
   };
 
   const handleNewKeyClick = () => {

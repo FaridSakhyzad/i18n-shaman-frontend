@@ -47,7 +47,7 @@ export default function CreateKey ({ projectId, onCancel, onConfirm, onClose }: 
     setLoading(true);
 
     const result = await addProjectKey({
-      projectId: projectId,
+      projectId,
       id: Math.random().toString(16).substring(2),
       label: keyName,
       description: keyDescription,

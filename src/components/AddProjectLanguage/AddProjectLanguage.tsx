@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Modal from 'components/Modal';
+
+import { ILanguage } from 'interfaces';
+import { addMultipleLanguages } from 'api/languages';
+import { getUserProjectsById } from 'api/projects';
 
 import './AddProjectLanguage.scss';
 import getLanguages from './languages';
-
-import { ILanguage } from 'interfaces';
-import { addMultipleLanguages } from '../../api/languages';
 
 interface IProps {
   projectId: string;
@@ -14,20 +15,56 @@ interface IProps {
   onConfirm: () => void;
 }
 
-export default function AddProjectLanguage({ projectId, onClose, onCancel, onConfirm }: IProps) {
-  const fullLanguagesList = getLanguages();
+interface IUserLanguagesMapItem {
+  [key: string]: ILanguage;
+}
 
-  const [ loading, setLoading ] = useState<boolean>(false);
-  const [ languages, setLanguages ] = useState(getLanguages());
-  const [ selectedLanguages, setSelectedLanguages ] = useState<ILanguage[]>([]);
-  const [ languagesPanelVisible, setLanguagesPanelVisible ] = useState<boolean>(false);
-  const [ languageSearchQuery, setLanguageSearchQuery ] = useState('');
-  const [ searchQueryPrevValue, setSearchQueryPrevValue ] = useState('');
+export default function AddProjectLanguage({
+  projectId,
+  onClose,
+  onCancel,
+  onConfirm,
+}: IProps) {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fullLanguagesList, setFullLanguagesList] = useState<ILanguage[]>([]);
+  const [languages, setLanguages] = useState<ILanguage[]>([]);
+
+  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>([]);
+  const [languagesPanelVisible, setLanguagesPanelVisible] = useState<boolean>(false);
+  const [languageSearchQuery, setLanguageSearchQuery] = useState<string>('');
+  const [searchQueryPrevValue, setSearchQueryPrevValue] = useState<string>('');
+
+  const getProjectLanguages = async () => {
+    const result = await getUserProjectsById(projectId);
+
+    const languagesMap:IUserLanguagesMapItem = {};
+
+    if (result.error) {
+      alert(result.message);
+    } else {
+      result.languages.forEach((language: ILanguage) => {
+        languagesMap[language.code] = language;
+      });
+
+      const availableLanguages = getLanguages().filter(({ code }: ILanguage) => {
+        return languagesMap[code] === undefined;
+      });
+
+      setFullLanguagesList(availableLanguages);
+      setLanguages(availableLanguages);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getProjectLanguages();
+  }, [projectId]);
 
   const generateMap = (languagesArray: ILanguage[]) => {
     const result = {} as { [key: string]: number };
 
-    for (let i = 0; i < languagesArray.length; i++) {
+    for (let i = 0; i < languagesArray.length; i += 1) {
       const { code } = languagesArray[i];
 
       result[code] = i;
@@ -47,13 +84,15 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
       setLanguagesPanelVisible(false);
       window.removeEventListener('click', handleOutsideClick);
     }
-  }
+  };
 
   const handleLanguagesListWrapperClick = (e: React.MouseEvent<HTMLLabelElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    languageSearchFieldRef.current && languageSearchFieldRef.current.focus();
+    if (languageSearchFieldRef.current) {
+      languageSearchFieldRef.current.focus();
+    }
   };
 
   const handleLanguagesListFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -68,13 +107,13 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
     }
 
     setLanguagesPanelVisible(newVisibilityState);
-  }
+  };
 
   const handleLanguagesListBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.relatedTarget) {
       setLanguagesPanelVisible(false);
     }
-  }
+  };
 
   const handleLanguageSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { target: { value } } = e;
@@ -101,11 +140,13 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
 
     setLanguages(filtered);
     setLanguagesPanelVisible(true);
-  }
+  };
 
   const handleLanguageSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    setSearchQueryPrevValue(e.currentTarget.value)
-  }
+    setSearchQueryPrevValue(e.currentTarget.value);
+  };
+
+  const [currentLanguageIdx, setCurrentLanguageIdx] = useState<number>(-1);
 
   const handleLanguageSearchKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code !== 'Backspace' || e.currentTarget.value.length > 0 || searchQueryPrevValue.length > 0) {
@@ -120,7 +161,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
 
     selectedLanguages.pop();
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
 
   const handleLanguagesListItemClick = (e: React.MouseEvent<HTMLUListElement>) => {
     const { target } = e;
@@ -128,7 +169,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
 
     const langIndex: number = languagesMap[id];
 
-    selectedLanguages.push(languages[langIndex])
+    selectedLanguages.push(languages[langIndex]);
 
     setSelectedLanguages([...selectedLanguages]);
 
@@ -136,10 +177,10 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
     setLanguageSearchQuery('');
     setLanguages(fullLanguagesList);
 
-    languageSearchFieldRef.current && languageSearchFieldRef.current.focus();
-  }
-
-  const [ currentLanguageIdx, setCurrentLanguageIdx] = useState<number>(-1);
+    if (languageSearchFieldRef.current) {
+      languageSearchFieldRef.current.focus();
+    }
+  };
 
   const currentLanguage = selectedLanguages[currentLanguageIdx];
 
@@ -150,7 +191,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
     const selectedLanguageIdx = selectedLanguageMap[code];
 
     setCurrentLanguageIdx(selectedLanguageIdx);
-  }
+  };
 
   const handleChipDelete = (e: React.MouseEvent<HTMLElement>, code: string) => {
     e.preventDefault();
@@ -166,18 +207,16 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
       setCurrentLanguageIdx(-1);
     }
 
-    const result = selectedLanguages.splice(indexOfElToDelete, 1);
+    selectedLanguages.splice(indexOfElToDelete, 1);
 
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
 
   const theresMatchesToDisplay = () => {
-    const allMatchesAreSelected = languages.every((language) => {
-      return selectedLanguageMap[language.code] !== undefined;
-    })
+    const allMatchesAreSelected = languages.every((language) => selectedLanguageMap[language.code] !== undefined);
 
     return languages.length > 0 && !allMatchesAreSelected;
-  }
+  };
 
   const handleCustomCodeSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedLanguages || !selectedLanguages[currentLanguageIdx]) {
@@ -187,13 +226,13 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
     selectedLanguages[currentLanguageIdx].customCodeEnabled = e.currentTarget.checked;
 
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
 
   const handleCustomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     selectedLanguages[currentLanguageIdx].customCode = e.currentTarget.value;
 
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
 
   const handleCustomLabelSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedLanguages || !selectedLanguages[currentLanguageIdx]) {
@@ -203,36 +242,40 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
     selectedLanguages[currentLanguageIdx].customLabelEnabled = e.currentTarget.checked;
 
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
 
   const handleCustomLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     selectedLanguages[currentLanguageIdx].customLabel = e.currentTarget.value;
 
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
 
   const handleBaseLanguageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     selectedLanguages[currentLanguageIdx].baseLanguage = e.currentTarget.checked;
 
     setSelectedLanguages([...selectedLanguages]);
-  }
+  };
+
+  const handleCancelButtonClick = () => {
+    onCancel();
+  };
 
   const handleCloseButtonClick = () => {
     onClose();
-  }
+  };
 
   const handleAddButtonClick = async () => {
     setLoading(true);
 
-    const result = await addMultipleLanguages({
+    await addMultipleLanguages({
       languages: selectedLanguages,
-      projectId
+      projectId,
     });
 
     setLoading(false);
 
     onConfirm();
-  }
+  };
 
   return (
     <Modal
@@ -240,7 +283,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
       onEscapeKeyPress={onClose}
     >
       {loading && (
-        <div className="addProjectLang-loading"/>
+        <div className="addProjectLang-loading" />
       )}
       <div className="modal-header">
         <h4 className="modal-title">Add New Language</h4>
@@ -261,18 +304,18 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                   className="select languagesSelector-chipBox"
                   onClick={handleLanguagesListWrapperClick}
                 >
-                  {selectedLanguages.length > 0 && selectedLanguages.map(({code, label}: ILanguage) => (
+                  {selectedLanguages.length > 0 && selectedLanguages.map(({ code, label }: ILanguage) => (
                     <span
                       className={`languagesSelector-chip ${currentLanguage && currentLanguage.code === code ? 'isActive' : ''}`}
                       key={code}
                       onClick={(e) => handleChipClick(e, code)}
                     >
-                        {label}
+                      {label}
                       <i
                         className="languagesSelector-chipDelete"
                         onClick={(e) => handleChipDelete(e, code)}
                       />
-                      </span>
+                    </span>
                   ))}
                   <input
                     ref={languageSearchFieldRef}
@@ -303,8 +346,10 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
                               className={`languagesSelector-listItem ${selectedLanguageMap[code] !== undefined ? 'selected' : ''}`}
                               key={code}
                               id={code}
-                            >{label} ({code})</li>
-                          )
+                            >
+                              {label} ({code})
+                            </li>
+                          );
                         })}
                       </ul>
                     ) : (
@@ -405,7 +450,7 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
         <button
           type="button"
           className="button secondary addProjectLang-cancelButton"
-          onClick={handleCloseButtonClick}
+          onClick={handleCancelButtonClick}
         >
           Close
         </button>
@@ -419,5 +464,5 @@ export default function AddProjectLanguage({ projectId, onClose, onCancel, onCon
         </button>
       </div>
     </Modal>
-  )
-};
+  );
+}
