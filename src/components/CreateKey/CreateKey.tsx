@@ -32,7 +32,6 @@ export default function CreateKey({
   const [loading, setLoading] = useState<boolean>(false);
 
   const [keyName, setName] = useState<string>('');
-  const [keyValue, setValue] = useState<string>('');
 
   const [keyValues, setValues] = useState<{ [key: string]: string }>({});
 
@@ -205,7 +204,7 @@ export default function CreateKey({
           <div className="form-row">
             <div className="formControl">
               <div className="formControl-header">
-                <label className="formControl-label" htmlFor="key-value">Values for</label>
+                <label className="formControl-label" htmlFor="key-value">Value for</label>
 
                 {(project && project.languages) && (
                   <select
