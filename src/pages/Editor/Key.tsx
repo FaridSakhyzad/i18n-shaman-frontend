@@ -103,53 +103,59 @@ export default function Key(props: IProps) {
         <button type="button" className="keyName" onClick={handleKeyNameClick}>{label}</button>
       </div>
       <div className="keyContent">
-        {languages && languages.map((language: ILanguage, idx) => (
-          <Fragment key={language.id}>
-            <div className="keyContent-lang">
-              {language.label}
-            </div>
+        {languages && languages.map((language: ILanguage, idx) => {
+          if (!language.visible) {
+            return null;
+          }
 
-            <div className="keyContent-value">
-              {language.id !== editValueId && (
-                <span className="keyContent-valueName" onClick={(e) => handleValueNameClick(e, language.id)}>
-                  {values && values[language.id] && values[language.id].value}
-                </span>
-              )}
+          return (
+            <Fragment key={language.id}>
+              <div className="keyContent-lang">
+                {language.label}
+              </div>
 
-              {language.id === editValueId && (
-                <div className="keyEdit">
-                  {loading && <div className="loading" />}
-                  <div className="keyEdit-valueFieldBox">
-                    <textarea
-                      className="textarea keyEdit-valueField"
-                      value={values && values[language.id] && values[language.id].value}
-                      onChange={(e) => handleValueChange(e, language.id, idx)}
-                    />
-                    <span className="keyEdit-valueSymbolsCount">1024</span>
+              <div className="keyContent-value">
+                {language.id !== editValueId && (
+                  <span className="keyContent-valueName" onClick={(e) => handleValueNameClick(e, language.id)}>
+                    {values && values[language.id] && values[language.id].value}
+                  </span>
+                )}
+
+                {language.id === editValueId && (
+                  <div className="keyEdit">
+                    {loading && <div className="loading" />}
+                    <div className="keyEdit-valueFieldBox">
+                      <textarea
+                        className="textarea keyEdit-valueField"
+                        value={values && values[language.id] && values[language.id].value}
+                        onChange={(e) => handleValueChange(e, language.id, idx)}
+                      />
+                      <span className="keyEdit-valueSymbolsCount">1024</span>
+                    </div>
+
+                    <div className="keyEdit-controls">
+                      <button
+                        type="button"
+                        className="button primary keyEdit-saveButton"
+                        onClick={handleValueSave}
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        type="button"
+                        className="button secondary keyEdit-cancelButton"
+                        onClick={handleValueEditCancel}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="keyEdit-controls">
-                    <button
-                      type="button"
-                      className="button primary keyEdit-saveButton"
-                      onClick={handleValueSave}
-                    >
-                      Save
-                    </button>
-
-                    <button
-                      type="button"
-                      className="button secondary keyEdit-cancelButton"
-                      onClick={handleValueEditCancel}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </Fragment>
-        ))}
+                )}
+              </div>
+            </Fragment>
+          );
+        })}
       </div>
     </section>
   );

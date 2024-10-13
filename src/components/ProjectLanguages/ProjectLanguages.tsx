@@ -4,7 +4,7 @@ import { ILanguage, IProjectUpdateError, IProject } from 'interfaces';
 import Modal from 'components/Modal';
 
 import {
-  hideAllLanguages,
+  hideMultipleLanguages,
   setLanguageVisibility,
   deleteLanguage,
 } from 'api/languages';
@@ -31,10 +31,21 @@ export default function ProjectLanguages({
   const [languages, setLanguages] = useState(project.languages);
   const [showLoading, setShowLoading] = useState<boolean>(false);
 
-  const handleHideAllClick = async () => {
+  const toggleAllVisibilityClick = async (allVisible: boolean) => {
     setShowLoading(true);
 
-    await hideAllLanguages();
+    const visibilityData = project.languages.map(({ id }: ILanguage) => ({
+      languageId: id,
+      visible: allVisible,
+    }));
+
+    const result: IProject | IProjectUpdateError = await hideMultipleLanguages(project.projectId, visibilityData);
+
+    if ('error' in result) {
+      console.error(result.message);
+    } else {
+      setLanguages(result.languages);
+    }
 
     setShowLoading(false);
 
@@ -108,8 +119,19 @@ export default function ProjectLanguages({
         <h4 className="modal-title">Project Languages</h4>
         <button
           type="button"
+          className="buttonInline link projectLangs-showAllButton"
+          onClick={() => toggleAllVisibilityClick(true)}
+        >
+          <i className="projectLangs-hideAllIcon" />
+          <i className="projectLangs-hideAllIcon" />
+          <i className="projectLangs-hideAllIcon" />
+          Show All
+        </button>
+
+        <button
+          type="button"
           className="buttonInline link projectLangs-hideAllButton"
-          onClick={handleHideAllClick}
+          onClick={() => toggleAllVisibilityClick(false)}
         >
           <i className="projectLangs-hideAllIcon" />
           <i className="projectLangs-hideAllIcon" />
@@ -120,40 +142,45 @@ export default function ProjectLanguages({
 
       <div className="modal-content">
         <div className="projectLangs">
-          {languages && languages.map((lang: ILanguage) => (
-            <div className="projectLangs-item" key={lang.id}>
-              <div className="projectLangs-itemIcon" />
+          {languages && languages.map(({
+            id,
+            label,
+            code,
+            visible,
+          }: ILanguage) => (
+            <div className={`projectLangs-item ${visible ? '' : 'isHidden'}`} key={id}>
+              <div className="projectLangs-itemIcon"/>
               <div className="projectLangs-itemTitle">
-                <span className="projectLangs-itemName">{lang.label}</span>
-                <span className="projectLangs-itemCode">{lang.code}</span>
+              <span className="projectLangs-itemName">{label}</span>
+                <span className="projectLangs-itemCode">{code}</span>
               </div>
               <div className="projectLangs-itemControls">
-                {lang.visible ? (
+                {visible ? (
                   <button
                     type="button"
                     className="projectLangs-itemControl projectLangs-itemControl_hide"
                     aria-label="Hide Language"
-                    onClick={(e) => handleHideLangClick(e, lang.id)}
+                    onClick={(e) => handleHideLangClick(e, id)}
                   />
                 ) : (
                   <button
                     type="button"
                     className="projectLangs-itemControl projectLangs-itemControl_show"
                     aria-label="Hide Language"
-                    onClick={(e) => handleShowLangClick(e, lang.id)}
+                    onClick={(e) => handleShowLangClick(e, id)}
                   />
                 )}
                 <button
                   type="button"
                   className="projectLangs-itemControl projectLangs-itemControl_edit"
                   aria-label="Edit Language"
-                  onClick={(e) => handleEditClick(e, lang.id)}
+                  onClick={(e) => handleEditClick(e, id)}
                 />
                 <button
                   type="button"
                   className="projectLangs-itemControl projectLangs-itemControl_delete"
                   aria-label="Delete Language"
-                  onClick={(e) => handleDeleteClick(e, lang.id)}
+                  onClick={(e) => handleDeleteClick(e, id)}
                 />
               </div>
             </div>

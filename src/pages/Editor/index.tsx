@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -7,18 +7,14 @@ import { getProjects } from 'store/projects';
 
 import { IKey, IProject } from 'interfaces';
 
-import {
-  getUserProjectsById,
-  addProjectKey,
-} from 'api/projects';
-
-import Key from './Key';
+import { getUserProjectsById } from 'api/projects';
 
 import './Editor.scss';
 
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
+import Key from './Key';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -116,6 +112,7 @@ export default function Editor() {
       {isCreateKeyModalVisible && (
         <CreateKey
           projectId={currentProjectId}
+          project={project}
           onClose={() => { setIsCreateKeyModalVisible(false); }}
           onCancel={() => { setIsCreateKeyModalVisible(false); }}
           onConfirm={() => { setIsCreateKeyModalVisible(false); }}
@@ -173,7 +170,7 @@ export default function Editor() {
           className="button success editorHeader-addLanguage"
           onClick={handleAddLanguageClick}
         >
-          Add Language
+          Add Languages
         </button>
       </div>
 
@@ -182,7 +179,8 @@ export default function Editor() {
           type="button"
           className="button success editorToolbar-createKeyButton"
           onClick={handleNewKeyClick}
-        >New Key
+        >
+          Create New Key
         </button>
       </section>
 

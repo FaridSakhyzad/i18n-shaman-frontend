@@ -25,11 +25,27 @@
 }
 
 .projectLangs-hideAllButton {
-  margin: 1px 6px 0 auto;
+  margin: 1px 6px 0 12px;
   outline: none;
   display: flex;
   align-items: center;
   text-decoration: none;
+
+  &.isActive {
+
+  }
+}
+
+.projectLangs-showAllButton {
+  margin: 1px 0 0 auto;
+  outline: none;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+
+  .projectLangs-hideAllIcon {
+    background-image: url("../../assets/images/icon--eye.svg");
+  }
 }
 
 .projectLangs-hideAllIcon {
@@ -38,7 +54,7 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #cdcfd4 url("../../assets/images/icon--eye.svg") center center no-repeat;
+  background: #cdcfd4 url("../../assets/images/icon--eye-disabled.svg") center center no-repeat;
   border: 1px solid #fff;
   margin-top: -2px;
 
@@ -66,6 +82,12 @@
 
   &:last-child {
     border-top: 1px solid #ebedf2;
+  }
+
+  &.isHidden {
+    :is(.projectLangs-itemIcon, .projectLangs-itemTitle) {
+      opacity: 0.5;
+    }
   }
 }
 

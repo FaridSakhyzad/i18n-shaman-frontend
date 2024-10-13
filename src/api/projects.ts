@@ -52,14 +52,15 @@ interface IAddKey {
   id: string;
   label: string;
   description: string;
-  values: []
+  values: { [key: string]: string }[]
 }
 
-export const addProjectKey = async ({ projectId, id, label }: IAddKey) => {
+export const addProjectKey = async ({ projectId, id, label, values }: IAddKey) => {
   return apiClient.post('/addProjectKey', {
     projectId,
     id,
     label,
+    values,
   });
 };
 

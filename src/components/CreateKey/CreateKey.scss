@@ -1,0 +1,23 @@
+.modal_createKey {
+  min-width: 600px;
+}
+
+.createKey-languageSelect {
+  margin: -1px 0 0 6px;
+  height: 23px;
+  padding: 2px 34px 1px 10px;
+  background-position-y: center;
+}
+
+.createKey-valueTextarea {
+  animation: fade-in 0.3s ease-in;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

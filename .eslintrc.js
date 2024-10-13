@@ -19,5 +19,6 @@ module.exports = {
     'max-len': 0,
     'react/jsx-one-expression-per-line': 'off',
     'react/require-default-props': 'off',
+    'jsx-a11y/label-has-associated-control': 'off',
   },
 };

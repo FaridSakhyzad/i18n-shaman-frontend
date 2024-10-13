@@ -32,11 +32,16 @@ export const addMultipleLanguages = async (data: IUpdateMultipleLanguages) => {
   } catch (error: any) {
     return error.response && error.response.data;
   }
+};
+
+interface IHideMultipleLanguagesItem {
+  languageId: string,
+  visible: boolean,
 }
 
-export const hideAllLanguages = async (): Promise<void> => {
+export const hideMultipleLanguages = async (projectId: string, data: IHideMultipleLanguagesItem[]): Promise<IProject | IProjectUpdateError> => {
   try {
-    return (await apiClient.post('/hideAllLanguages')).data;
+    return (await apiClient.post('/setMultipleLanguagesVisibility', { projectId, data })).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

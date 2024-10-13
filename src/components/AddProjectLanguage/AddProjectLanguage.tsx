@@ -286,7 +286,7 @@ export default function AddProjectLanguage({
         <div className="addProjectLang-loading" />
       )}
       <div className="modal-header">
-        <h4 className="modal-title">Add New Language</h4>
+        <h4 className="modal-title">Add New Languages</h4>
         <button
           type="button"
           className="modal-closeButton"
@@ -365,8 +365,9 @@ export default function AddProjectLanguage({
             {selectedLanguages[currentLanguageIdx] && (
               <section key={currentLanguageIdx} className="form languagesOptions">
                 <div className="row">
-                  <h3 className="h3">Options
-                    for <b>{selectedLanguages[currentLanguageIdx].label} ({selectedLanguages[currentLanguageIdx].code})</b></h3>
+                  <h3 className="h3">
+                    Options for <b>{selectedLanguages[currentLanguageIdx].label} ({selectedLanguages[currentLanguageIdx].code})</b>
+                  </h3>
                 </div>
                 <div className="form-row">
                   <div className="formControl">
