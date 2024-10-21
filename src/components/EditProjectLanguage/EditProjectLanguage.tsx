@@ -5,10 +5,11 @@ import { getUserProjectsById } from 'api/projects';
 import { ILanguage } from 'interfaces';
 
 import './EditProjectLanguage.scss';
+import { updateLanguage, IUpdateLanguage } from '../../api/languages';
 
 interface IProps {
   projectId: string;
-  languageId: string | null;
+  languageId: string;
   onClose: () => void;
   onCancel: () => void;
   onSave: () => void;
@@ -34,15 +35,40 @@ export default function EditProjectLanguage({
     setLoading(false);
   };
 
-  const handleCustomCodeSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleCustomCodeSwitcherChange = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
+    setLanguageInEdit({
+      ...languageInEdit,
+      customCodeEnabled: checked,
+    } as ILanguage);
+  };
 
-  const handleCustomLabelSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleCustomCodeChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setLanguageInEdit({
+      ...languageInEdit,
+      customCode: value,
+    } as ILanguage);
+  };
 
-  const handleCustomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleCustomLabelSwitcherChange = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
+    setLanguageInEdit({
+      ...languageInEdit,
+      customLabelEnabled: checked,
+    } as ILanguage);
+  };
 
-  const handleCustomLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleCustomLabelChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setLanguageInEdit({
+      ...languageInEdit,
+      customLabel: value,
+    } as ILanguage);
+  };
 
-  const handleBaseLanguageChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleBaseLanguageChange = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
+    setLanguageInEdit({
+      ...languageInEdit,
+      baseLanguage: checked,
+    } as ILanguage);
+  };
 
   const handleCloseButtonClick = () => {
     onClose();
@@ -52,7 +78,16 @@ export default function EditProjectLanguage({
     onCancel();
   };
 
-  const handleSaveButtonClick = () => {
+  const handleSaveButtonClick = async () => {
+    setLoading(true);
+
+    const result = await updateLanguage({
+      projectId,
+      ...languageInEdit,
+    } as IUpdateLanguage);
+
+    setLoading(false);
+
     onSave();
   };
 

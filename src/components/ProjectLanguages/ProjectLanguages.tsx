@@ -4,7 +4,7 @@ import { ILanguage, IProjectUpdateError, IProject } from 'interfaces';
 import Modal from 'components/Modal';
 
 import {
-  hideMultipleLanguages,
+  setMultipleLanguagesVisibility,
   setLanguageVisibility,
   deleteLanguage,
 } from 'api/languages';
@@ -39,7 +39,7 @@ export default function ProjectLanguages({
       visible: allVisible,
     }));
 
-    const result: IProject | IProjectUpdateError = await hideMultipleLanguages(project.projectId, visibilityData);
+    const result: IProject | IProjectUpdateError = await setMultipleLanguagesVisibility(project.projectId, visibilityData);
 
     if ('error' in result) {
       console.error(result.message);

@@ -130,7 +130,7 @@ export default function Editor() {
       {isLanguageEditModalVisible && (
         <EditProjectLanguage
           projectId={currentProjectId}
-          languageId={inEditLanguageId}
+          languageId={inEditLanguageId as string}
           onClose={() => { setIsLanguageEditModalVisible(false); }}
           onCancel={() => { setIsLanguageEditModalVisible(false); }}
           onSave={() => { setIsLanguageEditModalVisible(false); }}

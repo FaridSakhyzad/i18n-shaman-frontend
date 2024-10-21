@@ -34,12 +34,24 @@ export const addMultipleLanguages = async (data: IUpdateMultipleLanguages) => {
   }
 };
 
-interface IHideMultipleLanguagesItem {
+export interface IUpdateLanguage extends ILanguage {
+  projectId: string
+}
+
+export const updateLanguage = async (data: IUpdateLanguage) => {
+  try {
+    return (await apiClient.post('/updateLanguage', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+interface ISetMultipleLanguagesVisibilityItem {
   languageId: string,
   visible: boolean,
 }
 
-export const hideMultipleLanguages = async (projectId: string, data: IHideMultipleLanguagesItem[]): Promise<IProject | IProjectUpdateError> => {
+export const setMultipleLanguagesVisibility = async (projectId: string, data: ISetMultipleLanguagesVisibilityItem[]): Promise<IProject | IProjectUpdateError> => {
   try {
     return (await apiClient.post('/setMultipleLanguagesVisibility', { projectId, data })).data;
   } catch (error: any) {
