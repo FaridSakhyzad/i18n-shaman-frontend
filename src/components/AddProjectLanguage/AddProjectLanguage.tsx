@@ -267,8 +267,24 @@ export default function AddProjectLanguage({
   const handleAddButtonClick = async () => {
     setLoading(true);
 
+    const languagesData: ILanguage[] = selectedLanguages.map((language: ILanguage) => {
+      const languageData = {
+        ...language,
+      };
+
+      if (language.customLabelEnabled && !language.customLabel) {
+        languageData.customLabel = language.label;
+      }
+
+      if (language.customCodeEnabled && !language.customCode) {
+        languageData.customCode = language.code;
+      }
+
+      return languageData;
+    });
+
     await addMultipleLanguages({
-      languages: selectedLanguages,
+      languages: languagesData,
       projectId,
     });
 
@@ -336,7 +352,7 @@ export default function AddProjectLanguage({
                   <div className="dropdownPanel languagesSelector-panel">
                     {theresMatchesToDisplay() ? (
                       <ul className="languagesSelector-list" onClick={handleLanguagesListItemClick}>
-                        {languages.map(({code, label}: ILanguage) => {
+                        {languages.map(({ code, label }: ILanguage) => {
                           if (selectedLanguageMap[code] !== undefined) {
                             return null;
                           }

@@ -15,6 +15,7 @@ import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
 import Key from './Key';
+import EditProjectLanguage from '../../components/EditProjectLanguage';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -59,7 +60,7 @@ export default function Editor() {
   useEffect(() => {
     dispatch(getProjects(userId as string));
     fetchProjectData();
-  }, [ currentProjectId ]);
+  }, [currentProjectId]);
 
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
@@ -87,6 +88,23 @@ export default function Editor() {
     setIsLanguagesModalVisible(true);
   };
 
+  const [inEditLanguageId, setInEditLanguageId] = useState<string | null>(null);
+  const [isLanguageEditModalVisible, setIsLanguageEditModalVisible] = useState<boolean>(false);
+
+  const onLanguageEdit = (languageId: string) => {
+    setInEditLanguageId(languageId);
+    setIsLanguageEditModalVisible(true);
+  };
+
+  const onKeyNameClick = (keyId: string) => {
+    console.log(keyId);
+  };
+
+  const onLanguageClick = (languageId: string) => {
+    setInEditLanguageId(languageId);
+    setIsLanguageEditModalVisible(true);
+  };
+
   return (
     <div className="container">
       {isAddLanguageModalVisible && (
@@ -103,9 +121,19 @@ export default function Editor() {
           project={project}
           onHideAll={() => {}}
           onHide={() => {}}
-          onEdit={() => {}}
+          onEdit={onLanguageEdit}
           onDelete={() => {}}
           onClose={() => { setIsLanguagesModalVisible(false); }}
+        />
+      )}
+
+      {isLanguageEditModalVisible && (
+        <EditProjectLanguage
+          projectId={currentProjectId}
+          languageId={inEditLanguageId}
+          onClose={() => { setIsLanguageEditModalVisible(false); }}
+          onCancel={() => { setIsLanguageEditModalVisible(false); }}
+          onSave={() => { setIsLanguageEditModalVisible(false); }}
         />
       )}
 
@@ -192,6 +220,9 @@ export default function Editor() {
               label={key.label}
               values={key.values}
               languages={project.languages}
+              description={key.description}
+              onKeyNameClick={onKeyNameClick}
+              onLanguageClick={onLanguageClick}
             />
           </div>
         ))}

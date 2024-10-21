@@ -8,6 +8,7 @@ export interface IKey {
   id: string;
   label: string;
   values: [IKeyValue];
+  description: string;
 }
 
 export interface ILanguage {

@@ -149,9 +149,9 @@ export default function ProjectLanguages({
             visible,
           }: ILanguage) => (
             <div className={`projectLangs-item ${visible ? '' : 'isHidden'}`} key={id}>
-              <div className="projectLangs-itemIcon"/>
+              <div className="projectLangs-itemIcon" />
               <div className="projectLangs-itemTitle">
-              <span className="projectLangs-itemName">{label}</span>
+                <span className="projectLangs-itemName">{label}</span>
                 <span className="projectLangs-itemCode">{code}</span>
               </div>
               <div className="projectLangs-itemControls">

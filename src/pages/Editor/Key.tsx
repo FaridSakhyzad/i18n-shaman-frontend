@@ -9,6 +9,9 @@ interface IProps {
   label: string;
   values: [IKeyValue],
   languages: [ILanguage];
+  description: string;
+  onKeyNameClick?: (keyId: string) => void
+  onLanguageClick?: (languageId: string) => void
 }
 
 interface IKeyValueMapItem extends IKeyValue {
@@ -21,6 +24,9 @@ export default function Key(props: IProps) {
     label,
     languages,
     values: valuesFromProps,
+    description,
+    onKeyNameClick = () => {},
+    onLanguageClick = () => {},
   } = props;
 
   const generateValuesMap = () => {
@@ -90,6 +96,12 @@ export default function Key(props: IProps) {
 
   const handleKeyNameClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    onKeyNameClick(id);
+  };
+
+  const handleLanguageNameClick = (languageId: string) => {
+    onLanguageClick(languageId);
   };
 
   const handleValueEditCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -100,7 +112,7 @@ export default function Key(props: IProps) {
   return (
     <section className="key">
       <div className="keyHeader">
-        <button type="button" className="keyName" onClick={handleKeyNameClick}>{label}</button>
+        <button type="button" className="keyName" onClick={handleKeyNameClick} title={description}>{label}</button>
       </div>
       <div className="keyContent">
         {languages && languages.map((language: ILanguage, idx) => {
@@ -111,7 +123,7 @@ export default function Key(props: IProps) {
           return (
             <Fragment key={language.id}>
               <div className="keyContent-lang">
-                {language.label}
+                <span onClick={() => handleLanguageNameClick(language.id)}>{language.label}</span>
               </div>
 
               <div className="keyContent-value">

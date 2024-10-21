@@ -55,14 +55,15 @@ interface IAddKey {
   values: { [key: string]: string }[]
 }
 
-export const addProjectKey = async ({ projectId, id, label, values }: IAddKey) => {
-  return apiClient.post('/addProjectKey', {
-    projectId,
-    id,
-    label,
-    values,
-  });
-};
+export const addProjectKey = async ({
+  projectId, id, label, values, description,
+}: IAddKey) => apiClient.post('/addProjectKey', {
+  projectId,
+  id,
+  label,
+  values,
+  description,
+});
 
 interface IUpdateKey {
   id: string
