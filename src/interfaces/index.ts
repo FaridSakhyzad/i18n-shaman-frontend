@@ -1,3 +1,9 @@
+export interface IError {
+  message: string;
+  error: string;
+  statusCode: number;
+}
+
 export interface IKeyValue {
   languageId: string;
   value: string;
@@ -10,6 +16,8 @@ export interface IKey {
   values: [IKeyValue];
   description: string;
 }
+
+export interface IKeyUpdateError extends IError {}
 
 export interface ILanguage {
   id: string,
@@ -31,8 +39,4 @@ export interface IProject {
   languages: [ILanguage];
 }
 
-export interface IProjectUpdateError {
-  message: string;
-  error: string;
-  statusCode: number;
-}
+export interface IProjectUpdateError extends IError {}

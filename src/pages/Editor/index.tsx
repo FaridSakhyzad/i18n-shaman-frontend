@@ -14,6 +14,8 @@ import './Editor.scss';
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
+import EditKey from 'components/EditKey';
+
 import Key from './Key';
 import EditProjectLanguage from '../../components/EditProjectLanguage';
 
@@ -96,13 +98,23 @@ export default function Editor() {
     setIsLanguageEditModalVisible(true);
   };
 
-  const onKeyNameClick = (keyId: string) => {
-    console.log(keyId);
-  };
-
   const onLanguageClick = (languageId: string) => {
     setInEditLanguageId(languageId);
     setIsLanguageEditModalVisible(true);
+  };
+
+  const [inEditKey, setInEditKey] = useState<IKey | null>(null);
+  const [isEditKeyModalVisible, setIsEditKeyModalVisible] = useState<boolean>(false);
+
+  const onKeyNameClick = (keyId: string) => {
+    if (!project) {
+      return;
+    }
+
+    const theKey = project.keys.find((key) => key.id === keyId) || null;
+
+    setInEditKey(theKey);
+    setIsEditKeyModalVisible(true);
   };
 
   return (
@@ -144,6 +156,16 @@ export default function Editor() {
           onClose={() => { setIsCreateKeyModalVisible(false); }}
           onCancel={() => { setIsCreateKeyModalVisible(false); }}
           onConfirm={() => { setIsCreateKeyModalVisible(false); }}
+        />
+      )}
+
+      {isEditKeyModalVisible && (
+        <EditKey
+          projectKey={inEditKey as IKey}
+          project={project as IProject}
+          onClose={() => { setIsEditKeyModalVisible(false); }}
+          onCancel={() => { setIsEditKeyModalVisible(false); }}
+          onSave={() => { setIsEditKeyModalVisible(false); }}
         />
       )}
 

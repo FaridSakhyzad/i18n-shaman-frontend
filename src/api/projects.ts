@@ -1,10 +1,10 @@
-import { IKeyValue, IProject } from 'interfaces';
+import { IKey, IKeyUpdateError, IKeyValue, IProject } from 'interfaces';
 import { apiClient } from './client';
 
 interface ICreateProject {
   userId: string;
-  projectName: string
-  projectId: string
+  projectName: string;
+  projectId: string;
 }
 
 export const createUserProject = async ({ userId, projectName, projectId }: ICreateProject) => {
@@ -52,7 +52,7 @@ interface IAddKey {
   id: string;
   label: string;
   description: string;
-  values: { [key: string]: string }[]
+  values: IKeyValue[]
 }
 
 export const addProjectKey = async ({
@@ -66,15 +66,22 @@ export const addProjectKey = async ({
 });
 
 interface IUpdateKey {
-  id: string
-  label: string
-  values: IKeyValue[]
+  id: string;
+  label: string;
+  values: IKeyValue[];
+  description: string;
 }
 
-export const updateKey = async ({ id, label, values }: IUpdateKey) => {
+export const updateKey = async ({
+  id,
+  label,
+  values,
+  description,
+}: IUpdateKey): Promise<IKey | IKeyUpdateError> => {
   return apiClient.post('/updateKey', {
     id,
     label,
     values,
+    description,
   });
 };

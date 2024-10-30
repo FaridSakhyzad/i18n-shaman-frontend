@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
-import { IKeyValue, ILanguage } from '../../interfaces';
-import { updateKey } from '../../api/projects';
+import { IKeyValue, ILanguage } from 'interfaces';
+import { updateKey } from 'api/projects';
 
 import './Key.scss';
 
@@ -81,6 +81,7 @@ export default function Key(props: IProps) {
       id,
       label,
       values: getValuesArray(),
+      description,
     });
 
     console.log('result', result);

@@ -1,36 +1,39 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import Modal from 'components/Modal';
-import { addProjectKey } from 'api/projects';
-import { IKeyValue, IProject } from 'interfaces';
+import { IKey, IKeyUpdateError, IProject } from '../../interfaces';
+import { validateKeyName, validationErrors } from '../../utils/Validators';
+import { updateKey } from '../../api/projects';
 
-import {
-  validateKeyName,
-  validationErrors,
-} from '../../utils/Validators';
-
-import './CreateKey.scss';
-
-interface IPros {
-  projectId: string;
-  project: IProject | null;
-  onCancel: () => void;
-  onConfirm: () => void;
+interface IProps {
+  projectKey: IKey;
+  project: IProject;
   onClose: () => void;
+  onCancel: () => void;
+  onSave: () => void;
 }
 
-export default function CreateKey({
-  projectId,
+export default function EditKey({
+  projectKey,
   project,
-  onCancel,
-  onConfirm,
   onClose,
-}: IPros) {
+  onCancel,
+  onSave,
+}: IProps) {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [keyName, setName] = useState<string>('');
+  const [key, setKey] = useState<IKey>(projectKey);
 
-  const [keyValues, setValues] = useState<{ [key: string]: string }>({});
+  const getInitialValues = () => {
+    const result = {} as { [key: string]: string };
+
+    projectKey.values.forEach(({ languageId, value }) => {
+      result[languageId] = value;
+    });
+
+    return result;
+  };
+
+  const [keyValues, setValues] = useState<{ [key: string]: string }>(getInitialValues());
 
   const getInitialSelectedLanguageId = () => {
     if (!project) {
@@ -44,48 +47,52 @@ export default function CreateKey({
 
   const [selectedLanguageId, setSelectedLanguageId] = useState<string>(getInitialSelectedLanguageId());
 
-  const [keyDescription, setDescription] = useState<string>('');
+  const [keyNameError, setKeyNameError] = useState<string | null>('');
 
-  const [submitAttemptMade, setSubmitAttemptMade] = useState<boolean>(false);
-  const [keyNameError, setKeyNameError] = useState<string>('');
+  const handleNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyNameError(null);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!project) {
-      return;
+    const validationResult = validateKeyName(value, key.id, project.keys);
+
+    if (validationResult.error) {
+      setKeyNameError(validationErrors[validationResult.error]);
     }
 
-    setKeyNameError('');
-
-    const { value } = e.target;
-
-    if (submitAttemptMade) {
-      const validationResult = validateKeyName(value, null, project.keys);
-
-      if (validationResult.error) {
-        setKeyNameError(validationErrors[validationResult.error]);
-      }
-    }
-
-    setName(value);
+    setKey({
+      ...key,
+      label: value,
+    });
   };
 
-  const handleValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
+  const handleSelectedLanguageChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedLanguageId(value);
+  };
 
+  const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = { [selectedLanguageId]: value };
 
     setValues({
       ...keyValues,
       ...newValue,
     });
-  };
 
-  const handleSelectedLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedLanguageId(e.target.value);
+    const theKeyIndex = key.values.findIndex((keyItem) => keyItem.languageId === selectedLanguageId);
+
+    key.values[theKeyIndex] = {
+      ...key.values[theKeyIndex],
+      value,
+    };
+
+    setKey({
+      ...key,
+    });
   };
 
   const handleDescriptionChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(value);
+    setKey({
+      ...key,
+      description: value,
+    });
   };
 
   const handleCloseButtonClick = () => {
@@ -96,55 +103,31 @@ export default function CreateKey({
     onCancel();
   };
 
-  const handleCreateClick = async () => {
-    if (!project) {
-      return;
-    }
-
-    setSubmitAttemptMade(true);
-
-    const validationResult = validateKeyName(keyName, null, project.keys);
-
-    if (validationResult.error) {
-      setKeyNameError(validationErrors[validationResult.error]);
-      return;
-    }
-
+  const handleSaveClick = async () => {
     setLoading(true);
 
-    const newValues: IKeyValue[] = [];
+    const result: IKey | IKeyUpdateError = await updateKey(key);
 
-    Object.keys(keyValues).forEach((key) => {
-      newValues.push({
-        value: keyValues[key],
-        languageId: key,
-      });
-    });
-
-    const result = await addProjectKey({
-      projectId,
-      id: Math.random().toString(16).substring(2),
-      label: keyName,
-      description: keyDescription,
-      values: newValues,
-    });
+    if ('error' in result) {
+      alert(result.message);
+    }
 
     setLoading(false);
 
-    onConfirm();
+    onSave();
   };
 
   return (
     <Modal
-      customClassNames="modal_withBottomButtons modal_createKey"
-      onEscapeKeyPress={handleCloseButtonClick}
+      onEscapeKeyPress={onClose}
+      customClassNames="modal_withBottomButtons modal_editProjectLang"
     >
       {loading && (
         <div className="loading modal-loading" />
       )}
 
       <div className="modal-header">
-        <h4 className="modal-title">Create New Key</h4>
+        <h4 className="modal-title">Edit Key {projectKey.label}</h4>
         <button
           type="button"
           className="modal-closeButton"
@@ -158,7 +141,7 @@ export default function CreateKey({
           <div className="form-row">
             <div className="formControl">
               <div className="formControl-header">
-                <label className="formControl-label" htmlFor="key-name">Name*</label>
+                <label className="formControl-label" htmlFor="key-name">Name</label>
               </div>
               <div className="formControl-body">
                 <div className="formControl-wrapper">
@@ -168,11 +151,11 @@ export default function CreateKey({
                     className="input formControl-input"
                     placeholder="Please Enter Unique Key Name..."
                     onChange={handleNameChange}
-                    value={keyName}
+                    value={key.label}
                   />
                 </div>
                 <div className="formControl-footer">
-                  {(submitAttemptMade && keyNameError.length > 0) && (
+                  {keyNameError && (
                     <div className="formControl-error">{keyNameError}</div>
                   )}
                 </div>
@@ -228,7 +211,7 @@ export default function CreateKey({
                     id="key-description"
                     className="textarea formControl-textarea"
                     onChange={handleDescriptionChange}
-                    value={keyDescription}
+                    value={key.description}
                   />
                 </div>
               </div>
@@ -236,19 +219,21 @@ export default function CreateKey({
           </div>
         </form>
       </div>
+
       <div className="modal-buttonBox">
         <button
           type="button"
           className="button secondary modal-button"
           onClick={handleCancelClick}
-        >Cancel
+        >
+          Cancel
         </button>
         <button
           type="button"
           className="button primary modal-button"
-          onClick={handleCreateClick}
-          disabled={keyName.length < 1}
-        >Create
+          onClick={handleSaveClick}
+        >
+          Save
         </button>
       </div>
     </Modal>
