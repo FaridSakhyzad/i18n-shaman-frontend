@@ -85,3 +85,9 @@ export const updateKey = async ({
     description,
   });
 };
+
+export const exportProjectToJson = async (projectId: string) => {
+  return apiClient.get(`/exportProjectToJson?projectId=${projectId}`, {
+    responseType: 'blob',
+  });
+};

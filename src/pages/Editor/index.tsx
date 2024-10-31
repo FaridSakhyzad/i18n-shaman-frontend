@@ -7,7 +7,7 @@ import { getProjects } from 'store/projects';
 
 import { IKey, IProject } from 'interfaces';
 
-import { getUserProjectsById } from 'api/projects';
+import { exportProjectToJson, getUserProjectsById } from 'api/projects';
 
 import './Editor.scss';
 
@@ -117,8 +117,43 @@ export default function Editor() {
     setIsEditKeyModalVisible(true);
   };
 
+  const handleImportClick = () => {
+    console.log('IMPORT');
+  };
+
+  const handleExportClick = async () => {
+    if (!project) {
+      return;
+    }
+
+    const { projectId, projectName } = project;
+
+    const response = await exportProjectToJson(projectId as string);
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    const $link = document.createElement('a');
+    $link.href = url;
+    $link.download = `${projectName}.zip`;
+
+    document.body.appendChild($link);
+
+    $link.click();
+    $link.remove();
+
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="container">
+      <div className="header">
+        <hr />
+        <button type="button" className="button primary" onClick={handleImportClick}>Import</button>
+        &nbsp;&nbsp;&nbsp;
+        <button type="button" className="button primary" onClick={handleExportClick}>Export</button>
+        <hr />
+      </div>
+
       {isAddLanguageModalVisible && (
         <AddProjectLanguage
           projectId={currentProjectId}
@@ -181,9 +216,9 @@ export default function Editor() {
         {(isProjectsMenuVisible && projectsMenuCoords) && (
           <div
             className="editorHeader-projectListMenu"
-            style={{ top: projectsMenuCoords.top, left: projectsMenuCoords.left }}
+            style={{top: projectsMenuCoords.top, left: projectsMenuCoords.left}}
           >
-            {projects && projects.map(({ projectName, projectId }) => {
+            {projects && projects.map(({projectName, projectId}) => {
               if (projectId === currentProjectId) {
                 return null;
               }
@@ -198,7 +233,7 @@ export default function Editor() {
                   >
                     {projectName}
                   </Link>
-                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
+                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu"/>
                 </div>
               );
             })}
