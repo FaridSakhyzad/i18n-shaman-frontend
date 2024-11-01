@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import { ILanguage, IProjectUpdateError, IProject } from 'interfaces';
-
-import Modal from 'components/Modal';
+import {
+  ILanguage,
+  IProjectUpdateError,
+  IProject,
+  IUserLanguagesMapItem,
+} from 'interfaces';
 
 import {
   setMultipleLanguagesVisibility,
   setLanguageVisibility,
-  deleteLanguage,
+  deleteLanguage, addMultipleLanguages,
 } from 'api/languages';
+
+import Modal from 'components/Modal';
+import AddLanguageControl from 'components/AddProjectLanguage/AddLanguageControl';
+import getLanguages from 'components/AddProjectLanguage/languages';
 
 import './ProjectLanguages.scss';
 
@@ -29,10 +36,25 @@ export default function ProjectLanguages({
   onClose,
 }: IProps) {
   const [languages, setLanguages] = useState(project.languages);
-  const [showLoading, setShowLoading] = useState<boolean>(false);
+
+  const getAvailableLanguages = (projectLanguages: ILanguage[]) => {
+    const languagesMap:IUserLanguagesMapItem = {};
+
+    projectLanguages.forEach((language: ILanguage) => {
+      languagesMap[language.code] = language;
+    });
+
+    return getLanguages().filter(({ code }: ILanguage) => {
+      return languagesMap[code] === undefined;
+    });
+  };
+
+  const [fullLanguagesList, setFullLanguagesList] = useState<ILanguage[]>(getAvailableLanguages(project.languages));
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const toggleAllVisibilityClick = async (allVisible: boolean) => {
-    setShowLoading(true);
+    setLoading(true);
 
     const visibilityData = project.languages.map(({ id }: ILanguage) => ({
       languageId: id,
@@ -47,13 +69,13 @@ export default function ProjectLanguages({
       setLanguages(result.languages);
     }
 
-    setShowLoading(false);
+    setLoading(false);
 
     onHideAll();
   };
 
   const handleHideLangClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
-    setShowLoading(true);
+    setLoading(true);
 
     const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, false);
 
@@ -63,13 +85,13 @@ export default function ProjectLanguages({
       setLanguages(result.languages);
     }
 
-    setShowLoading(false);
+    setLoading(false);
 
     onHide(langId);
   };
 
   const handleShowLangClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
-    setShowLoading(true);
+    setLoading(true);
 
     const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, true);
 
@@ -79,7 +101,7 @@ export default function ProjectLanguages({
       setLanguages(result.languages);
     }
 
-    setShowLoading(false);
+    setLoading(false);
 
     onHide(langId);
   };
@@ -89,7 +111,7 @@ export default function ProjectLanguages({
   };
 
   const handleDeleteClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
-    setShowLoading(true);
+    setLoading(true);
 
     const result: IProject | IProjectUpdateError = await deleteLanguage(project.projectId, langId);
 
@@ -97,14 +119,64 @@ export default function ProjectLanguages({
       console.error(result.message);
     } else {
       setLanguages(result.languages);
+
+      const availableLanguages = getAvailableLanguages(result.languages);
+
+      setFullLanguagesList(availableLanguages);
     }
 
-    setShowLoading(false);
+    setLoading(false);
 
     onDelete(langId);
   };
 
-  const handleCloseClick = () => {
+  const [isQuickAddVisible, setIsQuickAddVisible] = useState(false);
+
+  const handleQuickAddClick = () => {
+    setIsQuickAddVisible(!isQuickAddVisible);
+  };
+
+  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>([]);
+
+  const handleQuickAddSaveClick = async () => {
+    setIsQuickAddVisible(true);
+    setLoading(true);
+
+    const languagesData: ILanguage[] = selectedLanguages.map((language: ILanguage) => {
+      const languageData = {
+        ...language,
+      };
+
+      if (language.customLabelEnabled && !language.customLabel) {
+        languageData.customLabel = language.label;
+      }
+
+      if (language.customCodeEnabled && !language.customCode) {
+        languageData.customCode = language.code;
+      }
+
+      return languageData;
+    });
+
+    const resultProject = await addMultipleLanguages({
+      languages: languagesData,
+      projectId: project.projectId,
+    });
+
+    setIsQuickAddVisible(false);
+
+    setFullLanguagesList(getAvailableLanguages(resultProject.languages));
+
+    setLanguages(resultProject.languages);
+
+    setLoading(false);
+  };
+
+  const handleSelectedLanguagesChange = (data: ILanguage[]) => {
+    setSelectedLanguages(data);
+  };
+
+  const handleCloseButtonClick = () => {
     onClose();
   };
 
@@ -113,31 +185,17 @@ export default function ProjectLanguages({
       customClassNames="modal_withBottomButtons projectLangsModal"
       onEscapeKeyPress={onClose}
     >
-      {showLoading && (<div className="loading projectLangsModal-loading" />)}
+      {loading && (<div className="loading projectLangsModal-loading" />)}
 
       <div className="modal-header">
         <h4 className="modal-title">Project Languages</h4>
-        <button
-          type="button"
-          className="buttonInline link projectLangs-showAllButton"
-          onClick={() => toggleAllVisibilityClick(true)}
-        >
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          Show All
-        </button>
 
         <button
           type="button"
-          className="buttonInline link projectLangs-hideAllButton"
-          onClick={() => toggleAllVisibilityClick(false)}
-        >
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          Hide All
-        </button>
+          className="modal-closeButton"
+          onClick={handleCloseButtonClick}
+          aria-label="Close modal"
+        />
       </div>
 
       <div className="modal-content">
@@ -185,21 +243,47 @@ export default function ProjectLanguages({
               </div>
             </div>
           ))}
+          {(isQuickAddVisible && fullLanguagesList.length > 0) && (
+            <div className="projectLangs-quickControl">
+              <AddLanguageControl
+                fullLanguagesList={fullLanguagesList}
+                chipsSelectable={false}
+                onSelectedLanguagesChange={handleSelectedLanguagesChange}
+              />
+              <button type="button" className="button primary projectLangs-quickAddSave" onClick={handleQuickAddSaveClick} aria-label="Save Language" />
+            </div>
+          )}
         </div>
       </div>
       <div className="modal-buttonBox">
         <button
           type="button"
           className="button success projectLangs-quickAddButton"
+          onClick={handleQuickAddClick}
         >
           Quick Add Language
         </button>
+
         <button
           type="button"
-          className="button secondary projectLangs-closeButton"
-          onClick={handleCloseClick}
+          className="buttonInline link projectLangs-showAllButton"
+          onClick={() => toggleAllVisibilityClick(true)}
         >
-          Close
+          <i className="projectLangs-hideAllIcon" />
+          <i className="projectLangs-hideAllIcon" />
+          <i className="projectLangs-hideAllIcon" />
+          Show All
+        </button>
+
+        <button
+          type="button"
+          className="buttonInline link projectLangs-hideAllButton"
+          onClick={() => toggleAllVisibilityClick(false)}
+        >
+          <i className="projectLangs-hideAllIcon" />
+          <i className="projectLangs-hideAllIcon" />
+          <i className="projectLangs-hideAllIcon" />
+          Hide All
         </button>
       </div>
     </Modal>

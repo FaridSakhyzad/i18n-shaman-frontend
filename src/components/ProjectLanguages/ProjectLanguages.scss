@@ -166,3 +166,19 @@
     background-color: #e62e2e;
   }
 }
+
+.projectLangs-quickControl {
+  display: flex;
+  gap: 8px;
+
+  .languagesSelector {
+    flex: 1 1 0
+  }
+}
+
+.projectLangs-quickAddSave {
+  width: 51px;
+  border-radius: 16px;
+  align-self: flex-start;
+  min-height: 31px;
+}

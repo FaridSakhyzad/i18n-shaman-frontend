@@ -40,3 +40,7 @@ export interface IProject {
 }
 
 export interface IProjectUpdateError extends IError {}
+
+export interface IUserLanguagesMapItem {
+  [key: string]: ILanguage;
+}

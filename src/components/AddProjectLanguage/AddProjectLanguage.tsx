@@ -1,22 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'components/Modal';
 
-import { ILanguage } from 'interfaces';
+import { ILanguage, IUserLanguagesMapItem } from 'interfaces';
 import { addMultipleLanguages } from 'api/languages';
 import { getUserProjectsById } from 'api/projects';
 
 import './AddProjectLanguage.scss';
 import getLanguages from './languages';
+import AddLanguageControl from './AddLanguageControl';
 
 interface IProps {
   projectId: string;
   onClose: () => void;
   onCancel: () => void;
   onConfirm: () => void;
-}
-
-interface IUserLanguagesMapItem {
-  [key: string]: ILanguage;
 }
 
 export default function AddProjectLanguage({
@@ -27,12 +24,8 @@ export default function AddProjectLanguage({
 }: IProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [fullLanguagesList, setFullLanguagesList] = useState<ILanguage[]>([]);
-  const [languages, setLanguages] = useState<ILanguage[]>([]);
 
   const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>([]);
-  const [languagesPanelVisible, setLanguagesPanelVisible] = useState<boolean>(false);
-  const [languageSearchQuery, setLanguageSearchQuery] = useState<string>('');
-  const [searchQueryPrevValue, setSearchQueryPrevValue] = useState<string>('');
 
   const getProjectLanguages = async () => {
     const result = await getUserProjectsById(projectId);
@@ -51,7 +44,6 @@ export default function AddProjectLanguage({
       });
 
       setFullLanguagesList(availableLanguages);
-      setLanguages(availableLanguages);
     }
 
     setLoading(false);
@@ -61,162 +53,7 @@ export default function AddProjectLanguage({
     getProjectLanguages();
   }, [projectId]);
 
-  const generateMap = (languagesArray: ILanguage[]) => {
-    const result = {} as { [key: string]: number };
-
-    for (let i = 0; i < languagesArray.length; i += 1) {
-      const { code } = languagesArray[i];
-
-      result[code] = i;
-    }
-
-    return result;
-  };
-
-  const languagesMap = generateMap(languages);
-  const selectedLanguageMap = generateMap(selectedLanguages);
-
-  const languageSearchFieldRef = useRef<HTMLInputElement>(null);
-  const languageSearchFieldWrapperRef = useRef<HTMLLabelElement>(null);
-
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (e.target !== languageSearchFieldRef.current && e.target !== languageSearchFieldWrapperRef.current) {
-      setLanguagesPanelVisible(false);
-      window.removeEventListener('click', handleOutsideClick);
-    }
-  };
-
-  const handleLanguagesListWrapperClick = (e: React.MouseEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (languageSearchFieldRef.current) {
-      languageSearchFieldRef.current.focus();
-    }
-  };
-
-  const handleLanguagesListFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-
-    const newVisibilityState = !languagesPanelVisible;
-
-    if (newVisibilityState) {
-      window.addEventListener('click', handleOutsideClick);
-    } else {
-      window.removeEventListener('click', handleOutsideClick);
-    }
-
-    setLanguagesPanelVisible(newVisibilityState);
-  };
-
-  const handleLanguagesListBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.relatedTarget) {
-      setLanguagesPanelVisible(false);
-    }
-  };
-
-  const handleLanguageSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { target: { value } } = e;
-
-    setLanguageSearchQuery(value);
-
-    if (value.length < 1) {
-      setLanguages(fullLanguagesList);
-
-      return;
-    }
-
-    const filtered = fullLanguagesList.filter(({ label, code }) => {
-      const normalizedValue = value.toLowerCase().trim();
-
-      if (normalizedValue.length < 1) {
-        return true;
-      }
-
-      const normalizedLabel = `${label.toLowerCase()} (${code})`;
-
-      return normalizedLabel.includes(normalizedValue);
-    });
-
-    setLanguages(filtered);
-    setLanguagesPanelVisible(true);
-  };
-
-  const handleLanguageSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    setSearchQueryPrevValue(e.currentTarget.value);
-  };
-
   const [currentLanguageIdx, setCurrentLanguageIdx] = useState<number>(-1);
-
-  const handleLanguageSearchKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code !== 'Backspace' || e.currentTarget.value.length > 0 || searchQueryPrevValue.length > 0) {
-      return;
-    }
-
-    if ((selectedLanguages.length - 1) === currentLanguageIdx) {
-      setCurrentLanguageIdx(-1);
-    }
-
-    setCurrentLanguageIdx(-1);
-
-    selectedLanguages.pop();
-    setSelectedLanguages([...selectedLanguages]);
-  };
-
-  const handleLanguagesListItemClick = (e: React.MouseEvent<HTMLUListElement>) => {
-    const { target } = e;
-    const { id } = target as HTMLLIElement;
-
-    const langIndex: number = languagesMap[id];
-
-    selectedLanguages.push(languages[langIndex]);
-
-    setSelectedLanguages([...selectedLanguages]);
-
-    setLanguagesPanelVisible(false);
-    setLanguageSearchQuery('');
-    setLanguages(fullLanguagesList);
-
-    if (languageSearchFieldRef.current) {
-      languageSearchFieldRef.current.focus();
-    }
-  };
-
-  const currentLanguage = selectedLanguages[currentLanguageIdx];
-
-  const handleChipClick = (e: React.MouseEvent<HTMLSpanElement>, code: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const selectedLanguageIdx = selectedLanguageMap[code];
-
-    setCurrentLanguageIdx(selectedLanguageIdx);
-  };
-
-  const handleChipDelete = (e: React.MouseEvent<HTMLElement>, code: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const indexOfElToDelete = selectedLanguages.findIndex((item) => item.code === code);
-
-    if (indexOfElToDelete < 0) {
-      return;
-    }
-
-    if (indexOfElToDelete === currentLanguageIdx) {
-      setCurrentLanguageIdx(-1);
-    }
-
-    selectedLanguages.splice(indexOfElToDelete, 1);
-
-    setSelectedLanguages([...selectedLanguages]);
-  };
-
-  const theresMatchesToDisplay = () => {
-    const allMatchesAreSelected = languages.every((language) => selectedLanguageMap[language.code] !== undefined);
-
-    return languages.length > 0 && !allMatchesAreSelected;
-  };
 
   const handleCustomCodeSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedLanguages || !selectedLanguages[currentLanguageIdx]) {
@@ -293,6 +130,14 @@ export default function AddProjectLanguage({
     onConfirm();
   };
 
+  const handleSelectedLanguagesChange = (data: ILanguage[]) => {
+    setSelectedLanguages(data);
+  };
+
+  const handleCurrentLanguageIdxChange = (index: number) => {
+    setCurrentLanguageIdx(index);
+  };
+
   return (
     <Modal
       customClassNames="modal_withBottomButtons modal_addProjectLang"
@@ -314,66 +159,13 @@ export default function AddProjectLanguage({
         <form className="form">
           <div className="form-row">
             <div className="formControl">
-              <div className="languagesSelector">
-                <label
-                  ref={languageSearchFieldWrapperRef}
-                  className="select languagesSelector-chipBox"
-                  onClick={handleLanguagesListWrapperClick}
-                >
-                  {selectedLanguages.length > 0 && selectedLanguages.map(({ code, label }: ILanguage) => (
-                    <span
-                      className={`languagesSelector-chip ${currentLanguage && currentLanguage.code === code ? 'isActive' : ''}`}
-                      key={code}
-                      onClick={(e) => handleChipClick(e, code)}
-                    >
-                      {label}
-                      <i
-                        className="languagesSelector-chipDelete"
-                        onClick={(e) => handleChipDelete(e, code)}
-                      />
-                    </span>
-                  ))}
-                  <input
-                    ref={languageSearchFieldRef}
-                    type="text"
-                    className="languagesSelector-input"
-                    value={languageSearchQuery}
-                    size={languageSearchQuery.length || 1}
-                    onChange={handleLanguageSearchQueryChange}
-                    onKeyDown={handleLanguageSearchKeyDown}
-                    onKeyUp={handleLanguageSearchKeyUp}
-                    onFocus={handleLanguagesListFocus}
-                    onBlur={handleLanguagesListBlur}
-                    tabIndex={0}
-                  />
-                </label>
-
-                {languagesPanelVisible && (
-                  <div className="dropdownPanel languagesSelector-panel">
-                    {theresMatchesToDisplay() ? (
-                      <ul className="languagesSelector-list" onClick={handleLanguagesListItemClick}>
-                        {languages.map(({ code, label }: ILanguage) => {
-                          if (selectedLanguageMap[code] !== undefined) {
-                            return null;
-                          }
-
-                          return (
-                            <li
-                              className={`languagesSelector-listItem ${selectedLanguageMap[code] !== undefined ? 'selected' : ''}`}
-                              key={code}
-                              id={code}
-                            >
-                              {label} ({code})
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    ) : (
-                      <div className="languagesSelector-noMatches">No Matches Found</div>
-                    )}
-                  </div>
-                )}
-              </div>
+              {fullLanguagesList.length > 0 && (
+                <AddLanguageControl
+                  fullLanguagesList={fullLanguagesList}
+                  onSelectedLanguagesChange={handleSelectedLanguagesChange}
+                  onCurrentLanguageIdxChange={handleCurrentLanguageIdxChange}
+                />
+              )}
             </div>
           </div>
 

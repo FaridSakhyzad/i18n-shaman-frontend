@@ -58,10 +58,13 @@
   color: #295fcc;
   position: relative;
   align-items: center;
-  cursor: pointer;
 
-  &:hover:not(:has(.languagesSelector-chipDelete:hover)) {
-    border-color: #388ff3;
+  &.isSelectable {
+    cursor: pointer;
+
+    &:hover:not(:has(.languagesSelector-chipDelete:hover)) {
+      border-color: #388ff3;
+    }
   }
 
   &.isActive {

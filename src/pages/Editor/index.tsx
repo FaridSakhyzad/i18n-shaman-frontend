@@ -144,6 +144,18 @@ export default function Editor() {
     window.URL.revokeObjectURL(url);
   };
 
+  const getLanguagesButtonTitle = (): string => {
+    const { languages = [] } = project || {};
+
+    const visibleLanguagesCount = languages.filter((lang) => lang.visible).length;
+
+    if (visibleLanguagesCount !== languages.length) {
+      return `Languages (${visibleLanguagesCount} of ${languages.length})`;
+    }
+
+    return `All Languages (${languages.length})`;
+  };
+
   return (
     <div className="container">
       <div className="header">
@@ -216,7 +228,7 @@ export default function Editor() {
         {(isProjectsMenuVisible && projectsMenuCoords) && (
           <div
             className="editorHeader-projectListMenu"
-            style={{top: projectsMenuCoords.top, left: projectsMenuCoords.left}}
+            style={{ top: projectsMenuCoords.top, left: projectsMenuCoords.left }}
           >
             {projects && projects.map(({projectName, projectId}) => {
               if (projectId === currentProjectId) {
@@ -233,7 +245,7 @@ export default function Editor() {
                   >
                     {projectName}
                   </Link>
-                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu"/>
+                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
                 </div>
               );
             })}
@@ -246,7 +258,7 @@ export default function Editor() {
             className="button primary editorHeader-languageList"
             onClick={handleProjectLanguagesButtonClick}
           >
-            All Languages ({project.languages.length})
+            {getLanguagesButtonTitle()}
           </button>
         )}
 
