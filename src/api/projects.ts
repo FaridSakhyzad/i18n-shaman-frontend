@@ -91,3 +91,11 @@ export const exportProjectToJson = async (projectId: string) => {
     responseType: 'blob',
   });
 };
+
+export const importDataToProject = async (data: any) => {
+  try {
+    return (await apiClient.post('importJsonDataToProject', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+}

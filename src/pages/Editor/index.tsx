@@ -7,17 +7,17 @@ import { getProjects } from 'store/projects';
 
 import { IKey, IProject } from 'interfaces';
 
-import { exportProjectToJson, getUserProjectsById } from 'api/projects';
-
-import './Editor.scss';
+import { exportProjectToJson, getUserProjectsById, importDataToProject } from 'api/projects';
 
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
 import EditKey from 'components/EditKey';
+import EditProjectLanguage from 'components/EditProjectLanguage';
 
 import Key from './Key';
-import EditProjectLanguage from '../../components/EditProjectLanguage';
+
+import './Editor.scss';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -156,14 +156,36 @@ export default function Editor() {
     return `All Languages (${languages.length})`;
   };
 
+  const handleExportFieldChange = async ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    const { files }: { files: FileList | null } = target;
+
+    if (!files) {
+      return;
+    }
+
+    const { projectId } = project || {};
+
+    const formData = new FormData();
+
+    formData.append('projectId', projectId as string);
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+
+    const result = await importDataToProject(formData);
+
+    console.log('result', result);
+  }
+
   return (
     <div className="container">
       <div className="header">
-        <hr />
-        <button type="button" className="button primary" onClick={handleImportClick}>Import</button>
-        &nbsp;&nbsp;&nbsp;
+        <span className="button primary export">
+          <input type="file" onChange={handleExportFieldChange} accept="application/json" multiple />
+          Import
+        </span>
         <button type="button" className="button primary" onClick={handleExportClick}>Export</button>
-        <hr />
       </div>
 
       {isAddLanguageModalVisible && (
