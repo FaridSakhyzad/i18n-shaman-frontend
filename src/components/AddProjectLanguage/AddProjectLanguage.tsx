@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'components/Modal';
 
-import { ILanguage, IUserLanguagesMapItem } from 'interfaces';
-import { addMultipleLanguages } from 'api/languages';
+import { ILanguage, IProjectLanguage, IUserLanguagesMapItem } from 'interfaces';
+import { addMultipleLanguages, getAppLanguagesData } from 'api/languages';
 import { getUserProjectsById } from 'api/projects';
 
 import './AddProjectLanguage.scss';
-import getLanguages from './languages';
 import AddLanguageControl from './AddLanguageControl';
 
 interface IProps {
@@ -23,23 +22,25 @@ export default function AddProjectLanguage({
   onConfirm,
 }: IProps) {
   const [loading, setLoading] = useState<boolean>(true);
-  const [fullLanguagesList, setFullLanguagesList] = useState<ILanguage[]>([]);
+  const [fullLanguagesList, setFullLanguagesList] = useState<IProjectLanguage[]>([]);
 
-  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<IProjectLanguage[]>([]);
 
   const getProjectLanguages = async () => {
     const result = await getUserProjectsById(projectId);
+
+    const languages = await getAppLanguagesData();
 
     const languagesMap:IUserLanguagesMapItem = {};
 
     if (result.error) {
       alert(result.message);
     } else {
-      result.languages.forEach((language: ILanguage) => {
+      result.languages.forEach((language: IProjectLanguage) => {
         languagesMap[language.code] = language;
       });
 
-      const availableLanguages = getLanguages().filter(({ code }: ILanguage) => {
+      const availableLanguages = languages.filter(({ code }: IProjectLanguage) => {
         return languagesMap[code] === undefined;
       });
 
@@ -104,7 +105,7 @@ export default function AddProjectLanguage({
   const handleAddButtonClick = async () => {
     setLoading(true);
 
-    const languagesData: ILanguage[] = selectedLanguages.map((language: ILanguage) => {
+    const languagesData: IProjectLanguage[] = selectedLanguages.map((language: IProjectLanguage) => {
       const languageData = {
         ...language,
       };
@@ -131,7 +132,15 @@ export default function AddProjectLanguage({
   };
 
   const handleSelectedLanguagesChange = (data: ILanguage[]) => {
-    setSelectedLanguages(data);
+    setSelectedLanguages(data.map((item) => ({
+      baseLanguage: false,
+      visible: true,
+      customLabelEnabled: false,
+      customLabel: '',
+      customCodeEnabled: false,
+      customCode: '',
+      ...item
+    })));
   };
 
   const handleCurrentLanguageIdxChange = (index: number) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ILanguage } from '../../interfaces';
+import { ILanguage } from 'interfaces';
 
 interface IProps {
   fullLanguagesList: ILanguage[];
@@ -149,7 +149,7 @@ export default function AddLanguageControl({
 
     const langIndex: number = languagesMap[id];
 
-    selectedLanguages.push(languages[langIndex]);
+    selectedLanguages.push(fullLanguagesList[langIndex]);
 
     setSelectedLanguages([...selectedLanguages]);
     onSelectedLanguagesChange([...selectedLanguages]);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'components/Modal';
 
 import { getUserProjectsById } from 'api/projects';
-import { ILanguage } from 'interfaces';
+import { IProjectLanguage } from 'interfaces';
 
 import './EditProjectLanguage.scss';
 import { updateLanguage, IUpdateLanguage } from '../../api/languages';
@@ -23,12 +23,12 @@ export default function EditProjectLanguage({
   onSave,
 }: IProps) {
   const [loading, setLoading] = useState(true);
-  const [languageInEdit, setLanguageInEdit] = useState<ILanguage | null>(null);
+  const [languageInEdit, setLanguageInEdit] = useState<IProjectLanguage | null>(null);
 
   const getProjectsLanguages = async () => {
     const result = await getUserProjectsById(projectId);
 
-    const language = result.languages.find(({ id }: ILanguage) => id === languageId);
+    const language = result.languages.find(({ id }: IProjectLanguage) => id === languageId);
 
     setLanguageInEdit(language);
 
@@ -39,35 +39,35 @@ export default function EditProjectLanguage({
     setLanguageInEdit({
       ...languageInEdit,
       customCodeEnabled: checked,
-    } as ILanguage);
+    } as IProjectLanguage);
   };
 
   const handleCustomCodeChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setLanguageInEdit({
       ...languageInEdit,
       customCode: value,
-    } as ILanguage);
+    } as IProjectLanguage);
   };
 
   const handleCustomLabelSwitcherChange = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
     setLanguageInEdit({
       ...languageInEdit,
       customLabelEnabled: checked,
-    } as ILanguage);
+    } as IProjectLanguage);
   };
 
   const handleCustomLabelChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setLanguageInEdit({
       ...languageInEdit,
       customLabel: value,
-    } as ILanguage);
+    } as IProjectLanguage);
   };
 
   const handleBaseLanguageChange = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) => {
     setLanguageInEdit({
       ...languageInEdit,
       baseLanguage: checked,
-    } as ILanguage);
+    } as IProjectLanguage);
   };
 
   const handleCloseButtonClick = () => {

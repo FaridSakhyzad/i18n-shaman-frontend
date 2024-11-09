@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  ILanguage,
+  IProjectLanguage,
   IProjectUpdateError,
   IProject,
   IUserLanguagesMapItem,
+  ILanguage,
 } from 'interfaces';
 
 import {
   setMultipleLanguagesVisibility,
   setLanguageVisibility,
-  deleteLanguage, addMultipleLanguages,
+  deleteLanguage,
+  addMultipleLanguages,
+  getAppLanguagesData,
 } from 'api/languages';
 
 import Modal from 'components/Modal';
 import AddLanguageControl from 'components/AddProjectLanguage/AddLanguageControl';
-import getLanguages from 'components/AddProjectLanguage/languages';
 
 import './ProjectLanguages.scss';
 
@@ -35,28 +37,50 @@ export default function ProjectLanguages({
   onDelete,
   onClose,
 }: IProps) {
-  const [languages, setLanguages] = useState(project.languages);
+  const [projectLanguages, setProjectLanguages] = useState(project.languages);
+  const [languageData, setLanguageData] = useState<ILanguage[] | undefined>();
 
-  const getAvailableLanguages = (projectLanguages: ILanguage[]) => {
+  const getAvailableLanguages = (projectLanguages: IProjectLanguage[], allLanguages: ILanguage[] | undefined) => {
     const languagesMap:IUserLanguagesMapItem = {};
 
-    projectLanguages.forEach((language: ILanguage) => {
+    projectLanguages.forEach((language: IProjectLanguage) => {
       languagesMap[language.code] = language;
     });
 
-    return getLanguages().filter(({ code }: ILanguage) => {
+    if (!allLanguages) {
+      return [];
+    }
+
+    return allLanguages.filter(({ code }: ILanguage) => {
       return languagesMap[code] === undefined;
     });
   };
 
-  const [fullLanguagesList, setFullLanguagesList] = useState<ILanguage[]>(getAvailableLanguages(project.languages));
+  const [availableLanguagesList, setAvailableLanguagesList] = useState<ILanguage[]>();
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const fetchLanguagesData = async () => {
+    setLoading(true);
+
+    const result = await getAppLanguagesData();
+
+    const availableLanguages = getAvailableLanguages(project.languages, result);
+
+    setLanguageData(result);
+    setAvailableLanguagesList(availableLanguages);
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchLanguagesData();
+  }, []);
 
   const toggleAllVisibilityClick = async (allVisible: boolean) => {
     setLoading(true);
 
-    const visibilityData = project.languages.map(({ id }: ILanguage) => ({
+    const visibilityData = project.languages.map(({ id }: IProjectLanguage) => ({
       languageId: id,
       visible: allVisible,
     }));
@@ -66,7 +90,7 @@ export default function ProjectLanguages({
     if ('error' in result) {
       console.error(result.message);
     } else {
-      setLanguages(result.languages);
+      setProjectLanguages(result.languages);
     }
 
     setLoading(false);
@@ -82,7 +106,7 @@ export default function ProjectLanguages({
     if ('error' in result) {
       console.error(result.message);
     } else {
-      setLanguages(result.languages);
+      setProjectLanguages(result.languages);
     }
 
     setLoading(false);
@@ -98,7 +122,7 @@ export default function ProjectLanguages({
     if ('error' in result) {
       console.error(result.message);
     } else {
-      setLanguages(result.languages);
+      setProjectLanguages(result.languages);
     }
 
     setLoading(false);
@@ -118,11 +142,11 @@ export default function ProjectLanguages({
     if ('error' in result) {
       console.error(result.message);
     } else {
-      setLanguages(result.languages);
+      setProjectLanguages(result.languages);
 
-      const availableLanguages = getAvailableLanguages(result.languages);
+      const availableLanguages = getAvailableLanguages(result.languages, languageData);
 
-      setFullLanguagesList(availableLanguages);
+      setAvailableLanguagesList(availableLanguages);
     }
 
     setLoading(false);
@@ -142,20 +166,16 @@ export default function ProjectLanguages({
     setIsQuickAddVisible(true);
     setLoading(true);
 
-    const languagesData: ILanguage[] = selectedLanguages.map((language: ILanguage) => {
-      const languageData = {
-        ...language,
+    const languagesData: IProjectLanguage[] = selectedLanguages.map((language: ILanguage) => {
+      return {
+        baseLanguage: false,
+        visible: true,
+        customLabelEnabled: false,
+        customLabel: '',
+        customCodeEnabled: false,
+        customCode: '',
+        ...language
       };
-
-      if (language.customLabelEnabled && !language.customLabel) {
-        languageData.customLabel = language.label;
-      }
-
-      if (language.customCodeEnabled && !language.customCode) {
-        languageData.customCode = language.code;
-      }
-
-      return languageData;
     });
 
     const resultProject = await addMultipleLanguages({
@@ -165,9 +185,9 @@ export default function ProjectLanguages({
 
     setIsQuickAddVisible(false);
 
-    setFullLanguagesList(getAvailableLanguages(resultProject.languages));
+    setAvailableLanguagesList(getAvailableLanguages(resultProject.languages, languageData));
 
-    setLanguages(resultProject.languages);
+    setProjectLanguages(resultProject.languages);
 
     setLoading(false);
   };
@@ -200,12 +220,12 @@ export default function ProjectLanguages({
 
       <div className="modal-content">
         <div className="projectLangs">
-          {languages && languages.map(({
+          {projectLanguages && projectLanguages.map(({
             id,
             label,
             code,
             visible,
-          }: ILanguage) => (
+          }: IProjectLanguage) => (
             <div className={`projectLangs-item ${visible ? '' : 'isHidden'}`} key={id}>
               <div className="projectLangs-itemIcon" />
               <div className="projectLangs-itemTitle">
@@ -243,10 +263,10 @@ export default function ProjectLanguages({
               </div>
             </div>
           ))}
-          {(isQuickAddVisible && fullLanguagesList.length > 0) && (
+          {(isQuickAddVisible && availableLanguagesList && availableLanguagesList.length > 0) && (
             <div className="projectLangs-quickControl">
               <AddLanguageControl
-                fullLanguagesList={fullLanguagesList}
+                fullLanguagesList={availableLanguagesList as ILanguage[]}
                 chipsSelectable={false}
                 onSelectedLanguagesChange={handleSelectedLanguagesChange}
               />

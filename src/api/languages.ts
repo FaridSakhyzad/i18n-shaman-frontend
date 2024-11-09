@@ -1,4 +1,4 @@
-import { ILanguage, IProject, IProjectUpdateError } from 'interfaces';
+import { IProjectLanguage, IProject, IProjectUpdateError } from 'interfaces';
 
 import { apiClient } from './client';
 
@@ -21,9 +21,17 @@ export const addLanguage = async ({
   baseLanguage,
 });
 
+export const getAppLanguagesData = async () => {
+  try {
+    return (await apiClient.get('/getAppLanguagesData')).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
 interface IUpdateMultipleLanguages {
   projectId: string,
-  languages: ILanguage[],
+  languages: IProjectLanguage[],
 }
 
 export const addMultipleLanguages = async (data: IUpdateMultipleLanguages) => {
@@ -34,7 +42,7 @@ export const addMultipleLanguages = async (data: IUpdateMultipleLanguages) => {
   }
 };
 
-export interface IUpdateLanguage extends ILanguage {
+export interface IUpdateLanguage extends IProjectLanguage {
   projectId: string
 }
 
@@ -70,6 +78,14 @@ export const setLanguageVisibility = async (projectId: string, languageId: strin
 export const deleteLanguage = async (projectId: string, languageId: string): Promise<IProject | IProjectUpdateError> => {
   try {
     return (await apiClient.delete(`/deleteLanguage?projectId=${projectId}&languageId=${languageId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const addMultipleRawLanguages = async (data: any[]) => {
+  try {
+    return (await apiClient.post('/addMultipleRawLanguages', data)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

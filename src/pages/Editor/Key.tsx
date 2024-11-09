@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react';
-import { IKeyValue, ILanguage } from 'interfaces';
+import { IKeyValue, IProjectLanguage } from 'interfaces';
 import { updateKey } from 'api/projects';
 
 import './Key.scss';
@@ -8,7 +8,7 @@ interface IProps {
   id: string;
   label: string;
   values: [IKeyValue],
-  languages: [ILanguage];
+  languages: [IProjectLanguage];
   description: string;
   onKeyNameClick?: (keyId: string) => void
   onLanguageClick?: (languageId: string) => void
@@ -116,7 +116,7 @@ export default function Key(props: IProps) {
         <button type="button" className="keyName" onClick={handleKeyNameClick} title={description}>{label}</button>
       </div>
       <div className="keyContent">
-        {languages && languages.map((language: ILanguage, idx) => {
+        {languages && languages.map((language: IProjectLanguage, idx) => {
           if (!language.visible) {
             return null;
           }

@@ -22,7 +22,10 @@ export interface IKeyUpdateError extends IError {}
 export interface ILanguage {
   id: string,
   label: string,
-  code: string,
+  code: string
+}
+
+export interface IProjectLanguage extends ILanguage {
   baseLanguage: boolean,
   visible: boolean,
   customCodeEnabled?: boolean,
@@ -36,11 +39,11 @@ export interface IProject {
   projectId: string;
   userId: string;
   keys: [IKey];
-  languages: [ILanguage];
+  languages: [IProjectLanguage];
 }
 
 export interface IProjectUpdateError extends IError {}
 
 export interface IUserLanguagesMapItem {
-  [key: string]: ILanguage;
+  [key: string]: IProjectLanguage;
 }

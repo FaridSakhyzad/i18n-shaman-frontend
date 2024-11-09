@@ -117,10 +117,6 @@ export default function Editor() {
     setIsEditKeyModalVisible(true);
   };
 
-  const handleImportClick = () => {
-    console.log('IMPORT');
-  };
-
   const handleExportClick = async () => {
     if (!project) {
       return;
