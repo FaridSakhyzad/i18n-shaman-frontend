@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import Modal from 'components/Modal';
-import { addProjectKey } from 'api/projects';
+import { createProjectKey } from 'api/projects';
 import { IKeyValue, IProject } from 'interfaces';
 
 import {
@@ -114,20 +114,26 @@ export default function CreateKey({
 
     const newValues: IKeyValue[] = [];
 
+    const newKeyId = Math.random().toString(16).substring(2)
+
     Object.keys(keyValues).forEach((key) => {
       newValues.push({
         value: keyValues[key],
         languageId: key,
+        keyId: newKeyId,
+        projectId,
       });
     });
 
-    const result = await addProjectKey({
+    const result = await createProjectKey({
       projectId,
-      id: Math.random().toString(16).substring(2),
+      id: newKeyId,
       label: keyName,
       description: keyDescription,
       values: newValues,
     });
+
+    console.log('create project key', result);
 
     setLoading(false);
 

@@ -7,13 +7,17 @@ export interface IError {
 export interface IKeyValue {
   languageId: string;
   value: string;
+  keyId: string;
+  projectId: string;
 }
 
 export interface IKey {
   projectId: string;
   id: string;
   label: string;
-  values: [IKeyValue];
+  values: {
+    [key: string]: IKeyValue;
+  };
   description: string;
 }
 
@@ -39,6 +43,7 @@ export interface IProject {
   projectId: string;
   userId: string;
   keys: [IKey];
+  values: any;
   languages: [IProjectLanguage];
 }
 

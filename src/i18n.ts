@@ -5,11 +5,21 @@ const resources = {
   en: {
     translation: {
       'Welcome to React': 'Welcome to React and react-i18next',
+      key1: 'EN LOCAL | KEY 1 Value',
+      key2: {
+        key2_inner_key1: 'EN LOCAL | KEY 2 inner Key 1 Value',
+      },
+      'key3.dotted.name': 'EN LOCAL | KEY 3 Dotted Key Value',
     },
   },
   fr: {
     translation: {
       'Welcome to React': 'Bienvenue à React et react-i18next',
+      key1: 'FR LOCAL | KEY 1 Value',
+      key2: {
+        key2_inner_key1: 'FR LOCAL | KEY 2 inner Key 1 Value',
+      },
+      'key3.dotted.name': 'FR LOCAL | KEY 3 Dotted Key Value',
     },
   },
 };

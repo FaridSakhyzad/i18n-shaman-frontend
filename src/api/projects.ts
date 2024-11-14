@@ -55,9 +55,9 @@ interface IAddKey {
   values: IKeyValue[]
 }
 
-export const addProjectKey = async ({
+export const createProjectKey = async ({
   projectId, id, label, values, description,
-}: IAddKey) => apiClient.post('/addProjectKey', {
+}: IAddKey) => apiClient.post('/createProjectKey', {
   projectId,
   id,
   label,
@@ -67,6 +67,7 @@ export const addProjectKey = async ({
 
 interface IUpdateKey {
   id: string;
+  userId?: string;
   label: string;
   values: IKeyValue[];
   description: string;
@@ -74,12 +75,14 @@ interface IUpdateKey {
 
 export const updateKey = async ({
   id,
+  userId,
   label,
   values,
   description,
 }: IUpdateKey): Promise<IKey | IKeyUpdateError> => {
   return apiClient.post('/updateKey', {
     id,
+    userId,
     label,
     values,
     description,
@@ -98,4 +101,4 @@ export const importDataToProject = async (data: any) => {
   } catch (error: any) {
     return error.response && error.response.data;
   }
-}
+};

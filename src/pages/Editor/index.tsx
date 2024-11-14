@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { changeLanguage } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
-
 import { IKey, IProject } from 'interfaces';
-
 import { exportProjectToJson, getUserProjectsById, importDataToProject } from 'api/projects';
 
 import ProjectLanguages from 'components/ProjectLanguages';
@@ -14,7 +14,6 @@ import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
 import EditKey from 'components/EditKey';
 import EditProjectLanguage from 'components/EditProjectLanguage';
-
 import Key from './Key';
 
 import './Editor.scss';
@@ -25,6 +24,8 @@ interface IProjectsMenuCoords {
 }
 
 export default function Editor() {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch<AppDispatch>();
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
@@ -55,6 +56,8 @@ export default function Editor() {
     } else {
       setProject(result);
     }
+
+    console.log('result', result);
 
     setLoading(false);
   };
@@ -172,13 +175,24 @@ export default function Editor() {
     const result = await importDataToProject(formData);
 
     console.log('result', result);
-  }
+  };
+
+  const handlechangeLanguageClick = () => {
+    changeLanguage('fr');
+  };
 
   return (
     <div className="container">
+      <h1>{t('Welcome to React')}</h1>
+      <h1>{t('key1')}</h1>
+      <h1>{t('key2.key2_inner_key1')}</h1>
+      <h1>{t('key3.dotted.name')}</h1>
+
       <div className="header">
+        <button type="button" onClick={handlechangeLanguageClick}>Change language</button>
+
         <span className="button primary export">
-          <input type="file" onChange={handleExportFieldChange} accept="application/json" multiple />
+          <input type="file" onChange={handleExportFieldChange} accept="application/json" multiple/>
           Import
         </span>
         <button type="button" className="button primary" onClick={handleExportClick}>Export</button>
@@ -187,20 +201,31 @@ export default function Editor() {
       {isAddLanguageModalVisible && (
         <AddProjectLanguage
           projectId={currentProjectId}
-          onClose={() => { setAddLanguageModalVisible(false); }}
-          onCancel={() => { setAddLanguageModalVisible(false); }}
-          onConfirm={() => { setAddLanguageModalVisible(false); }}
+          onClose={() => {
+            setAddLanguageModalVisible(false);
+          }}
+          onCancel={() => {
+            setAddLanguageModalVisible(false);
+          }}
+          onConfirm={() => {
+            setAddLanguageModalVisible(false);
+          }}
         />
       )}
 
       {isLanguagesModalVisible && (
         <ProjectLanguages
           project={project}
-          onHideAll={() => {}}
-          onHide={() => {}}
+          onHideAll={() => {
+          }}
+          onHide={() => {
+          }}
           onEdit={onLanguageEdit}
-          onDelete={() => {}}
-          onClose={() => { setIsLanguagesModalVisible(false); }}
+          onDelete={() => {
+          }}
+          onClose={() => {
+            setIsLanguagesModalVisible(false);
+          }}
         />
       )}
 
@@ -208,9 +233,15 @@ export default function Editor() {
         <EditProjectLanguage
           projectId={currentProjectId}
           languageId={inEditLanguageId as string}
-          onClose={() => { setIsLanguageEditModalVisible(false); }}
-          onCancel={() => { setIsLanguageEditModalVisible(false); }}
-          onSave={() => { setIsLanguageEditModalVisible(false); }}
+          onClose={() => {
+            setIsLanguageEditModalVisible(false);
+          }}
+          onCancel={() => {
+            setIsLanguageEditModalVisible(false);
+          }}
+          onSave={() => {
+            setIsLanguageEditModalVisible(false);
+          }}
         />
       )}
 
@@ -218,9 +249,15 @@ export default function Editor() {
         <CreateKey
           projectId={currentProjectId}
           project={project}
-          onClose={() => { setIsCreateKeyModalVisible(false); }}
-          onCancel={() => { setIsCreateKeyModalVisible(false); }}
-          onConfirm={() => { setIsCreateKeyModalVisible(false); }}
+          onClose={() => {
+            setIsCreateKeyModalVisible(false);
+          }}
+          onCancel={() => {
+            setIsCreateKeyModalVisible(false);
+          }}
+          onConfirm={() => {
+            setIsCreateKeyModalVisible(false);
+          }}
         />
       )}
 
@@ -228,9 +265,15 @@ export default function Editor() {
         <EditKey
           projectKey={inEditKey as IKey}
           project={project as IProject}
-          onClose={() => { setIsEditKeyModalVisible(false); }}
-          onCancel={() => { setIsEditKeyModalVisible(false); }}
-          onSave={() => { setIsEditKeyModalVisible(false); }}
+          onClose={() => {
+            setIsEditKeyModalVisible(false);
+          }}
+          onCancel={() => {
+            setIsEditKeyModalVisible(false);
+          }}
+          onSave={() => {
+            setIsEditKeyModalVisible(false);
+          }}
         />
       )}
 
@@ -263,7 +306,7 @@ export default function Editor() {
                   >
                     {projectName}
                   </Link>
-                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
+                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu"/>
                 </div>
               );
             })}
@@ -305,7 +348,8 @@ export default function Editor() {
             <Key
               id={key.id}
               label={key.label}
-              values={key.values}
+              projectId={project.projectId}
+              values={project.values ? project.values[key.id] : {}}
               languages={project.languages}
               description={key.description}
               onKeyNameClick={onKeyNameClick}

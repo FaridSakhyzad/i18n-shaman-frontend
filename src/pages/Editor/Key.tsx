@@ -1,21 +1,23 @@
 import React, { useState, Fragment } from 'react';
 import { IKeyValue, IProjectLanguage } from 'interfaces';
+import { useSelector } from 'react-redux';
+
 import { updateKey } from 'api/projects';
+import { IRootState } from 'store';
 
 import './Key.scss';
 
 interface IProps {
   id: string;
   label: string;
-  values: [IKeyValue],
-  languages: [IProjectLanguage];
+  values: {
+    [key: string]: IKeyValue;
+  },
+  projectId: string;
+  languages: IProjectLanguage[];
   description: string;
   onKeyNameClick?: (keyId: string) => void
   onLanguageClick?: (languageId: string) => void
-}
-
-interface IKeyValueMapItem extends IKeyValue {
-  index: number;
 }
 
 export default function Key(props: IProps) {
@@ -24,50 +26,27 @@ export default function Key(props: IProps) {
     label,
     languages,
     values: valuesFromProps,
+    projectId,
     description,
     onKeyNameClick = () => {},
     onLanguageClick = () => {},
   } = props;
 
-  const generateValuesMap = () => {
-    const valuesMap = {} as { [key: string]: IKeyValueMapItem };
-
-    for (let i = 0; i < valuesFromProps.length; i += 1) {
-      if (valuesFromProps[i]) {
-        valuesMap[valuesFromProps[i].languageId] = {
-          ...valuesFromProps[i],
-          index: i,
-        };
-      }
-    }
-
-    return valuesMap;
-  };
-
   const [loading, setLoading] = useState(false);
-  const [values, setValues] = useState(generateValuesMap());
+  const [values, setValues] = useState(valuesFromProps);
   const [editValueId, setEditValueId] = useState('');
 
-  const getValuesArray = () => {
-    const valuesArray = [] as IKeyValueMapItem[];
+  const { id: userId } = useSelector((state: IRootState) => state.user);
 
-    Object.keys(values).forEach((key) => {
-      const { index } = values[key];
-
-      valuesArray[index] = values[key];
-    });
-
-    return valuesArray;
-  };
-
-  const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>, valueLanguageId: string, idx: number) => {
+  const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>, valueLanguageId: string) => {
     if (values[valueLanguageId] && values[valueLanguageId].value) {
       values[valueLanguageId].value = value;
     } else {
       values[valueLanguageId] = {
-        index: idx,
         languageId: valueLanguageId,
         value,
+        keyId: id,
+        projectId,
       };
     }
 
@@ -77,14 +56,15 @@ export default function Key(props: IProps) {
   const handleValueSave = async () => {
     setLoading(true);
 
+    const preparedValues = Object.entries(values).map(([_key, keyValue]) => keyValue);
+
     const result = await updateKey({
       id,
       label,
-      values: getValuesArray(),
+      userId: userId as string,
+      values: preparedValues,
       description,
     });
-
-    console.log('result', result);
 
     setEditValueId('');
     setLoading(false);
@@ -141,7 +121,7 @@ export default function Key(props: IProps) {
                       <textarea
                         className="textarea keyEdit-valueField"
                         value={values && values[language.id] && values[language.id].value}
-                        onChange={(e) => handleValueChange(e, language.id, idx)}
+                        onChange={(e) => handleValueChange(e, language.id)}
                       />
                       <span className="keyEdit-valueSymbolsCount">1024</span>
                     </div>

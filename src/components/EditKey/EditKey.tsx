@@ -1,6 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+
+import { IRootState } from 'store';
+
 import Modal from 'components/Modal';
-import { IKey, IKeyUpdateError, IProject } from '../../interfaces';
+import {
+  IKey,
+  IKeyUpdateError,
+  IKeyValue,
+  IProject,
+} from 'interfaces';
+
 import { validateKeyName, validationErrors } from '../../utils/Validators';
 import { updateKey } from '../../api/projects';
 
@@ -23,17 +33,9 @@ export default function EditKey({
 
   const [key, setKey] = useState<IKey>(projectKey);
 
-  const getInitialValues = () => {
-    const result = {} as { [key: string]: string };
+  const [keyValues, setValues] = useState<{ [key: string]: IKeyValue }>(project.values[projectKey.id]);
 
-    projectKey.values.forEach(({ languageId, value }) => {
-      result[languageId] = value;
-    });
-
-    return result;
-  };
-
-  const [keyValues, setValues] = useState<{ [key: string]: string }>(getInitialValues());
+  const { id: userId } = useSelector((state: IRootState) => state.user);
 
   const getInitialSelectedLanguageId = () => {
     if (!project) {
@@ -69,23 +71,18 @@ export default function EditKey({
   };
 
   const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = { [selectedLanguageId]: value };
+    if (keyValues[selectedLanguageId]) {
+      keyValues[selectedLanguageId].value = value;
+    } else {
+      keyValues[selectedLanguageId] = {
+        languageId: selectedLanguageId,
+        keyId: key.id,
+        projectId: project.projectId,
+        value,
+      };
+    }
 
-    setValues({
-      ...keyValues,
-      ...newValue,
-    });
-
-    const theKeyIndex = key.values.findIndex((keyItem) => keyItem.languageId === selectedLanguageId);
-
-    key.values[theKeyIndex] = {
-      ...key.values[theKeyIndex],
-      value,
-    };
-
-    setKey({
-      ...key,
-    });
+    setValues(structuredClone(keyValues));
   };
 
   const handleDescriptionChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -106,7 +103,13 @@ export default function EditKey({
   const handleSaveClick = async () => {
     setLoading(true);
 
-    const result: IKey | IKeyUpdateError = await updateKey(key);
+    const keyValuesPrepared = Object.entries(keyValues).map(([_key, keyValue]) => keyValue);
+
+    const result: IKey | IKeyUpdateError = await updateKey({
+      ...key,
+      userId: userId as string,
+      values: keyValuesPrepared,
+    });
 
     if ('error' in result) {
       alert(result.message);
@@ -191,7 +194,7 @@ export default function EditKey({
                     id="key-value"
                     className="textarea formControl-textarea createKey-valueTextarea"
                     onChange={handleValueChange}
-                    value={keyValues[selectedLanguageId]}
+                    value={keyValues[selectedLanguageId] ? keyValues[selectedLanguageId].value : ''}
                     key={selectedLanguageId}
                     placeholder="Please Enter Key Value..."
                   />
