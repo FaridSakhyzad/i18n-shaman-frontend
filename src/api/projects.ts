@@ -48,45 +48,47 @@ export const getUserProjectsById = async (projectId: string) => {
 };
 
 interface IAddKey {
-  projectId: string;
   id: string;
+  projectId: string;
+  parentId: string;
   label: string;
   description: string;
-  values: IKeyValue[]
+  values: IKeyValue[];
+  type: string;
 }
 
-export const createProjectKey = async ({
-  projectId, id, label, values, description,
-}: IAddKey) => apiClient.post('/createProjectKey', {
-  projectId,
-  id,
-  label,
-  values,
-  description,
-});
+export const createProjectKey = async (data: IAddKey) => apiClient.post('/createProjectKey', data);
 
 interface IUpdateKey {
   id: string;
   userId?: string;
+  projectId: string;
+  parentId: string;
   label: string;
   values: IKeyValue[];
   description: string;
 }
 
-export const updateKey = async ({
-  id,
-  userId,
-  label,
-  values,
-  description,
-}: IUpdateKey): Promise<IKey | IKeyUpdateError> => {
-  return apiClient.post('/updateKey', {
-    id,
-    userId,
-    label,
-    values,
-    description,
-  });
+export const updateKey = async (data: IUpdateKey): Promise<IKey | IKeyUpdateError> => {
+  try {
+    return (await apiClient.post('/updateKey', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+interface IGetComponentData {
+  projectId: string;
+  userId: string;
+  componentId: string;
+}
+
+export const getComponentData = async ({ userId, projectId, componentId }: IGetComponentData) => {
+  try {
+    return (await apiClient.get(`getComponentData?userId=${userId}&projectId=${projectId}&componentId=${componentId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
 };
 
 export const exportProjectToJson = async (projectId: string) => {

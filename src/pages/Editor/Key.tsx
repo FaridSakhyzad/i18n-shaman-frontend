@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useRef, Fragment, useEffect } from 'react';
 import { IKeyValue, IProjectLanguage } from 'interfaces';
 import { useSelector } from 'react-redux';
 
@@ -14,6 +14,7 @@ interface IProps {
     [key: string]: IKeyValue;
   },
   projectId: string;
+  parentId: string;
   languages: IProjectLanguage[];
   description: string;
   onKeyNameClick?: (keyId: string) => void
@@ -27,19 +28,22 @@ export default function Key(props: IProps) {
     languages,
     values: valuesFromProps,
     projectId,
+    parentId,
     description,
     onKeyNameClick = () => {},
     onLanguageClick = () => {},
   } = props;
 
   const [loading, setLoading] = useState(false);
-  const [values, setValues] = useState(valuesFromProps);
+  const [values, setValues] = useState(valuesFromProps || {});
   const [editValueId, setEditValueId] = useState('');
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
+  const keyEditValueFieldRef = useRef<HTMLTextAreaElement>(null);
+
   const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>, valueLanguageId: string) => {
-    if (values[valueLanguageId] && values[valueLanguageId].value) {
+    if (values && values[valueLanguageId] && values[valueLanguageId].value) {
       values[valueLanguageId].value = value;
     } else {
       values[valueLanguageId] = {
@@ -47,6 +51,7 @@ export default function Key(props: IProps) {
         value,
         keyId: id,
         projectId,
+        parentId,
       };
     }
 
@@ -61,10 +66,18 @@ export default function Key(props: IProps) {
     const result = await updateKey({
       id,
       label,
+      projectId,
+      parentId,
       userId: userId as string,
       values: preparedValues,
       description,
     });
+
+    if ('error' in result) {
+      alert(result.message);
+    } else {
+      setValues(result.values);
+    }
 
     setEditValueId('');
     setLoading(false);
@@ -74,6 +87,15 @@ export default function Key(props: IProps) {
     e.preventDefault();
     setEditValueId(languageId);
   };
+
+  useEffect(() => {
+    if (editValueId.length > 0 && keyEditValueFieldRef && keyEditValueFieldRef.current) {
+      keyEditValueFieldRef.current.focus();
+
+      const { length } = keyEditValueFieldRef.current.value;
+      keyEditValueFieldRef.current.setSelectionRange(length, length);
+    }
+  }, [editValueId]);
 
   const handleKeyNameClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -119,6 +141,7 @@ export default function Key(props: IProps) {
                     {loading && <div className="loading" />}
                     <div className="keyEdit-valueFieldBox">
                       <textarea
+                        ref={keyEditValueFieldRef}
                         className="textarea keyEdit-valueField"
                         value={values && values[language.id] && values[language.id].value}
                         onChange={(e) => handleValueChange(e, language.id)}

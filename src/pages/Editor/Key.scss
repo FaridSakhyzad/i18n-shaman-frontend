@@ -4,7 +4,28 @@
   background-color: #faf9fb;
   padding: 9px 30px;
   min-height: 48px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.keyHeader-expandIcon {
+  width: 12px;
+  height: 11px;
+  display: block;
+  background: url("../../assets/images/icon--key-name-arrow.svg") right center no-repeat;
+  cursor: pointer;
+  position: absolute;
+  top: 19px;
+  left: 16px;
+  transition: transform 0.2s ease;
+
+  &.expanded {
+    transform: rotate(90deg);
+  }
 }
 
 .keyName {

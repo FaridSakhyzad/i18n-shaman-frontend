@@ -9,6 +9,7 @@ export interface IKeyValue {
   value: string;
   keyId: string;
   projectId: string;
+  parentId: string;
 }
 
 export interface IKey {
@@ -19,6 +20,7 @@ export interface IKey {
     [key: string]: IKeyValue;
   };
   description: string;
+  type: string;
 }
 
 export interface IKeyUpdateError extends IError {}

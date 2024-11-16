@@ -114,7 +114,7 @@ export default function CreateKey({
 
     const newValues: IKeyValue[] = [];
 
-    const newKeyId = Math.random().toString(16).substring(2)
+    const newKeyId = Math.random().toString(16).substring(2);
 
     Object.keys(keyValues).forEach((key) => {
       newValues.push({
@@ -122,18 +122,19 @@ export default function CreateKey({
         languageId: key,
         keyId: newKeyId,
         projectId,
+        parentId: projectId,
       });
     });
 
     const result = await createProjectKey({
       projectId,
+      parentId: projectId,
       id: newKeyId,
       label: keyName,
       description: keyDescription,
       values: newValues,
+      type: 'string',
     });
-
-    console.log('create project key', result);
 
     setLoading(false);
 

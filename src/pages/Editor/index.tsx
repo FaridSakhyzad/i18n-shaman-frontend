@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeLanguage } from 'i18next';
@@ -15,8 +15,11 @@ import CreateKey from 'components/CreateKey';
 import EditKey from 'components/EditKey';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import Key from './Key';
+import Folder from './Folder';
+import Component from './Component';
 
 import './Editor.scss';
+import ItemsList from './ItemsList';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -57,7 +60,7 @@ export default function Editor() {
       setProject(result);
     }
 
-    console.log('result', result);
+    console.log('project', result);
 
     setLoading(false);
   };
@@ -183,16 +186,20 @@ export default function Editor() {
 
   return (
     <div className="container">
-      <h1>{t('Welcome to React')}</h1>
-      <h1>{t('key1')}</h1>
-      <h1>{t('key2.key2_inner_key1')}</h1>
-      <h1>{t('key3.dotted.name')}</h1>
+      {/*
+        <h1>{t('Welcome to React')}</h1>
+        <h1>{t('key1')}</h1>
+        <h1>{t('key2.key2_inner_key1')}</h1>
+        <h1>{t('key3.dotted.name')}</h1>
+      */}
 
       <div className="header">
-        <button type="button" onClick={handlechangeLanguageClick}>Change language</button>
+        {/*
+          <button type="button" onClick={handlechangeLanguageClick}>Change language</button>
+        */}
 
         <span className="button primary export">
-          <input type="file" onChange={handleExportFieldChange} accept="application/json" multiple/>
+          <input type="file" onChange={handleExportFieldChange} accept="application/json" multiple />
           Import
         </span>
         <button type="button" className="button primary" onClick={handleExportClick}>Export</button>
@@ -342,21 +349,71 @@ export default function Editor() {
         </button>
       </section>
 
-      <section className="keysList">
-        {project && project.keys.map((key: IKey) => (
-          <div key={key.id}>
-            <Key
-              id={key.id}
-              label={key.label}
-              projectId={project.projectId}
-              values={project.values ? project.values[key.id] : {}}
-              languages={project.languages}
-              description={key.description}
-              onKeyNameClick={onKeyNameClick}
-              onLanguageClick={onLanguageClick}
-            />
-          </div>
-        ))}
+      {project && (
+        <ItemsList
+          keys={project.keys}
+          values={project.values}
+          parentId={project.projectId}
+          projectId={project.projectId}
+          languages={project.languages}
+        />
+      )}
+
+      <hr />
+
+      <section className="itemsList">
+        {project && project.keys.map((key: IKey) => {
+          if (key.type === 'string') {
+            return (
+              <Fragment key={key.id}>
+                <Key
+                  id={key.id}
+                  label={key.label}
+                  projectId={project.projectId}
+                  parentId={project.projectId}
+                  values={project.values ? project.values[key.id] : {}}
+                  languages={project.languages}
+                  description={key.description}
+                  onKeyNameClick={onKeyNameClick}
+                  onLanguageClick={onLanguageClick}
+                />
+              </Fragment>
+            );
+          }
+
+          if (key.type === 'component') {
+            return (
+              <Fragment key={key.id}>
+                <Component
+                  id={key.id}
+                  label={key.label}
+                  projectId={project.projectId}
+                  languages={project.languages}
+                  description={key.description}
+                  onKeyNameClick={onKeyNameClick}
+                  onLanguageClick={onLanguageClick}
+                />
+              </Fragment>
+            );
+          }
+
+          if (key.type === 'folder') {
+            return (
+              <Fragment key={key.id}>
+                <Folder
+                  id={key.id}
+                  label={key.label}
+                  projectId={project.projectId}
+                  languages={project.languages}
+                  description={key.description}
+                  onFolderNameClick={onKeyNameClick}
+                />
+              </Fragment>
+            );
+          }
+
+          return null;
+        })}
       </section>
     </div>
   );

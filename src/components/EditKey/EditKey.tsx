@@ -33,7 +33,7 @@ export default function EditKey({
 
   const [key, setKey] = useState<IKey>(projectKey);
 
-  const [keyValues, setValues] = useState<{ [key: string]: IKeyValue }>(project.values[projectKey.id]);
+  const [keyValues, setValues] = useState<{ [key: string]: IKeyValue }>(project.values ? project.values[projectKey.id] : {});
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
@@ -78,6 +78,7 @@ export default function EditKey({
         languageId: selectedLanguageId,
         keyId: key.id,
         projectId: project.projectId,
+        parentId: project.projectId,
         value,
       };
     }
@@ -107,6 +108,7 @@ export default function EditKey({
 
     const result: IKey | IKeyUpdateError = await updateKey({
       ...key,
+      parentId: project.projectId,
       userId: userId as string,
       values: keyValuesPrepared,
     });
