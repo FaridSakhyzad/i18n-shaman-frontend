@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { IRootState } from 'store';
@@ -12,10 +12,10 @@ import {
 } from 'interfaces';
 
 import { validateKeyName, validationErrors } from '../../utils/Validators';
-import { updateKey } from '../../api/projects';
+import { getComponentData, getKeyData, updateKey } from '../../api/projects';
 
 interface IProps {
-  projectKey: IKey;
+  keyId: string;
   project: IProject;
   onClose: () => void;
   onCancel: () => void;
@@ -23,19 +23,34 @@ interface IProps {
 }
 
 export default function EditKey({
-  projectKey,
+  keyId,
   project,
   onClose,
   onCancel,
   onSave,
 }: IProps) {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [key, setKey] = useState<IKey>(projectKey);
-
-  const [keyValues, setValues] = useState<{ [key: string]: IKeyValue }>(project.values ? project.values[projectKey.id] : {});
+  const [key, setKey] = useState<IKey>();
+  const [keyValues, setValues] = useState<{ [key: string]: IKeyValue }>({});
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
+
+  const fetchKeyData = async () => {
+    const keyData = await getKeyData({ userId: userId as string, projectId: project.projectId, keyId });
+
+    const { key = {}, values = {} } = keyData;
+
+    setKey(key);
+    setValues(values[keyId]);
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchKeyData();
+  }, []);
+
 
   const getInitialSelectedLanguageId = () => {
     if (!project) {
@@ -52,6 +67,10 @@ export default function EditKey({
   const [keyNameError, setKeyNameError] = useState<string | null>('');
 
   const handleNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    if (!key) {
+      return;
+    }
+
     setKeyNameError(null);
 
     const validationResult = validateKeyName(value, key.id, project.keys);
@@ -63,7 +82,7 @@ export default function EditKey({
     setKey({
       ...key,
       label: value,
-    });
+    } as IKey);
   };
 
   const handleSelectedLanguageChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
@@ -71,6 +90,10 @@ export default function EditKey({
   };
 
   const handleValueChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (!key) {
+      return;
+    }
+
     if (keyValues[selectedLanguageId]) {
       keyValues[selectedLanguageId].value = value;
     } else {
@@ -90,7 +113,7 @@ export default function EditKey({
     setKey({
       ...key,
       description: value,
-    });
+    } as IKey);
   };
 
   const handleCloseButtonClick = () => {
@@ -102,9 +125,13 @@ export default function EditKey({
   };
 
   const handleSaveClick = async () => {
+    if (!key) {
+      return;
+    }
+
     setLoading(true);
 
-    const keyValuesPrepared = Object.entries(keyValues).map(([_key, keyValue]) => keyValue);
+    const keyValuesPrepared = keyValues ? Object.entries(keyValues).map(([_key, keyValue]) => keyValue) : [];
 
     const result: IKey | IKeyUpdateError = await updateKey({
       ...key,
@@ -122,6 +149,10 @@ export default function EditKey({
     onSave();
   };
 
+  if (!key) {
+    return null
+  }
+
   return (
     <Modal
       onEscapeKeyPress={onClose}
@@ -132,7 +163,7 @@ export default function EditKey({
       )}
 
       <div className="modal-header">
-        <h4 className="modal-title">Edit Key {projectKey.label}</h4>
+        <h4 className="modal-title">Edit Key {key.label}</h4>
         <button
           type="button"
           className="modal-closeButton"
@@ -168,30 +199,31 @@ export default function EditKey({
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="formControl">
-              <div className="formControl-header">
-                <label className="formControl-label" htmlFor="key-value">Value for</label>
+          {keyValues && (
+            <div className="form-row">
+              <div className="formControl">
+                <div className="formControl-header">
+                  <label className="formControl-label" htmlFor="key-value">Value for</label>
 
-                {(project && project.languages) && (
-                  <select
-                    className="select createKey-languageSelect"
-                    onChange={handleSelectedLanguageChange}
-                    value={selectedLanguageId}
-                  >
-                    {project.languages.map((language) => (
-                      <option
-                        key={language.id}
-                        value={language.id}
-                      >
-                        {language.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-              <div className="formControl-body">
-                <div className="formControl-wrapper">
+                  {(project && project.languages) && (
+                    <select
+                      className="select createKey-languageSelect"
+                      onChange={handleSelectedLanguageChange}
+                      value={selectedLanguageId}
+                    >
+                      {project.languages.map((language) => (
+                        <option
+                          key={language.id}
+                          value={language.id}
+                        >
+                          {language.label}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+                <div className="formControl-body">
+                  <div className="formControl-wrapper">
                   <textarea
                     id="key-value"
                     className="textarea formControl-textarea createKey-valueTextarea"
@@ -200,10 +232,11 @@ export default function EditKey({
                     key={selectedLanguageId}
                     placeholder="Please Enter Key Value..."
                   />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="form-row">
             <div className="formControl">

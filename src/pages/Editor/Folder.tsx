@@ -5,7 +5,7 @@ import { IRootState } from 'store';
 import { getComponentData } from 'api/projects';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 
-import Key from './Key';
+import ItemsList from './ItemsList';
 
 import './Key.scss';
 import './Folder.scss';
@@ -56,23 +56,23 @@ export default function Component({
     <section className="key">
       <div className="keyHeader">
         <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
-        <button type="button" className="folderName" onClick={handleExpandIconClick} title={description}>{label}</button>
+        <button
+          type="button"
+          className="folderName"
+          title={description}
+          data-click-target="keyName"
+          data-key-id={id}
+        >{label}</button>
       </div>
       {(keys.length > 0 && isExpanded) && (
         <div className="folderContent">
-          {keys.map((key: IKey) => (
-            <Fragment key={key.id}>
-              <Key
-                id={key.id}
-                label={key.label}
-                projectId={projectId}
-                parentId={id}
-                values={keyValues && keyValues[key.id]}
-                languages={languages}
-                description={key.description}
-              />
-            </Fragment>
-          ))}
+          <ItemsList
+            keys={keys}
+            values={keyValues}
+            parentId={id}
+            projectId={projectId}
+            languages={languages}
+          />
         </div>
       )}
     </section>

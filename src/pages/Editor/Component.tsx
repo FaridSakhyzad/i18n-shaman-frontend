@@ -9,6 +9,7 @@ import Key from './Key';
 
 import './Key.scss';
 import './Component.scss';
+import ItemsList from './ItemsList';
 
 interface IProps {
   id: string;
@@ -60,25 +61,23 @@ export default function Component({
     <section className="key">
       <div className="keyHeader">
         <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
-        <button type="button" className="componentName" onClick={handleExpandIconClick} title={description}>{label}</button>
+        <button
+          type="button"
+          className="componentName"
+          title={description}
+          data-click-target="keyName"
+          data-key-id={id}
+        >{label}</button>
       </div>
       {(keys.length > 0 && isExpanded) && (
         <div className="componentContent">
-          {keys.map((key: IKey) => (
-            <Fragment key={key.id}>
-              <Key
-                id={key.id}
-                label={key.label}
-                projectId={projectId}
-                parentId={id}
-                values={keyValues && keyValues[key.id]}
-                languages={languages}
-                description={key.description}
-                onKeyNameClick={onKeyNameClick}
-                onLanguageClick={onLanguageClick}
-              />
-            </Fragment>
-          ))}
+          <ItemsList
+            keys={keys}
+            values={keyValues}
+            parentId={id}
+            projectId={projectId}
+            languages={languages}
+          />
         </div>
       )}
     </section>

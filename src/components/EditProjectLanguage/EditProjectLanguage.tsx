@@ -141,7 +141,7 @@ export default function EditProjectLanguage({
                     id="custom_code"
                     className="input formControl-input"
                     disabled={!languageInEdit.customCodeEnabled}
-                    value={languageInEdit.customCode || languageInEdit.code}
+                    value={languageInEdit.customCodeEnabled ? languageInEdit.customCode : languageInEdit.code}
                     onChange={handleCustomCodeChange}
                   />
                 </div>
@@ -170,7 +170,7 @@ export default function EditProjectLanguage({
                     id="custom_language"
                     className="input formControl-input"
                     disabled={!languageInEdit.customLabelEnabled}
-                    value={languageInEdit.customLabel || languageInEdit.label}
+                    value={languageInEdit.customLabelEnabled ? languageInEdit.customLabel : languageInEdit.label}
                     onChange={handleCustomLabelChange}
                   />
                 </div>

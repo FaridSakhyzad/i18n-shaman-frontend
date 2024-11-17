@@ -115,7 +115,13 @@ export default function Key(props: IProps) {
   return (
     <section className="key">
       <div className="keyHeader">
-        <button type="button" className="keyName" onClick={handleKeyNameClick} title={description}>{label}</button>
+        <button
+          type="button"
+          className="keyName"
+          title={description}
+          data-click-target="keyName"
+          data-key-id={id}
+        >{label}</button>
       </div>
       <div className="keyContent">
         {languages && languages.map((language: IProjectLanguage, idx) => {
@@ -126,7 +132,10 @@ export default function Key(props: IProps) {
           return (
             <Fragment key={language.id}>
               <div className="keyContent-lang">
-                <span onClick={() => handleLanguageNameClick(language.id)}>{language.label}</span>
+                <span
+                  data-click-target="keyLanguage"
+                  data-language-id={language.id}
+                >{language.customLabelEnabled ? language.customLabel : language.label}</span>
               </div>
 
               <div className="keyContent-value">

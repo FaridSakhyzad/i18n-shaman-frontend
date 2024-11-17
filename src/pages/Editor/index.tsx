@@ -60,8 +60,6 @@ export default function Editor() {
       setProject(result);
     }
 
-    console.log('project', result);
-
     setLoading(false);
   };
 
@@ -109,17 +107,11 @@ export default function Editor() {
     setIsLanguageEditModalVisible(true);
   };
 
-  const [inEditKey, setInEditKey] = useState<IKey | null>(null);
+  const [inEditKeyId, setInEditKeyId] = useState<string>();
   const [isEditKeyModalVisible, setIsEditKeyModalVisible] = useState<boolean>(false);
 
   const onKeyNameClick = (keyId: string) => {
-    if (!project) {
-      return;
-    }
-
-    const theKey = project.keys.find((key) => key.id === keyId) || null;
-
-    setInEditKey(theKey);
+    setInEditKeyId(keyId);
     setIsEditKeyModalVisible(true);
   };
 
@@ -180,9 +172,32 @@ export default function Editor() {
     console.log('result', result);
   };
 
-  const handlechangeLanguageClick = () => {
+  const handleChangeLanguageClick = () => {
     changeLanguage('fr');
   };
+
+  const handleItemsListClickEvent = (e: React.SyntheticEvent<HTMLElement>) => {
+    const { target } = e;
+
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    if (!target.hasAttribute('data-click-target')) {
+      return;
+    }
+
+    const { dataset } = target;
+    const { clickTarget: elName } = dataset;
+
+    if (elName === 'keyName') {
+      onKeyNameClick(dataset.keyId as string);
+    }
+
+    if (elName === 'keyLanguage') {
+      onLanguageClick(dataset.languageId as string);
+    }
+  }
 
   return (
     <div className="container">
@@ -195,7 +210,7 @@ export default function Editor() {
 
       <div className="header">
         {/*
-          <button type="button" onClick={handlechangeLanguageClick}>Change language</button>
+          <button type="button" onClick={handleChangeLanguageClick}>Change language</button>
         */}
 
         <span className="button primary export">
@@ -270,7 +285,7 @@ export default function Editor() {
 
       {isEditKeyModalVisible && (
         <EditKey
-          projectKey={inEditKey as IKey}
+          keyId={inEditKeyId as string}
           project={project as IProject}
           onClose={() => {
             setIsEditKeyModalVisible(false);
@@ -350,71 +365,16 @@ export default function Editor() {
       </section>
 
       {project && (
-        <ItemsList
-          keys={project.keys}
-          values={project.values}
-          parentId={project.projectId}
-          projectId={project.projectId}
-          languages={project.languages}
-        />
+        <div onClick={handleItemsListClickEvent}>
+          <ItemsList
+            keys={project.keys}
+            values={project.values}
+            parentId={project.projectId}
+            projectId={project.projectId}
+            languages={project.languages}
+          />
+        </div>
       )}
-
-      <hr />
-
-      <section className="itemsList">
-        {project && project.keys.map((key: IKey) => {
-          if (key.type === 'string') {
-            return (
-              <Fragment key={key.id}>
-                <Key
-                  id={key.id}
-                  label={key.label}
-                  projectId={project.projectId}
-                  parentId={project.projectId}
-                  values={project.values ? project.values[key.id] : {}}
-                  languages={project.languages}
-                  description={key.description}
-                  onKeyNameClick={onKeyNameClick}
-                  onLanguageClick={onLanguageClick}
-                />
-              </Fragment>
-            );
-          }
-
-          if (key.type === 'component') {
-            return (
-              <Fragment key={key.id}>
-                <Component
-                  id={key.id}
-                  label={key.label}
-                  projectId={project.projectId}
-                  languages={project.languages}
-                  description={key.description}
-                  onKeyNameClick={onKeyNameClick}
-                  onLanguageClick={onLanguageClick}
-                />
-              </Fragment>
-            );
-          }
-
-          if (key.type === 'folder') {
-            return (
-              <Fragment key={key.id}>
-                <Folder
-                  id={key.id}
-                  label={key.label}
-                  projectId={project.projectId}
-                  languages={project.languages}
-                  description={key.description}
-                  onFolderNameClick={onKeyNameClick}
-                />
-              </Fragment>
-            );
-          }
-
-          return null;
-        })}
-      </section>
     </div>
   );
 }

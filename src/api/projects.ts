@@ -91,6 +91,20 @@ export const getComponentData = async ({ userId, projectId, componentId }: IGetC
   }
 };
 
+interface IGetKeyData {
+  projectId: string;
+  userId: string;
+  keyId: string;
+}
+
+export const getKeyData = async ({ userId, projectId, keyId }: IGetKeyData) => {
+  try {
+    return (await apiClient.get(`getKeyData?userId=${userId}&projectId=${projectId}&keyId=${keyId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
 export const exportProjectToJson = async (projectId: string) => {
   return apiClient.get(`/exportProjectToJson?projectId=${projectId}`, {
     responseType: 'blob',
