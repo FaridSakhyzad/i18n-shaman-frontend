@@ -30,6 +30,16 @@
   line-height: 30px;
   display: block;
   height: 58px;
+  padding: 14px 50px 14px 18px;
+  color: var(--link-text-color-2);
+  margin-right: auto;
+}
+
+.editorHeader-currentProjectButton {
+  font-size: 30px;
+  line-height: 30px;
+  display: block;
+  height: 58px;
   border-radius: 15px;
   padding: 14px 50px 14px 18px;
   cursor: pointer;
@@ -137,6 +147,65 @@
   display: flex;
   align-items: center;
   position: relative;
+}
+
+.editorSearch {
+  width: 240px;
+  position: relative;
+}
+
+.editorSearch-input {
+  display: block;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  height: 29px;
+  padding-left: 32px;
+  padding-right: 72px;
+  background-image: url("../../assets/images/icon--search-1.svg");
+  background-repeat: no-repeat;
+  background-position: 9px center;
+}
+
+.editorSearch-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 3px;
+  z-index: 10;
+  align-items: center;
+  padding-right: 6px;
+}
+
+.editorSearch-control {
+  display: block;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background-color: #bfbfbf;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #388ff3;
+  }
+
+  &.isActive {
+    background-color: #5ca1e5;
+  }
+
+  &.editorSearch-control_casing {
+    background-image: url("../../assets/images/icon--casing.svg");
+  }
+
+  &.editorSearch-control_exactMatch {
+    background-image: url("../../assets/images/icon--exact-match.svg");
+  }
+
+  &.editorSearch-control_advanced {
+    background-image: url("../../assets/images/icon--settings.svg");
+  }
 }
 
 .editorToolbar-createKeyButton {

@@ -1,4 +1,5 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
+import { PROJECT_ITEMS_MAX_DEPTH } from 'constants/app';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 import Key from './Key';
 import Component from './Component';
@@ -14,6 +15,9 @@ interface IProps {
   parentId: string,
   projectId: string,
   languages: IProjectLanguage[];
+  path: string;
+  pathCache: string;
+  iteration?: number;
 }
 
 export default function ItemsList({
@@ -22,7 +26,14 @@ export default function ItemsList({
   parentId,
   projectId,
   languages,
+  path,
+  pathCache,
+  iteration = 0,
 }: IProps) {
+  if (iteration > PROJECT_ITEMS_MAX_DEPTH) {
+    return null;
+  }
+
   return (
     <section className="itemsList">
       {keys.map((key: IKey) => {
@@ -37,6 +48,8 @@ export default function ItemsList({
                 values={values ? values[key.id] : {}}
                 languages={languages}
                 description={key.description}
+                path={path}
+                pathCache={pathCache}
               />
             </Fragment>
           );
@@ -51,6 +64,9 @@ export default function ItemsList({
                 projectId={projectId}
                 languages={languages}
                 description={key.description}
+                iteration={iteration}
+                path={path}
+                pathCache={pathCache}
               />
             </Fragment>
           );
@@ -65,6 +81,9 @@ export default function ItemsList({
                 projectId={projectId}
                 languages={languages}
                 description={key.description}
+                iteration={iteration}
+                path={path}
+                pathCache={pathCache}
               />
             </Fragment>
           );

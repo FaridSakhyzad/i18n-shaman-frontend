@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
+import store from 'store';
 
 import {
   ILoginUserDto,
@@ -7,10 +10,12 @@ import {
   loginUser,
   registerUser,
 } from 'api/user';
+import { restoreSession } from 'store/user';
 
 import './Auth.scss';
 
 export default function Auth() {
+  const dispatch = useDispatch<typeof store.dispatch>();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState(0);
@@ -34,6 +39,7 @@ export default function Auth() {
     if (result.error) {
       alert(result.message);
     } else {
+      dispatch(restoreSession());
       navigate('/projects');
     }
   };
@@ -49,8 +55,6 @@ export default function Auth() {
     };
 
     const result = await registerUser(data);
-
-    console.log('register result', result);
 
     if (result.error) {
       alert(result.message);

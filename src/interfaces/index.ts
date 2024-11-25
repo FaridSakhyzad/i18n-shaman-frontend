@@ -10,6 +10,7 @@ export interface IKeyValue {
   keyId: string;
   projectId: string;
   parentId: string;
+  pathCache?: string;
 }
 
 export interface IKey {
@@ -21,6 +22,7 @@ export interface IKey {
   };
   description: string;
   type: string;
+  pathCache: string;
 }
 
 export interface IKeyUpdateError extends IError {}

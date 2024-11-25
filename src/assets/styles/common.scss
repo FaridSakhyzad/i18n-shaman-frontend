@@ -297,6 +297,31 @@
     }
   }
 
+  &.danger {
+    color: white;
+    background-image: linear-gradient(0deg, rgb(150,18,28) 0%, rgb(196,28,39) 55%, rgb(241,38,49) 100%);
+    box-shadow: 0 10px 20px 0 rgba(151, 18, 28, 0.5);
+
+    &:hover {
+      background-image: linear-gradient(0deg, rgb(138,10,20) 0%, rgb(183,18,28) 55%, rgb(227,25,35) 100%);
+    }
+
+    &:focus-visible {
+      outline: 1px solid #31b01e;
+      outline-offset: 2px;
+    }
+
+    &:active:not([disabled]) {
+      box-shadow: 0 5px 15px 0 rgba(151, 18, 28, 0.5);
+      transform: translateY(1px);
+    }
+
+    &[disabled] {
+      background-image: linear-gradient(0deg, rgb(89,216,79) 0%, rgb(105,229,94) 55%, rgb(121,242,109) 100%);
+      color: rgba(255 255 255 / 0.5);
+    }
+  }
+
   &.ghost {
     background-color: transparent;
     color: var(--link-text-color-1);

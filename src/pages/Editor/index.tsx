@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeLanguage } from 'i18next';
@@ -6,20 +6,27 @@ import { useTranslation } from 'react-i18next';
 
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
-import { IKey, IProject } from 'interfaces';
-import { exportProjectToJson, getUserProjectsById, importDataToProject } from 'api/projects';
+import { ROOT } from 'constants/app';
+import { IProject } from 'interfaces';
+import {
+  deleteProjectEntity,
+  exportProjectToJson,
+  getUserProjectsById,
+  importDataToProject,
+} from 'api/projects';
+
+import { debounce } from 'utils/utils';
 
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
 import EditKey from 'components/EditKey';
 import EditProjectLanguage from 'components/EditProjectLanguage';
-import Key from './Key';
-import Folder from './Folder';
-import Component from './Component';
+
+import ItemsList from './ItemsList';
 
 import './Editor.scss';
-import ItemsList from './ItemsList';
+import { search } from '../../api/search';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -39,6 +46,8 @@ export default function Editor() {
   const [project, setProject] = useState<IProject | null>(null);
 
   const [isCreateKeyModalVisible, setIsCreateKeyModalVisible] = useState<boolean>(false);
+  const [newEntityParentId, setNewEntityParentId] = useState<string>();
+  const [newEntityPath, setNewEntityPath] = useState<string>();
 
   const [isProjectsMenuVisible, setIsProjectsMenuVisible] = useState<boolean>(false);
   const [projectsMenuCoords, setProjectsMenuCoords] = useState<IProjectsMenuCoords>();
@@ -73,6 +82,8 @@ export default function Editor() {
   };
 
   const handleNewKeyClick = () => {
+    setNewEntityParentId(currentProjectId);
+    setNewEntityPath(ROOT);
     setIsCreateKeyModalVisible(true);
   };
 
@@ -176,6 +187,10 @@ export default function Editor() {
     changeLanguage('fr');
   };
 
+  const deleteEntity = async (id: string) => {
+    const result = await deleteProjectEntity(id);
+  };
+
   const handleItemsListClickEvent = (e: React.SyntheticEvent<HTMLElement>) => {
     const { target } = e;
 
@@ -197,7 +212,42 @@ export default function Editor() {
     if (elName === 'keyLanguage') {
       onLanguageClick(dataset.languageId as string);
     }
-  }
+
+    if (elName === 'newEntity') {
+      setNewEntityPath(dataset.parentPath as string);
+      setNewEntityParentId(dataset.parentId as string);
+      setIsCreateKeyModalVisible(true);
+    }
+
+    if (elName === 'deleteEntity') {
+      deleteEntity(dataset.id as string);
+    }
+  };
+
+  const [caseSensitive, setCaseSensitive] = useState<boolean>(false);
+  const [exactMatch, setExactMatch] = useState<boolean>(false);
+
+  const applySearchParams = async (value: string) => {
+    const searchResult = await search({
+      projectId: project?.projectId as string,
+      value: encodeURIComponent(value),
+      casing: caseSensitive,
+      exact: exactMatch,
+    });
+
+    console.log('searchResult');
+    console.log(searchResult);
+  };
+
+  const handleSearchQueryChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => applySearchParams(e.target.value), 1000);
+
+  const handleCasingClick = () => {
+    setCaseSensitive(!caseSensitive);
+  };
+
+  const handleExactMatchClick = () => {
+    setExactMatch(!exactMatch);
+  };
 
   return (
     <div className="container">
@@ -238,16 +288,11 @@ export default function Editor() {
       {isLanguagesModalVisible && (
         <ProjectLanguages
           project={project}
-          onHideAll={() => {
-          }}
-          onHide={() => {
-          }}
+          onHideAll={() => {}}
+          onHide={() => {}}
           onEdit={onLanguageEdit}
-          onDelete={() => {
-          }}
-          onClose={() => {
-            setIsLanguagesModalVisible(false);
-          }}
+          onDelete={() => {}}
+          onClose={() => { setIsLanguagesModalVisible(false); }}
         />
       )}
 
@@ -267,9 +312,11 @@ export default function Editor() {
         />
       )}
 
-      {isCreateKeyModalVisible && (
+      {isCreateKeyModalVisible && newEntityParentId && newEntityPath && (
         <CreateKey
           projectId={currentProjectId}
+          parentId={newEntityParentId}
+          entityPath={newEntityPath}
           project={project}
           onClose={() => {
             setIsCreateKeyModalVisible(false);
@@ -300,20 +347,26 @@ export default function Editor() {
       )}
 
       <div className="editorHeader">
-        <button
-          type="button"
-          className="buttonInline editorHeader-currentProject"
-          onClick={handleProjectNameClick}
-        >
-          {project?.projectName}
-        </button>
+        {projects && projects.length > 1 ? (
+          <button
+            type="button"
+            className="buttonInline editorHeader-currentProjectButton"
+            onClick={handleProjectNameClick}
+          >
+            {project?.projectName}
+          </button>
+        ) : (
+          <span className="buttonInline editorHeader-currentProject">
+            {project?.projectName}
+          </span>
+        )}
 
-        {(isProjectsMenuVisible && projectsMenuCoords) && (
+        {(isProjectsMenuVisible && projectsMenuCoords && projects && projects.length > 1) && (
           <div
             className="editorHeader-projectListMenu"
             style={{ top: projectsMenuCoords.top, left: projectsMenuCoords.left }}
           >
-            {projects && projects.map(({projectName, projectId}) => {
+            {projects.map(({ projectName, projectId }) => {
               if (projectId === currentProjectId) {
                 return null;
               }
@@ -355,6 +408,26 @@ export default function Editor() {
       </div>
 
       <section className="editorToolbar">
+        <div className="editorSearch">
+          <input
+            type="text"
+            className="input editorSearch-input"
+            placeholder="Search..."
+            onChange={handleSearchQueryChange}
+          />
+          <div className="editorSearch-controls">
+            <i
+              className={`editorSearch-control editorSearch-control_casing ${caseSensitive ? 'isActive' : ''}`}
+              onClick={handleCasingClick}
+            />
+            <i
+              className={`editorSearch-control editorSearch-control_exactMatch ${exactMatch ? 'isActive' : ''}`}
+              onClick={handleExactMatchClick}
+            />
+            <i className="editorSearch-control editorSearch-control_advanced" />
+          </div>
+        </div>
+
         <button
           type="button"
           className="button success editorToolbar-createKeyButton"
@@ -372,6 +445,8 @@ export default function Editor() {
             parentId={project.projectId}
             projectId={project.projectId}
             languages={project.languages}
+            path={ROOT}
+            pathCache={ROOT}
           />
         </div>
       )}

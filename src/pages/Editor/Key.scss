@@ -2,10 +2,11 @@
 
 .keyHeader {
   background-color: #faf9fb;
-  padding: 9px 30px;
+  padding: 9px 20px 9px 30px;
   min-height: 48px;
   margin-bottom: 1px;
   position: relative;
+  display: flex;
 
   &:last-child {
     margin-bottom: 0;

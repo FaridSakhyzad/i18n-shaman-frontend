@@ -1,4 +1,9 @@
-import { IKey, IKeyUpdateError, IKeyValue, IProject } from 'interfaces';
+import {
+  IKey,
+  IKeyUpdateError,
+  IKeyValue,
+  IProject,
+} from 'interfaces';
 import { apiClient } from './client';
 
 interface ICreateProject {
@@ -47,17 +52,26 @@ export const getUserProjectsById = async (projectId: string) => {
   }
 };
 
-interface IAddKey {
+interface ICreateEntity {
   id: string;
   projectId: string;
   parentId: string;
+  pathCache: string;
   label: string;
   description: string;
   values: IKeyValue[];
   type: string;
 }
 
-export const createProjectKey = async (data: IAddKey) => apiClient.post('/createProjectKey', data);
+export const createProjectEntity = async (data: ICreateEntity) => apiClient.post('/createProjectEntity', data);
+
+export const deleteProjectEntity = async (id: string) => {
+  try {
+    return (await apiClient.delete(`/deleteProjectEntity?id=${id}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
 
 interface IUpdateKey {
   id: string;

@@ -9,6 +9,7 @@ import ItemsList from './ItemsList';
 
 import './Key.scss';
 import './Folder.scss';
+import { ROOT } from '../../constants/app';
 
 interface IProps {
   id: string;
@@ -17,6 +18,9 @@ interface IProps {
   description: string;
   languages: IProjectLanguage[];
   onFolderNameClick?: (componentId: string) => void;
+  path: string;
+  pathCache: string;
+  iteration?: number;
 }
 
 export default function Component({
@@ -25,7 +29,9 @@ export default function Component({
   projectId,
   description,
   languages,
-  onFolderNameClick = () => {},
+  path,
+  pathCache,
+  iteration = 0,
 }: IProps) {
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
@@ -55,15 +61,35 @@ export default function Component({
   return (
     <section className="key">
       <div className="keyHeader">
-        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
+        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick}/>
         <button
           type="button"
           className="folderName"
           title={description}
           data-click-target="keyName"
           data-key-id={id}
-        >{label}</button>
+        >
+          {path !== ROOT ? `${path}/` : ''}{label}
+        </button>
+
+        <button
+          type="button"
+          className="button danger folderDelete"
+          data-click-target="deleteEntity"
+          data-id={id}
+        >
+          Delete
+        </button>
+        <button
+          type="button"
+          className="button success folderCreateNew"
+          data-click-target="newEntity"
+          data-parent-id={id}
+          data-parent-path={`${pathCache}/${id}`}
+        >New
+        </button>
       </div>
+
       {(keys.length > 0 && isExpanded) && (
         <div className="folderContent">
           <ItemsList
@@ -72,6 +98,9 @@ export default function Component({
             parentId={id}
             projectId={projectId}
             languages={languages}
+            iteration={1 + iteration}
+            path={`${path !== ROOT ? `${path}/` : ''}${label}`}
+            pathCache={`${pathCache}/${id}`}
           />
         </div>
       )}

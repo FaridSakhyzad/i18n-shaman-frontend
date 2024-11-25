@@ -6,6 +6,7 @@ import { updateKey } from 'api/projects';
 import { IRootState } from 'store';
 
 import './Key.scss';
+import { ROOT } from '../../constants/app';
 
 interface IProps {
   id: string;
@@ -19,6 +20,8 @@ interface IProps {
   description: string;
   onKeyNameClick?: (keyId: string) => void
   onLanguageClick?: (languageId: string) => void
+  path?: string;
+  pathCache: string;
 }
 
 export default function Key(props: IProps) {
@@ -32,6 +35,8 @@ export default function Key(props: IProps) {
     description,
     onKeyNameClick = () => {},
     onLanguageClick = () => {},
+    path = null,
+    pathCache
   } = props;
 
   const [loading, setLoading] = useState(false);
@@ -52,6 +57,7 @@ export default function Key(props: IProps) {
         keyId: id,
         projectId,
         parentId,
+        pathCache: `${pathCache}/${id}`,
       };
     }
 
@@ -121,7 +127,18 @@ export default function Key(props: IProps) {
           title={description}
           data-click-target="keyName"
           data-key-id={id}
-        >{label}</button>
+        >
+          {path !== ROOT ? `${path}/` : ''}{label}
+        </button>
+
+        <button
+          type="button"
+          className="button danger folderDelete"
+          data-click-target="deleteEntity"
+          data-id={id}
+        >
+          Delete
+        </button>
       </div>
       <div className="keyContent">
         {languages && languages.map((language: IProjectLanguage, idx) => {

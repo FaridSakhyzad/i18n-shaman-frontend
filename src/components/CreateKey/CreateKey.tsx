@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import Modal from 'components/Modal';
-import { createProjectKey } from 'api/projects';
+import { createProjectEntity } from 'api/projects';
 import { IKeyValue, IProject } from 'interfaces';
 
 import {
@@ -13,6 +13,8 @@ import './CreateKey.scss';
 
 interface IPros {
   projectId: string;
+  parentId: string;
+  entityPath: string;
   project: IProject | null;
   onCancel: () => void;
   onConfirm: () => void;
@@ -21,6 +23,8 @@ interface IPros {
 
 export default function CreateKey({
   projectId,
+  parentId,
+  entityPath,
   project,
   onCancel,
   onConfirm,
@@ -29,6 +33,7 @@ export default function CreateKey({
   const [loading, setLoading] = useState<boolean>(false);
 
   const [keyName, setName] = useState<string>('');
+  const [selectedEntityType, setSelectedEntityType] = useState<string>('string');
 
   const [keyValues, setValues] = useState<{ [key: string]: string }>({});
 
@@ -88,6 +93,10 @@ export default function CreateKey({
     setDescription(value);
   };
 
+  const handleEntityTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedEntityType(e.target.value);
+  };
+
   const handleCloseButtonClick = () => {
     onClose();
   };
@@ -122,18 +131,19 @@ export default function CreateKey({
         languageId: key,
         keyId: newKeyId,
         projectId,
-        parentId: projectId,
+        parentId,
       });
     });
 
-    const result = await createProjectKey({
+    const result = await createProjectEntity({
       projectId,
-      parentId: projectId,
+      parentId,
       id: newKeyId,
       label: keyName,
       description: keyDescription,
       values: newValues,
-      type: 'string',
+      type: selectedEntityType,
+      pathCache: entityPath
     });
 
     setLoading(false);
@@ -182,6 +192,26 @@ export default function CreateKey({
                   {(submitAttemptMade && keyNameError.length > 0) && (
                     <div className="formControl-error">{keyNameError}</div>
                   )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="formControl">
+              <div className="formControl-header">
+                <label className="formControl-label" htmlFor="key-name">Type</label>
+              </div>
+              <div className="formControl-body">
+                <div className="formControl-wrapper">
+                  <select
+                    className="select"
+                    onChange={handleEntityTypeChange}
+                  >
+                    <option value="string">String</option>
+                    <option value="folder">Folder</option>
+                    <option value="component">Component</option>
+                  </select>
                 </div>
               </div>
             </div>
