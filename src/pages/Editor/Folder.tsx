@@ -1,10 +1,11 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { IRootState } from 'store';
 import { getComponentData } from 'api/projects';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 
+// eslint-disable-next-line import/no-cycle
 import ItemsList from './ItemsList';
 
 import './Key.scss';
@@ -17,7 +18,6 @@ interface IProps {
   projectId: string;
   description: string;
   languages: IProjectLanguage[];
-  onFolderNameClick?: (componentId: string) => void;
   path: string;
   pathCache: string;
   iteration?: number;
@@ -69,7 +69,8 @@ export default function Component({
           data-click-target="keyName"
           data-key-id={id}
         >
-          {path !== ROOT ? `${path}/` : ''}{label}
+          {/* {path !== ROOT ? `${path}/` : ''}{label} */}
+          {label}
         </button>
 
         <button

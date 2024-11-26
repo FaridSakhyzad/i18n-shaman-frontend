@@ -69,7 +69,8 @@ export default function Component({
           data-click-target="keyName"
           data-key-id={id}
         >
-          {path !== ROOT ? `${path}/` : ''}{label}
+          {/* {path !== ROOT ? `${path}/` : ''}{label} */}
+          {label}
         </button>
         <button
           type="button"

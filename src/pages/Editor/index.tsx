@@ -230,7 +230,7 @@ export default function Editor() {
   const applySearchParams = async (value: string) => {
     const searchResult = await search({
       projectId: project?.projectId as string,
-      value: encodeURIComponent(value),
+      query: encodeURIComponent(value),
       casing: caseSensitive,
       exact: exactMatch,
     });

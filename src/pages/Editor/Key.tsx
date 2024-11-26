@@ -103,16 +103,6 @@ export default function Key(props: IProps) {
     }
   }, [editValueId]);
 
-  const handleKeyNameClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    onKeyNameClick(id);
-  };
-
-  const handleLanguageNameClick = (languageId: string) => {
-    onLanguageClick(languageId);
-  };
-
   const handleValueEditCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setEditValueId('');
@@ -128,7 +118,8 @@ export default function Key(props: IProps) {
           data-click-target="keyName"
           data-key-id={id}
         >
-          {path !== ROOT ? `${path}/` : ''}{label}
+          {/* {path !== ROOT ? `${path}/` : ''}{label} */}
+          {label}
         </button>
 
         <button
