@@ -18,8 +18,6 @@ interface IProps {
   parentId: string;
   languages: IProjectLanguage[];
   description: string;
-  onKeyNameClick?: (keyId: string) => void
-  onLanguageClick?: (languageId: string) => void
   path?: string;
   pathCache: string;
 }
@@ -33,17 +31,29 @@ export default function Key(props: IProps) {
     projectId,
     parentId,
     description,
-    onKeyNameClick = () => {},
-    onLanguageClick = () => {},
     path = null,
-    pathCache
+    pathCache,
   } = props;
 
-  const [loading, setLoading] = useState(false);
-  const [values, setValues] = useState(valuesFromProps || {});
-  const [editValueId, setEditValueId] = useState('');
-
+  const { keyValues: valuesFromState } = useSelector((state: IRootState) => state.search);
   const { id: userId } = useSelector((state: IRootState) => state.user);
+
+  const [loading, setLoading] = useState(false);
+
+  const getInitialValues = () => {
+    if (valuesFromState && valuesFromState[id]) {
+      return { ...valuesFromState[id] };
+    }
+
+    if (valuesFromProps) {
+      return valuesFromProps;
+    }
+
+    return {};
+  };
+
+  const [values, setValues] = useState(getInitialValues());
+  const [editValueId, setEditValueId] = useState('');
 
   const keyEditValueFieldRef = useRef<HTMLTextAreaElement>(null);
 

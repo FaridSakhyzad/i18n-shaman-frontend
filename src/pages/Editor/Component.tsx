@@ -16,6 +16,7 @@ interface IProps {
   id: string;
   label: string;
   projectId: string;
+  keys?: IKey[];
   description: string;
   languages: IProjectLanguage[];
   path: string;
@@ -27,6 +28,7 @@ export default function Component({
   id,
   label,
   projectId,
+  keys: initialKeys = [],
   description,
   languages,
   path,
@@ -36,7 +38,7 @@ export default function Component({
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [keys, setKeys] = useState<IKey[]>([]);
+  const [keys, setKeys] = useState<IKey[]>(initialKeys);
   const [keyValues, setKeyValues] = useState<{ [parentId: string]: { [languageId: string]: IKeyValue } }>({});
 
   const handleExpandIconClick = async () => {

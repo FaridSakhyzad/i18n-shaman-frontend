@@ -17,6 +17,7 @@ export interface IKey {
   projectId: string;
   id: string;
   label: string;
+  children?: IKey[];
   values: {
     [key: string]: IKeyValue;
   };

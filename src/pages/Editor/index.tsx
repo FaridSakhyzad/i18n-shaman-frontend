@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeLanguage } from 'i18next';
@@ -6,8 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
+import { setValues } from 'store/search';
 import { ROOT } from 'constants/app';
-import { IProject } from 'interfaces';
+import { IKey, IProject } from 'interfaces';
 import {
   deleteProjectEntity,
   exportProjectToJson,
@@ -224,19 +225,38 @@ export default function Editor() {
     }
   };
 
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [caseSensitive, setCaseSensitive] = useState<boolean>(false);
   const [exactMatch, setExactMatch] = useState<boolean>(false);
 
+  const [searchResultKeys, setSearchResultKeys] = useState<IKey[] | null>(null);
+
   const applySearchParams = async (value: string) => {
-    const searchResult = await search({
+    if (!value || value.length < 1) {
+      setSearchQuery(null);
+      setSearchResultKeys(null);
+      dispatch(setValues(null));
+
+      return;
+    }
+
+    setSearchQuery(value);
+
+    setSearchResultKeys(null);
+    dispatch(setValues(null));
+
+    const searchResultData = await search({
       projectId: project?.projectId as string,
       query: encodeURIComponent(value),
       casing: caseSensitive,
       exact: exactMatch,
     });
 
-    console.log('searchResult');
-    console.log(searchResult);
+    const { keys, values } = searchResultData;
+
+    setSearchResultKeys([...keys]);
+
+    dispatch(setValues({ ...values }));
   };
 
   const handleSearchQueryChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => applySearchParams(e.target.value), 1000);
@@ -437,7 +457,20 @@ export default function Editor() {
         </button>
       </section>
 
-      {project && (
+      {(project && searchResultKeys) && (
+        <div onClick={handleItemsListClickEvent}>
+          <ItemsList
+            keys={searchResultKeys}
+            parentId={project.projectId}
+            projectId={project.projectId}
+            languages={project.languages}
+            path={ROOT}
+            pathCache={ROOT}
+          />
+        </div>
+      )}
+
+      {project && !searchQuery && (!searchResultKeys || searchResultKeys.length === 0) && (
         <div onClick={handleItemsListClickEvent}>
           <ItemsList
             keys={project.keys}

@@ -2,12 +2,14 @@ import React, { Fragment } from 'react';
 import { PROJECT_ITEMS_MAX_DEPTH } from 'constants/app';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 import Key from './Key';
+// eslint-disable-next-line import/no-cycle
 import Component from './Component';
+// eslint-disable-next-line import/no-cycle
 import Folder from './Folder';
 
 interface IProps {
   keys: IKey[],
-  values: {
+  values?: {
     [ keyId: string ]: {
       [languageId: string]: IKeyValue;
     }
@@ -61,6 +63,7 @@ export default function ItemsList({
               <Component
                 id={key.id}
                 label={key.label}
+                keys={key.children || []}
                 projectId={projectId}
                 languages={languages}
                 description={key.description}
@@ -78,6 +81,7 @@ export default function ItemsList({
               <Folder
                 id={key.id}
                 label={key.label}
+                keys={key.children || []}
                 projectId={projectId}
                 languages={languages}
                 description={key.description}

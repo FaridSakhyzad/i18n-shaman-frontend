@@ -16,6 +16,7 @@ interface IProps {
   id: string;
   label: string;
   projectId: string;
+  keys?: IKey[];
   description: string;
   languages: IProjectLanguage[];
   path: string;
@@ -27,6 +28,7 @@ export default function Component({
   id,
   label,
   projectId,
+  keys: initialKeys = [],
   description,
   languages,
   path,
@@ -35,8 +37,8 @@ export default function Component({
 }: IProps) {
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [keys, setKeys] = useState<IKey[]>([]);
+  const [keys, setKeys] = useState<IKey[]>(initialKeys);
+  const [isExpanded, setIsExpanded] = useState(initialKeys.length > 0);
   const [keyValues, setKeyValues] = useState<{ [parentId: string]: { [languageId: string]: IKeyValue } }>({});
 
   const handleExpandIconClick = async () => {
@@ -61,7 +63,7 @@ export default function Component({
   return (
     <section className="key">
       <div className="keyHeader">
-        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick}/>
+        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
         <button
           type="button"
           className="folderName"

@@ -45,12 +45,11 @@ export default function EditKey({
     setValues(values[keyId]);
 
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     fetchKeyData();
   }, []);
-
 
   const getInitialSelectedLanguageId = () => {
     if (!project) {
