@@ -28,6 +28,7 @@ import ItemsList from './ItemsList';
 
 import './Editor.scss';
 import { search } from '../../api/search';
+import ImportLocales from '../../components/ImportLocales';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -269,6 +270,16 @@ export default function Editor() {
     setExactMatch(!exactMatch);
   };
 
+  const [isImportLocalesModalVisible, setImportLocalesModalVisible] = useState<boolean>(false );
+
+  const handleImportLocalesClick = () => {
+    setImportLocalesModalVisible(true);
+  };
+
+  const handleImportComponentsClick = () => {
+    console.log('handleImportComponentsClick');
+  };
+
   return (
     <div className="container">
       {/*
@@ -278,17 +289,14 @@ export default function Editor() {
         <h1>{t('key3.dotted.name')}</h1>
       */}
 
-      <div className="header">
-        {/*
-          <button type="button" onClick={handleChangeLanguageClick}>Change language</button>
-        */}
-
-        <span className="button primary export">
-          <input type="file" onChange={handleExportFieldChange} accept="application/json" multiple />
-          Import
-        </span>
-        <button type="button" className="button primary" onClick={handleExportClick}>Export</button>
-      </div>
+      {isImportLocalesModalVisible && (
+        <ImportLocales
+          projectId={currentProjectId}
+          onClose={() => setImportLocalesModalVisible(false)}
+          onCancel={() => setImportLocalesModalVisible(false)}
+          onConfirm={() => setImportLocalesModalVisible(false)}
+        />
+      )}
 
       {isAddLanguageModalVisible && (
         <AddProjectLanguage
@@ -366,6 +374,18 @@ export default function Editor() {
         />
       )}
 
+      <div className="header">
+        <button type="button" className="button primary" onClick={handleImportLocalesClick}>
+          Import Locales
+        </button>
+
+        <button type="button" className="button primary" onClick={handleImportComponentsClick}>
+          Import Components
+        </button>
+
+        <button type="button" className="button primary" onClick={handleExportClick}>Export</button>
+      </div>
+
       <div className="editorHeader">
         {projects && projects.length > 1 ? (
           <button
@@ -384,9 +404,9 @@ export default function Editor() {
         {(isProjectsMenuVisible && projectsMenuCoords && projects && projects.length > 1) && (
           <div
             className="editorHeader-projectListMenu"
-            style={{ top: projectsMenuCoords.top, left: projectsMenuCoords.left }}
+            style={{top: projectsMenuCoords.top, left: projectsMenuCoords.left}}
           >
-            {projects.map(({ projectName, projectId }) => {
+            {projects.map(({projectName, projectId}) => {
               if (projectId === currentProjectId) {
                 return null;
               }
@@ -444,7 +464,7 @@ export default function Editor() {
               className={`editorSearch-control editorSearch-control_exactMatch ${exactMatch ? 'isActive' : ''}`}
               onClick={handleExactMatchClick}
             />
-            <i className="editorSearch-control editorSearch-control_advanced" />
+            <i className="editorSearch-control editorSearch-control_advanced"/>
           </div>
         </div>
 

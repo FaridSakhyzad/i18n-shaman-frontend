@@ -18,6 +18,7 @@ export interface IKey {
   id: string;
   label: string;
   children?: IKey[];
+  parentId: string;
   values: {
     [key: string]: IKeyValue;
   };

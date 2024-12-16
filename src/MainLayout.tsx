@@ -4,6 +4,7 @@ import store, { IRootState } from 'store';
 import { restoreSession } from 'store/user';
 import { changeLanguage } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { getAppLanguages } from './store/app';
 
 interface IProps {
   children: React.ReactNode,
@@ -15,6 +16,10 @@ export default function MainLayout({ children }: IProps) {
   const { loading: userLoading, settings } = useSelector(({ user }: IRootState) => user);
 
   const dispatch = useDispatch<typeof store.dispatch>();
+
+  const getAppData = () => {
+    dispatch(getAppLanguages());
+  };
 
   const getUserInformation = () => {
     dispatch(restoreSession());
@@ -29,6 +34,7 @@ export default function MainLayout({ children }: IProps) {
   };
 
   useEffect(() => {
+    getAppData();
     getUserInformation();
     setUserLanguage();
   }, []);

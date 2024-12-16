@@ -72,7 +72,7 @@ export default function EditKey({
 
     setKeyNameError(null);
 
-    const validationResult = validateKeyName(value, key.id, project.keys);
+    const validationResult = validateKeyName(value, key.id, key.parentId, project.keys);
 
     if (validationResult.error) {
       setKeyNameError(validationErrors[validationResult.error]);

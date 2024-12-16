@@ -119,6 +119,19 @@ export const getKeyData = async ({ userId, projectId, keyId }: IGetKeyData) => {
   }
 };
 
+interface IGetMultipleEntitiesDataByParentId {
+  projectId: string;
+  parentId: string;
+}
+
+export const getMultipleEntitiesDataByParentId = async ({ projectId, parentId }: IGetMultipleEntitiesDataByParentId) => {
+  try {
+    return (await apiClient.get(`getMultipleEntitiesDataByParentId?projectId=${projectId}&parentId=${parentId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
 export const exportProjectToJson = async (projectId: string) => {
   return apiClient.get(`/exportProjectToJson?projectId=${projectId}`, {
     responseType: 'blob',

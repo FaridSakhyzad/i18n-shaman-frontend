@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 
 import Modal from 'components/Modal';
-import { createProjectEntity } from 'api/projects';
-import { IKeyValue, IProject } from 'interfaces';
+import { IRootState } from 'store';
+
+import { createProjectEntity, getMultipleEntitiesDataByParentId } from 'api/projects';
+import { IKey, IKeyValue, IProject } from 'interfaces';
 
 import {
   validateKeyName,
@@ -10,6 +12,7 @@ import {
 } from '../../utils/Validators';
 
 import './CreateKey.scss';
+import { useSelector } from 'react-redux';
 
 interface IPros {
   projectId: string;
@@ -32,8 +35,11 @@ export default function CreateKey({
 }: IPros) {
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { id: userId } = useSelector((state: IRootState) => state.user);
+
   const [keyName, setName] = useState<string>('');
   const [selectedEntityType, setSelectedEntityType] = useState<string>('string');
+  const [siblingKeys, setSiblingKeys] = useState<IKey[] | null>(null);
 
   const [keyValues, setValues] = useState<{ [key: string]: string }>({});
 
@@ -64,7 +70,7 @@ export default function CreateKey({
     const { value } = e.target;
 
     if (submitAttemptMade) {
-      const validationResult = validateKeyName(value, null, project.keys);
+      const validationResult = validateKeyName(value, null, parentId, siblingKeys as IKey[]);
 
       if (validationResult.error) {
         setKeyNameError(validationErrors[validationResult.error]);
@@ -111,15 +117,22 @@ export default function CreateKey({
     }
 
     setSubmitAttemptMade(true);
+    setLoading(true);
 
-    const validationResult = validateKeyName(keyName, null, project.keys);
+    const siblingKeysData = await getMultipleEntitiesDataByParentId({
+      projectId,
+      parentId,
+    });
+
+    setSiblingKeys(siblingKeysData);
+
+    const validationResult = validateKeyName(keyName, project.projectId, parentId, siblingKeysData);
 
     if (validationResult.error) {
+      setLoading(false);
       setKeyNameError(validationErrors[validationResult.error]);
       return;
     }
-
-    setLoading(true);
 
     const newValues: IKeyValue[] = [];
 

@@ -2,19 +2,31 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ILanguage } from 'interfaces';
 
 interface IProps {
+  id?: string;
+  selected?: ILanguage[];
+  multiple?: boolean;
+  classNames?: string;
   fullLanguagesList: ILanguage[];
   chipsSelectable?: boolean;
   onSelectedLanguagesChange?: (languages: ILanguage[]) => void;
   onCurrentLanguageIdxChange?: (index: number) => void;
+  onOpen?: (id: string) => void,
+  isOpen?: null | boolean,
 }
 
 export default function AddLanguageControl({
+  id = '',
+  selected = [],
+  multiple = true,
+  classNames = '',
   fullLanguagesList,
   chipsSelectable = true,
   onSelectedLanguagesChange = () => {},
   onCurrentLanguageIdxChange = () => {},
+  onOpen = () => {},
+  isOpen = null,
 }: IProps) {
-  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>(selected as ILanguage[]);
 
   const [languageSearchQuery, setLanguageSearchQuery] = useState<string>('');
 
@@ -25,6 +37,12 @@ export default function AddLanguageControl({
   }, [fullLanguagesList]);
 
   const [languagesPanelVisible, setLanguagesPanelVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isOpen !== null) {
+      setLanguagesPanelVisible(isOpen);
+    }
+  }, [isOpen]);
 
   const [currentLanguageIdx, setCurrentLanguageIdx] = useState<number>(-1);
 
@@ -57,6 +75,11 @@ export default function AddLanguageControl({
     if (languageSearchFieldRef.current) {
       languageSearchFieldRef.current.focus();
     }
+
+    if (!multiple) {
+      setLanguagesPanelVisible(true);
+      onOpen(id);
+    }
   };
 
   const handleLanguageSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +107,7 @@ export default function AddLanguageControl({
 
     setLanguages(filtered);
     setLanguagesPanelVisible(true);
+    onOpen(id);
   };
 
   const handleChipClick = (e: React.MouseEvent<HTMLSpanElement>, code: string) => {
@@ -135,6 +159,10 @@ export default function AddLanguageControl({
     }
 
     setLanguagesPanelVisible(newVisibilityState);
+
+    if (newVisibilityState) {
+      onOpen(id);
+    }
   };
 
   const handleLanguagesListBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -149,10 +177,16 @@ export default function AddLanguageControl({
 
     const langIndex: number = languagesMap[id];
 
-    selectedLanguages.push(fullLanguagesList[langIndex]);
+    let newSelectedLanguages = [...selectedLanguages];
 
-    setSelectedLanguages([...selectedLanguages]);
-    onSelectedLanguagesChange([...selectedLanguages]);
+    if (multiple) {
+      newSelectedLanguages.push(fullLanguagesList[langIndex]);
+    } else {
+      newSelectedLanguages = [fullLanguagesList[langIndex]];
+    }
+
+    setSelectedLanguages(newSelectedLanguages);
+    onSelectedLanguagesChange(newSelectedLanguages);
 
     setLanguagesPanelVisible(false);
     setLanguageSearchQuery('');
@@ -190,7 +224,7 @@ export default function AddLanguageControl({
   };
 
   return (
-    <div className="languagesSelector">
+    <div className={`languagesSelector ${classNames}`}>
       <label
         ref={languageSearchFieldWrapperRef}
         className="select languagesSelector-chipBox"
@@ -203,10 +237,12 @@ export default function AddLanguageControl({
             onClick={chipsSelectable ? (e) => handleChipClick(e, code) : () => {}}
           >
             {label}
-            <i // eslint-disable-line jsx-a11y/no-static-element-interactions
-              className="languagesSelector-chipDelete"
-              onClick={(e) => handleChipDelete(e, code)}
-            />
+            {multiple && (
+              <i // eslint-disable-line jsx-a11y/no-static-element-interactions
+                className="languagesSelector-chipDelete"
+                onClick={(e) => handleChipDelete(e, code)}
+              />
+            )}
           </span>
         ))}
         <input

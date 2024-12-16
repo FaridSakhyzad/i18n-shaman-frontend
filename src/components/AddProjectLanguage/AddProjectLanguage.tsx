@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+
 import Modal from 'components/Modal';
 
 import { ILanguage, IProjectLanguage, IUserLanguagesMapItem } from 'interfaces';
 import { addMultipleLanguages, getAppLanguagesData } from 'api/languages';
 import { getUserProjectsById } from 'api/projects';
 
-import './AddProjectLanguage.scss';
 import AddLanguageControl from './AddLanguageControl';
+
+import './AddProjectLanguage.scss';
 
 interface IProps {
   projectId: string;
@@ -40,9 +42,7 @@ export default function AddProjectLanguage({
         languagesMap[language.code] = language;
       });
 
-      const availableLanguages = languages.filter(({ code }: IProjectLanguage) => {
-        return languagesMap[code] === undefined;
-      });
+      const availableLanguages = languages.filter(({ code }: IProjectLanguage) => languagesMap[code] === undefined);
 
       setFullLanguagesList(availableLanguages);
     }
@@ -139,7 +139,7 @@ export default function AddProjectLanguage({
       customLabel: '',
       customCodeEnabled: false,
       customCode: '',
-      ...item
+      ...item,
     })));
   };
 
