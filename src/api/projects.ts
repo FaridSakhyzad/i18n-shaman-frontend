@@ -145,3 +145,11 @@ export const importDataToProject = async (data: any) => {
     return error.response && error.response.data;
   }
 };
+
+export const importComponentsToProject = async (data: any) => {
+  try {
+    return (await apiClient.post('importComponentsDataToProject', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};

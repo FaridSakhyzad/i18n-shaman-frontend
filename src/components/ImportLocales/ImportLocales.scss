@@ -1,12 +1,24 @@
+.modal_import {
+  width: 600px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  .modal-content {
+    flex: 1 1 0;
+  }
+}
+
 .importedFilesList {}
 
 .importedFilesList-upload {
   display: flex;
-  width: 101px;
+  min-width: 101px;
   align-items: center;
   justify-content: center;
-  padding: 7px 12px 5px 12px;
+  padding: 7px 18px 5px 18px;
   margin-top: 9px;
+  float: left;
 
   &:first-child {
     margin-top: 18px;
@@ -36,11 +48,11 @@
 .importedFilesList-itemName {
   font-size: 14px;
   line-height: 19px;
+  margin-right: auto;
 }
 
 .importedFilesList-itemLanguage {
   display: block;
-  margin-left: auto;
   min-width: 165px;
 
   .languagesSelector-chipBox {

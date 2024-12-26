@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeLanguage } from 'i18next';
@@ -15,20 +15,21 @@ import {
   getUserProjectsById,
   importDataToProject,
 } from 'api/projects';
-
-import { debounce } from 'utils/utils';
+import { search } from 'api/search';
 
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
 import EditKey from 'components/EditKey';
 import EditProjectLanguage from 'components/EditProjectLanguage';
+import ImportLocales from 'components/ImportLocales';
+import ImportComponents from 'components/ImportComponents';
+
+import { debounce } from 'utils/utils';
 
 import ItemsList from './ItemsList';
 
 import './Editor.scss';
-import { search } from '../../api/search';
-import ImportLocales from '../../components/ImportLocales';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -270,14 +271,16 @@ export default function Editor() {
     setExactMatch(!exactMatch);
   };
 
-  const [isImportLocalesModalVisible, setImportLocalesModalVisible] = useState<boolean>(false );
+  const [isImportLocalesModalVisible, setImportLocalesModalVisible] = useState<boolean>(false);
 
   const handleImportLocalesClick = () => {
     setImportLocalesModalVisible(true);
   };
 
+  const [isImportComponentsModalVisible, setImportComponentsModalVisible] = useState<boolean>(false);
+
   const handleImportComponentsClick = () => {
-    console.log('handleImportComponentsClick');
+    setImportComponentsModalVisible(true);
   };
 
   return (
@@ -295,6 +298,15 @@ export default function Editor() {
           onClose={() => setImportLocalesModalVisible(false)}
           onCancel={() => setImportLocalesModalVisible(false)}
           onConfirm={() => setImportLocalesModalVisible(false)}
+        />
+      )}
+
+      {isImportComponentsModalVisible && (
+        <ImportComponents
+          onClose={() => setImportComponentsModalVisible(false)}
+          onCancel={() => setImportComponentsModalVisible(false)}
+          onConfirm={() => setImportComponentsModalVisible(false)}
+          project={project}
         />
       )}
 

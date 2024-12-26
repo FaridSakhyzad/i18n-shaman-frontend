@@ -50,7 +50,7 @@ export interface IProject {
   userId: string;
   keys: [IKey];
   values: any;
-  languages: [IProjectLanguage];
+  languages: IProjectLanguage[];
 }
 
 export interface IProjectUpdateError extends IError {}

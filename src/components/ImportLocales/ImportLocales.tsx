@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import Modal from 'components/Modal';
 import { useSelector } from 'react-redux';
@@ -121,20 +121,14 @@ export default function ImportLocales(props: IProps) {
   };
 
   const handleImportButtonClick = async () => {
-    console.log('handleImportButtonClick');
-
-    // formDataInState.forEach((value, key) => {
-    //   console.log(`${key}: ${value}`);
-    //   console.log('-');
-    // });
+    setLoading(true);
 
     formDataInState.set('metaData', JSON.stringify(filesList));
 
     const result = await importDataToProject(formDataInState);
 
-    console.log('result', result);
-
-    //onConfirm();
+    setLoading(false);
+    onConfirm();
   };
 
   const [openDropdownId, setOpenDropdownId] = useState<string>('');
@@ -145,9 +139,8 @@ export default function ImportLocales(props: IProps) {
 
   return (
     <Modal
-      customClassNames="modal_withBottomButtons modal_addProjectLang"
-      onEscapeKeyPress={() => {
-      }}
+      customClassNames="modal_withBottomButtons modal_import"
+      onEscapeKeyPress={onClose}
     >
       <div className="modal-header">
         <h4 className="modal-title">Import Language Files to project</h4>
@@ -162,31 +155,29 @@ export default function ImportLocales(props: IProps) {
       <div className="modal-content">
         {filesList.length > 0 && (
           <div className="importedFilesList">
-            {filesList.map((file: IFileListItem, idx: number) => {
-              return (
-                <div
-                  key={`${file.code}-${file.format}`}
-                  className="importedFilesList-item"
-                >
-                  <div className="importedFilesList-itemName">{file.name}</div>
-                  <AddLanguageControl
-                    id={`${idx}-${file.code}-${file.format}`}
-                    selected={file.code ? [languagesMap[file.code]] : []}
-                    classNames={`importedFilesList-itemLanguage ${file.code ? 'importedFilesList-itemLanguage_preselected' : ''}`}
-                    multiple={false}
-                    fullLanguagesList={languages}
-                    chipsSelectable={false}
-                    onSelectedLanguagesChange={(data) => onSelectedLanguagesChange(data, idx)}
-                    onOpen={onDropDownOpen}
-                    isOpen={`${idx}-${file.code}-${file.format}` === openDropdownId}
-                  />
-                  <i
-                    className="importedFilesList-itemDelete"
-                    onClick={() => handleFileDeleteClick(idx)}
-                  />
-                </div>
-              );
-            })}
+            {filesList.map((file: IFileListItem, idx: number) => (
+              <div
+                key={`${file.code}-${file.format}-${idx}`} // eslint-disable-line react/no-array-index-key
+                className="importedFilesList-item"
+              >
+                <div className="importedFilesList-itemName">{file.name}</div>
+                <AddLanguageControl
+                  id={`${idx}-${file.code}-${file.format}`}
+                  selected={file.code ? [languagesMap[file.code]] : []}
+                  classNames={`importedFilesList-itemLanguage ${file.code ? 'importedFilesList-itemLanguage_preselected' : ''}`}
+                  multiple={false}
+                  fullLanguagesList={languages}
+                  chipsSelectable={false}
+                  onSelectedLanguagesChange={(data) => onSelectedLanguagesChange(data, idx)}
+                  onOpen={onDropDownOpen}
+                  isOpen={`${idx}-${file.code}-${file.format}` === openDropdownId}
+                />
+                <i
+                  className="importedFilesList-itemDelete"
+                  onClick={() => handleFileDeleteClick(idx)}
+                />
+              </div>
+            ))}
           </div>
         )}
 
