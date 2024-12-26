@@ -233,7 +233,7 @@ export default function Editor() {
 
   const [searchResultKeys, setSearchResultKeys] = useState<IKey[] | null>(null);
 
-  const applySearchParams = async (value: string) => {
+  const applySearchParams = async (value: string, caseSensitive: boolean, exactMatch: boolean) => {
     if (!value || value.length < 1) {
       setSearchQuery(null);
       setSearchResultKeys(null);
@@ -250,25 +250,27 @@ export default function Editor() {
     const searchResultData = await search({
       projectId: project?.projectId as string,
       query: encodeURIComponent(value),
-      casing: caseSensitive,
+      caseSensitive,
       exact: exactMatch,
     });
 
-    const { keys, values } = searchResultData;
+    const { keys = [], values } = searchResultData;
 
     setSearchResultKeys([...keys]);
 
     dispatch(setValues({ ...values }));
   };
 
-  const handleSearchQueryChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => applySearchParams(e.target.value), 1000);
+  const handleSearchQueryChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => applySearchParams(e.target.value, caseSensitive, exactMatch), 1000);
 
   const handleCasingClick = () => {
     setCaseSensitive(!caseSensitive);
+    applySearchParams(searchQuery || '', !caseSensitive, exactMatch);
   };
 
   const handleExactMatchClick = () => {
     setExactMatch(!exactMatch);
+    applySearchParams(searchQuery || '', caseSensitive, !exactMatch);
   };
 
   const [isImportLocalesModalVisible, setImportLocalesModalVisible] = useState<boolean>(false);
