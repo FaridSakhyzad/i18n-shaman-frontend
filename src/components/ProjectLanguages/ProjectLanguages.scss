@@ -180,4 +180,18 @@
   border-radius: 16px;
   align-self: flex-start;
   min-height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:before {
+    content: '';
+    display: block;
+    margin: auto;
+    width: 13px;
+    height: 13px;
+    background: url("../../assets/images/icon--checkbox-checkmark.svg") center left no-repeat;
+    background-size: contain;
+    filter: brightness(10);
+  }
 }

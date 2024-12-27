@@ -151,7 +151,31 @@ export default function ImportComponents(props: IProps) {
   };
 
   const handleFileDeleteClick = (idx: number) => {
-    console.log('handleFileDeleteClick', idx);
+    const newFilesList = [...filesList];
+
+    newFilesList.splice(idx, 1)
+
+    setFilesList(newFilesList);
+
+    if (!project) {
+      return;
+    }
+
+    const newFormData = new FormData();
+
+    newFormData.set('projectId', project.projectId as string);
+
+    for (let i = 0; i < formDataInState.getAll('files').length; i++) {
+      const file = formDataInState.getAll('files')[i];
+      const metaData = formDataInState.getAll('metaData')[i];
+
+      if (i !== idx) {
+        newFormData.append('files', file);
+        newFormData.append('metaData', metaData);
+      }
+    }
+
+    setFormDataInState(newFormData);
   };
 
   return (
