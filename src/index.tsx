@@ -64,11 +64,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <Provider store={appstore}>
-    <React.StrictMode>
-      <MainLayout>
-        <RouterProvider router={router} />
-      </MainLayout>
-    </React.StrictMode>
+    <MainLayout>
+      <RouterProvider router={router} />
+    </MainLayout>
   </Provider>,
 );
 

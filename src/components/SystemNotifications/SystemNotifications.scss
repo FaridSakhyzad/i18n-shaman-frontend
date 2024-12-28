@@ -1,0 +1,135 @@
+.systemNotificationWrapper {
+  position: fixed;
+  top: 0;
+  right: 320px;
+  z-index: 1000;
+  width: 0;
+}
+
+.systemNotification {
+  --main-background-color: rgb(146, 146, 150);
+  --duration: 5000ms;
+  --removeAnimationDuration: 500ms;
+  --removeAnimationDelay: calc(var(--duration) - var(--removeAnimationDuration));
+
+  width: 300px;
+  background-color: var(--main-background-color);
+  box-shadow: 0 10px 20px 0 rgba(var(--main-background-color), 0.5);
+  position: relative;
+  min-height: 55px;
+  border-radius: 15px 0 15px 15px;
+  color: white;
+  margin-top: 20px;
+  padding: 18px 20px 17px 20px;
+  translate: 0 0;
+  transition: translate 200ms ease;
+  height: var(--initial-height);
+  overflow: hidden;
+
+  @starting-style {
+    translate: 0 30px;
+  }
+
+  &.info {
+    --main-background-color: #6692f2;
+  }
+
+  &.attention {
+    --main-background-color: #e6c04e;
+  }
+
+  &.warning {
+    --main-background-color: #ed9b4d;
+  }
+
+  &.success {
+    --main-background-color: #52bf4d;
+  }
+
+  &.error {
+    --main-background-color: #eb5b55;
+  }
+}
+
+.systemNotification_fadeAway {
+  animation-name: removeNotification;
+  animation-duration: var(--removeAnimationDuration);
+  animation-delay: calc(var(--removeAnimationDelay));
+  animation-timing-function: ease;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes removeNotification {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  60% {
+    opacity: 0;
+    height: var(--initial-height);
+    min-height: 55px;
+    margin-top: 20px;
+    padding: 18px 20px 17px 20px;
+  }
+  100% {
+    opacity: 0;
+    height: 0;
+    min-height: 0;
+    margin-top: 0;
+    padding: 0;
+  }
+}
+
+.systemNotification-close {
+  display: block;
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  border: none;
+  top: 3px;
+  right: 3px;
+  width: 15px;
+  height: 15px;
+  background-color: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 11px;
+    height: 1px;
+    scale: 1.026 1.41;
+    background-color: white;
+  }
+
+  &:before {
+    rotate: -45deg;
+  }
+  &:after {
+    rotate: 45deg;
+  }
+
+  &:hover {
+    background-color: white;
+
+    &:before,
+    &:after {
+      background-color: var(--main-background-color);
+    }
+  }
+}
+
+.systemNotification-content {}

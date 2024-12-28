@@ -205,7 +205,7 @@ export default function ImportComponents(props: IProps) {
                       return (
                         // eslint-disable-next-line react/no-array-index-key
                         <td className="targetLanguageSelector-cell" key={`dummy-${cellIdx}`}>
-                          <span className="targetLanguageSelector-item targetLanguageSelector-item_dummy"/>
+                          <span className="targetLanguageSelector-item targetLanguageSelector-item_dummy" />
                         </td>
                       );
                     }

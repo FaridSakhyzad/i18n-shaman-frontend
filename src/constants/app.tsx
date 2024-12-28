@@ -6,4 +6,6 @@ export const PROJECT_ITEM_TYPES = {
   COMPONENT: 'component',
 };
 
-export const PROJECT_ITEMS_MAX_DEPTH = 16
+export const PROJECT_ITEMS_MAX_DEPTH = 16;
+
+export const DEFAULT_SYSTEM_MESSAGE_DURATION = 5000;

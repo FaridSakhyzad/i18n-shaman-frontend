@@ -5,6 +5,7 @@ import { restoreSession } from 'store/user';
 import { changeLanguage } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { getAppLanguages } from './store/app';
+import SystemNotifications from './components/SystemNotifications';
 
 interface IProps {
   children: React.ReactNode,
@@ -42,6 +43,7 @@ export default function MainLayout({ children }: IProps) {
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
+      <SystemNotifications />
       {userLoading ? (
         <div>Loading</div>
       ) : (

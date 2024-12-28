@@ -4,6 +4,7 @@ import appReducer from './app';
 import userReducer from './user';
 import projectsReducer from './projects';
 import searchReducer from './search';
+import systemNotificationsSlice from './systemNotifications';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     user: userReducer,
     projects: projectsReducer,
     search: searchReducer,
+    systemNotifications: systemNotificationsSlice,
   },
 });
 
