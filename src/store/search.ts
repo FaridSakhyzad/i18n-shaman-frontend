@@ -29,7 +29,6 @@ const searchSlice = createAppSlice({
   reducers: {
     setValues: (state, { payload }) => {
       if (payload) {
-        // @ts-ignore
         // eslint-disable-next-line no-param-reassign
         state.keyValues = payload;
       }

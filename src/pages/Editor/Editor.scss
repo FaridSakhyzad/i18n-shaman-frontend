@@ -218,3 +218,30 @@
   flex-direction: column;
   gap: 3px;
 }
+
+.modal_searchSettings {
+  width: 400px;
+}
+
+.searchSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchSettings-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.searchSettings-control {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.searchSettings-controlText {
+  margin-top: 2px;
+  line-height: 1;
+}

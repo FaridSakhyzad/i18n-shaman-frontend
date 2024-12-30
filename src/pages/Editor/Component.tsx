@@ -3,14 +3,14 @@ import { useSelector } from 'react-redux';
 
 import { IRootState } from 'store';
 import { getComponentData } from 'api/projects';
+import { ROOT } from 'constants/app';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 
-import Key from './Key';
+
+import ItemsList from './ItemsList';
 
 import './Key.scss';
 import './Component.scss';
-import ItemsList from './ItemsList';
-import { ROOT } from '../../constants/app';
 
 interface IProps {
   id: string;
@@ -37,7 +37,7 @@ export default function Component({
 }: IProps) {
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(initialKeys.length > 0);
   const [keys, setKeys] = useState<IKey[]>(initialKeys);
   const [keyValues, setKeyValues] = useState<{ [parentId: string]: { [languageId: string]: IKeyValue } }>({});
 

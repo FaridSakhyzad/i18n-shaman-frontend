@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { IRootState } from 'store';
 import { getComponentData } from 'api/projects';
+import { ROOT } from 'constants/app';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 
 // eslint-disable-next-line import/no-cycle
@@ -10,7 +11,6 @@ import ItemsList from './ItemsList';
 
 import './Key.scss';
 import './Folder.scss';
-import { ROOT } from '../../constants/app';
 
 interface IProps {
   id: string;

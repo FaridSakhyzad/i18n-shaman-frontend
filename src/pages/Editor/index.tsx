@@ -33,6 +33,7 @@ import { debounce } from 'utils/utils';
 import ItemsList from './ItemsList';
 
 import './Editor.scss';
+import Modal from '../../components/Modal';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -234,6 +235,11 @@ export default function Editor() {
   const [caseSensitive, setCaseSensitive] = useState<boolean>(false);
   const [exactMatch, setExactMatch] = useState<boolean>(false);
 
+  const [searchInKeys, setSearchInKeys] = useState<boolean>(true);
+  const [searchInValues, setSearchInValues] = useState<boolean>(true);
+  const [searchInFolders, setSearchInFolders] = useState<boolean>(true);
+  const [searchInComponents, setSearchInComponents] = useState<boolean>(true);
+
   const [searchResultKeys, setSearchResultKeys] = useState<IKey[] | null>(null);
 
   const applySearchParams = async (value: string, caseSensitive: boolean, exactMatch: boolean) => {
@@ -255,6 +261,10 @@ export default function Editor() {
       query: encodeURIComponent(value),
       caseSensitive,
       exact: exactMatch,
+      searchInKeys,
+      searchInValues,
+      searchInFolders,
+      searchInComponents,
     });
 
     const { keys = [], values } = searchResultData;
@@ -288,33 +298,17 @@ export default function Editor() {
     setImportComponentsModalVisible(true);
   };
 
-  const [sysMessageId, setSysMessageId] = useState('');
+  const [extendedSearchModalVisible, setExtendedSearchModalVisible] = useState<boolean>(false);
 
-  const TheComponent = () => {
-    const handleCloseClick = () => {
-      dispatch(removeSystemMessage(sysMessageId));
-    };
-
-    return (
-      <div>
-        <h1>The Component Content YAY</h1>
-        <button type="button" onClick={handleCloseClick}>Close</button>
-      </div>
-    );
+  const handleExtendedSearchClick = () => {
+    setExtendedSearchModalVisible(true);
   };
 
-  registerComponent('TheComponent', TheComponent);
+  const handleExtendedSearchCloseClick = () => {
+    setExtendedSearchModalVisible(false);
 
-  const handleCreateMessageClick = () => {
-    const result = dispatch(createSystemMessage({
-      component: 'TheComponent',
-      type: EMessageType.Success,
-      contentType: EContentType.Component,
-      duration: 'infinity',
-    }));
-
-    setSysMessageId(result.payload.id);
-  };
+    applySearchParams(searchQuery || '', caseSensitive, exactMatch);
+  }
 
   return (
     <div className="container">
@@ -419,9 +413,71 @@ export default function Editor() {
         />
       )}
 
-      <div>
-        <button type="button" onClick={handleCreateMessageClick}>CREATE MESSAGE</button>
-      </div>
+      {extendedSearchModalVisible && (
+        <Modal
+          onEscapeKeyPress={() => {
+            setExtendedSearchModalVisible(false)
+          }}
+          customClassNames="modal_searchSettings"
+        >
+          <div className="modal-header">
+            <h4 className="modal-title">Search In: </h4>
+            <button
+              type="button"
+              className="modal-closeButton"
+              onClick={handleExtendedSearchCloseClick}
+              aria-label="Close modal"
+            />
+          </div>
+
+          <div className="searchSettings">
+            <div className="searchSettings-row">
+              <label className="searchSettings-control">
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={searchInKeys}
+                  onChange={() => setSearchInKeys(!searchInKeys)}
+                />
+                <span className="searchSettings-controlText">Keys</span>
+              </label>
+            </div>
+            <div className="searchSettings-row">
+              <label className="searchSettings-control">
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={searchInValues}
+                  onChange={() => setSearchInValues(!searchInValues)}
+                />
+                <span className="searchSettings-controlText">Values</span>
+              </label>
+            </div>
+            <div className="searchSettings-row">
+              <label className="searchSettings-control">
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={searchInFolders}
+                  onChange={() => setSearchInFolders(!searchInFolders)}
+                />
+                <span className="searchSettings-controlText">Folders</span>
+              </label>
+            </div>
+            <div className="searchSettings-row">
+              <label className="searchSettings-control">
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={searchInComponents}
+                  onChange={() => setSearchInComponents(!searchInComponents)}
+                />
+                <span className="searchSettings-controlText">Components</span>
+              </label>
+            </div>
+          </div>
+        </Modal>
+      )}
 
       <div className="header">
         <button type="button" className="button primary" onClick={handleImportLocalesClick}>
@@ -513,7 +569,10 @@ export default function Editor() {
               className={`editorSearch-control editorSearch-control_exactMatch ${exactMatch ? 'isActive' : ''}`}
               onClick={handleExactMatchClick}
             />
-            <i className="editorSearch-control editorSearch-control_advanced"/>
+            <i
+              className="editorSearch-control editorSearch-control_advanced"
+              onClick={handleExtendedSearchClick}
+            />
           </div>
         </div>
 
