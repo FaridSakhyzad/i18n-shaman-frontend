@@ -1,4 +1,14 @@
-.key {}
+.key {
+  &.isOpen {
+    & > .keyHeader {
+      margin-bottom: 2px;
+    }
+  }
+
+  .key {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3) inset;
+  }
+}
 
 .keyHeader {
   background-color: #faf9fb;
@@ -20,8 +30,8 @@
   background: url("../../assets/images/icon--key-name-arrow.svg") right center no-repeat;
   cursor: pointer;
   position: absolute;
-  top: 19px;
-  left: 16px;
+  top: 18px;
+  left: 10px;
   transition: transform 0.2s ease;
 
   &.expanded {
@@ -31,16 +41,109 @@
 
 .keyName {
   font-size: 20px;
-  line-height: 30px;
+  line-height: 28px;
   text-decoration: none;
   color: var(--link-text-color-2);
   cursor: pointer;
   background: transparent;
   display: inline;
   border: none;
+  padding: 0;
+  margin: 0 0 2px 0;
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.keyHeader-controls {
+  margin-top: 3px;
+  margin-left: auto;
+  align-self: flex-start;
+  justify-self: flex-start;
+  display: flex;
+  gap: 12px;
+}
+
+.keyHeader-controlsGroup {
+  display: flex;
+  gap: 6px;
+}
+
+.keyHeader-control {
+  display: block;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #faf9fb;
+
+  &:hover {
+    background-color: #cdcfd4;
+
+    &:before {
+      background-color: #fff;
+    }
+  }
+}
+
+.keyHeader-createKey {
+  &:before {
+    content: '';
+    display: block;
+    width: 15px;
+    height: 15px;
+    background-color: #cdcfd4;
+    mask: url("../../assets/images/icon--key-01.svg") right center no-repeat;
+    margin: 0 auto 0 auto;
+  }
+}
+
+.keyHeader-createFolder {
+  &:before {
+    content: '';
+    display: block;
+    width: 15px;
+    height: 11px;
+    background-color: #cdcfd4;
+    mask: url("../../assets/images/icon--folder.svg") right center no-repeat;
+    margin: 0 auto 0 auto;
+  }
+}
+
+.keyHeader-edit {
+  &:before {
+    content: '';
+    display: block;
+    width: 11px;
+    height: 12px;
+    background-color: #cdcfd4;
+    mask: url("../../assets/images/icon--pen.svg") right center no-repeat;
+    margin: 0 auto 1px auto;
+  }
+}
+
+.keyHeader-move {
+  &:before {
+    content: '';
+    display: block;
+    width: 13px;
+    height: 15px;
+    background-color: #cdcfd4;
+    mask: url("../../assets/images/icon--move.svg") right center no-repeat;
+    margin: 0 auto;
+  }
+}
+
+.keyHeader-delete {
+  &:before {
+    content: '';
+    display: block;
+    width: 11px;
+    height: 12px;
+    background-color: #cdcfd4;
+    mask: url("../../assets/images/icon--dumpster.svg") right center no-repeat;
+    margin: 0 auto 2px auto;
   }
 }
 
@@ -53,7 +156,7 @@
 .keyContent-lang {
   background-color: #faf9fb;
   text-align: right;
-  padding: 10px 10px;
+  padding: 11px 10px 9px 10px;
   font-size: 16px;
   line-height: 20px;
   min-height: 40px;
@@ -65,7 +168,7 @@
 
 .keyContent-valueName {
   display: block;
-  padding: 10px 10px;
+  padding: 11px 10px 9px 15px;
   font-size: 16px;
   line-height: 20px;
   min-height: 40px;
@@ -128,4 +231,68 @@
 
 .keyEdit-cancelButton {
   width: 71px;
+}
+
+.key_string {}
+
+.key_folder {
+  & > .keyHeader {
+    .keyName {
+      color: #db8f42;
+    }
+  }
+
+  .key_string {
+    .keyHeader {
+      padding-left: 17px;
+    }
+  }
+
+  & > .keyContent {
+    display: block;
+    padding-left: 30px;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -2px;
+      left: 0;
+      bottom: 0;
+      width: 28px;
+      background-color: #faf9fb;
+    }
+  }
+}
+
+.key_component {
+  & > .keyHeader {
+    .keyName {
+      color: #666666;
+    }
+  }
+
+  .key_string {
+    .keyHeader {
+      padding-left: 17px;
+    }
+  }
+
+  & > .keyContent {
+    display: block;
+    padding-left: 30px;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -2px;
+      left: 0;
+      bottom: 0;
+      width: 28px;
+      background-color: #faf9fb;
+    }
+  }
 }

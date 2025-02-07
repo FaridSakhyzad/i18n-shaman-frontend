@@ -23,7 +23,7 @@ export interface IKey {
     [key: string]: IKeyValue;
   };
   description: string;
-  type: string;
+  type: EntityType;
   pathCache: string;
 }
 
@@ -57,4 +57,10 @@ export interface IProjectUpdateError extends IError {}
 
 export interface IUserLanguagesMapItem {
   [key: string]: IProjectLanguage;
+}
+
+export enum EntityType {
+  String = 'string',
+  Folder = 'folder',
+  Component = 'component',
 }

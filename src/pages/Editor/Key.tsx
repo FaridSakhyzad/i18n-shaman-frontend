@@ -119,7 +119,7 @@ export default function Key(props: IProps) {
   };
 
   return (
-    <section className="key">
+    <section className="key key_string">
       <div className="keyHeader">
         <button
           type="button"
@@ -127,19 +127,40 @@ export default function Key(props: IProps) {
           title={description}
           data-click-target="keyName"
           data-key-id={id}
+          data-path={`${ROOT}/${path !== ROOT ? `${path}/` : ''}${label}`}
         >
-          {/* {path !== ROOT ? `${path}/` : ''}{label} */}
           {label}
         </button>
 
-        <button
-          type="button"
-          className="button danger folderDelete"
-          data-click-target="deleteEntity"
-          data-id={id}
-        >
-          Delete
-        </button>
+        <div className="keyHeader-controls">
+          <div className="keyHeader-controlsGroup">
+            <button
+              type="button"
+              className="buttonInline keyHeader-control keyHeader-edit"
+              data-click-target="editEntity"
+              data-id={id}
+              aria-label="Edit"
+            />
+
+            <button
+              type="button"
+              className="buttonInline keyHeader-control keyHeader-move"
+              data-click-target="moveEntity"
+              data-id={id}
+              aria-label="Move"
+            />
+          </div>
+
+          <div className="keyHeader-controlsGroup">
+            <button
+              type="button"
+              className="buttonInline keyHeader-control keyHeader-delete"
+              data-click-target="deleteEntity"
+              data-id={id}
+              aria-label="Delete"
+            />
+          </div>
+        </div>
       </div>
       <div className="keyContent">
         {languages && languages.map((language: IProjectLanguage, idx) => {

@@ -3,9 +3,7 @@ import { PROJECT_ITEMS_MAX_DEPTH } from 'constants/app';
 import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 import Key from './Key';
 // eslint-disable-next-line import/no-cycle
-import Component from './Component';
-// eslint-disable-next-line import/no-cycle
-import Folder from './Folder';
+import FolderComponent from './Folder';
 
 interface IProps {
   keys: IKey[],
@@ -60,9 +58,10 @@ export default function ItemsList({
         if (key.type === 'component') {
           return (
             <Fragment key={key.id}>
-              <Component
+              <FolderComponent
                 id={key.id}
                 label={key.label}
+                type={key.type}
                 keys={key.children || []}
                 projectId={projectId}
                 languages={languages}
@@ -78,9 +77,10 @@ export default function ItemsList({
         if (key.type === 'folder') {
           return (
             <Fragment key={key.id}>
-              <Folder
+              <FolderComponent
                 id={key.id}
                 label={key.label}
+                type={key.type}
                 keys={key.children || []}
                 projectId={projectId}
                 languages={languages}
