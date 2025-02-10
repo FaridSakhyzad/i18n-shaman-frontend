@@ -74,7 +74,10 @@ export default function FolderComponent({
       data-path={`${ROOT}/${path !== ROOT ? `${path}/` : ''}${label}`}
     >
       <div className="keyHeader">
-        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
+        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick}/>
+
+        <input type="checkbox" className="checkbox keySelectCheckbox"/>
+
         <button
           type="button"
           className="keyName"
@@ -136,20 +139,22 @@ export default function FolderComponent({
         </div>
       </div>
 
-      {(keys.length > 0 && isExpanded) && (
+      <div className={`keyContentWrapper ${isExpanded ? 'expanded' : ''}`}>
         <div className="keyContent">
-          <ItemsList
-            keys={keys}
-            values={keyValues}
-            parentId={id}
-            projectId={projectId}
-            languages={languages}
-            iteration={1 + iteration}
-            path={`${path !== ROOT ? `${path}/` : ''}${label}`}
-            pathCache={`${pathCache}/${id}`}
-          />
+          {(keys.length > 0) && (
+            <ItemsList
+              keys={keys}
+              values={keyValues}
+              parentId={id}
+              projectId={projectId}
+              languages={languages}
+              iteration={1 + iteration}
+              path={`${path !== ROOT ? `${path}/` : ''}${label}`}
+              pathCache={`${pathCache}/${id}`}
+            />
+          )}
         </div>
-      )}
+      </div>
     </section>
   );
 }

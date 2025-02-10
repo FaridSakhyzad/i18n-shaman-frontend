@@ -31,12 +31,19 @@
   cursor: pointer;
   position: absolute;
   top: 18px;
-  left: 10px;
+  left: 9px;
   transition: transform 0.2s ease;
 
   &.expanded {
     transform: rotate(90deg);
   }
+}
+
+.keySelectCheckbox {
+  align-self: center;
+  margin-bottom: 2px;
+  margin-right: 12px;
+  border-color: #bdbdbd;
 }
 
 .keyName {
@@ -147,10 +154,22 @@
   }
 }
 
+.keyContentWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.15s ease;
+  overflow: hidden;
+
+  &.expanded {
+    grid-template-rows: 1fr;
+  }
+}
+
 .keyContent {
   display: grid;
   grid-template-columns: 177px 1fr;
   gap: 1px;
+  overflow: hidden;
 }
 
 .keyContent-lang {
@@ -185,6 +204,19 @@
 .keyEdit {
   padding: 13px 16px 15px 16px;
   position: relative;
+  transition: translate 0.2s ease;
+
+  @starting-style {
+    translate: -16px -13px;
+
+    .keyEdit-controls {
+      opacity: 0;
+    }
+
+    .keyEdit-valueField {
+      border-color: transparent;
+    }
+  }
 }
 
 .keyEdit-valueFieldBox {
@@ -202,6 +234,7 @@
   display: block;
   position: relative;
   z-index: 1;
+  transition: border-color 0.2s ease;
 }
 
 .keyEdit-valueSymbolsCount {
@@ -223,6 +256,7 @@
 .keyEdit-controls {
   display: flex;
   gap: 12px;
+  transition: opacity 0.2s ease;
 }
 
 .keyEdit-saveButton {
@@ -248,7 +282,7 @@
     }
   }
 
-  & > .keyContent {
+  & > .keyContentWrapper > .keyContent {
     display: block;
     padding-left: 30px;
     position: relative;
@@ -279,7 +313,7 @@
     }
   }
 
-  & > .keyContent {
+  & > .keyContentWrapper > .keyContent {
     display: block;
     padding-left: 30px;
     position: relative;

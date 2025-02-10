@@ -1,6 +1,8 @@
 import React, { useState, useRef, Fragment, useEffect } from 'react';
 import { IKeyValue, IProjectLanguage } from 'interfaces';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { createSystemMessage, EContentType, EMessageType, removeSystemMessage } from 'store/systemNotifications';
 
 import { updateKey } from 'api/projects';
 import { IRootState } from 'store';
@@ -34,6 +36,8 @@ export default function Key(props: IProps) {
     path = null,
     pathCache,
   } = props;
+
+  const dispatch = useDispatch();
 
   const { keyValues: valuesFromState } = useSelector((state: IRootState) => state.search);
   const { id: userId } = useSelector((state: IRootState) => state.user);
@@ -90,9 +94,17 @@ export default function Key(props: IProps) {
     });
 
     if ('error' in result) {
-      alert(result.message);
+      dispatch(createSystemMessage({
+        content: 'Error While Saving Key',
+        type: EMessageType.Error
+      }));
     } else {
       setValues(result.values);
+
+      dispatch(createSystemMessage({
+        content: 'Key Saved Successfully',
+        type: EMessageType.Success
+      }));
     }
 
     setEditValueId('');
@@ -121,6 +133,7 @@ export default function Key(props: IProps) {
   return (
     <section className="key key_string">
       <div className="keyHeader">
+        <input type="checkbox" className="checkbox keySelectCheckbox" />
         <button
           type="button"
           className="keyName"
@@ -194,7 +207,9 @@ export default function Key(props: IProps) {
                         value={values && values[language.id] && values[language.id].value}
                         onChange={(e) => handleValueChange(e, language.id)}
                       />
-                      <span className="keyEdit-valueSymbolsCount">1024</span>
+                      <span className="keyEdit-valueSymbolsCount">
+                        {(values[language.id] && values[language.id].value) ? values[language.id].value.length : 0}
+                      </span>
                     </div>
 
                     <div className="keyEdit-controls">

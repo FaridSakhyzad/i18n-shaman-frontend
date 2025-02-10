@@ -1,5 +1,5 @@
 .header {
-  padding: 20px 0;
+  padding: 20px 29px;
   display: flex;
   gap: 12px;
 }
@@ -218,9 +218,39 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+  position: relative;
+  overflow: hidden;
 
   .itemsList {
     gap: 2px;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 100%;
+      width: 10px;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0);
+      z-index: 10;
+
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 100%;
+      height: 10px;
+      background-color: rgba(0, 0, 0, 0);
+      z-index: 10;
+
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    }
   }
 }
 
