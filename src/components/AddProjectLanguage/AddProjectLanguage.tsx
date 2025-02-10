@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Modal from 'components/Modal';
+
+import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { ILanguage, IProjectLanguage, IUserLanguagesMapItem } from 'interfaces';
 import { addMultipleLanguages, getAppLanguagesData } from 'api/languages';
@@ -23,6 +26,8 @@ export default function AddProjectLanguage({
   onCancel,
   onConfirm,
 }: IProps) {
+  const dispatch = useDispatch();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [fullLanguagesList, setFullLanguagesList] = useState<IProjectLanguage[]>([]);
 
@@ -121,14 +126,26 @@ export default function AddProjectLanguage({
       return languageData;
     });
 
-    await addMultipleLanguages({
+    const result = await addMultipleLanguages({
       languages: languagesData,
       projectId,
     });
 
-    setLoading(false);
+    if (result.error) {
+      dispatch(createSystemMessage({
+        content: result.message || 'Error Adding Project Language',
+        type: EMessageType.Error,
+      }));
+    } else {
+      dispatch(createSystemMessage({
+        content: 'Language Added Successfully',
+        type: EMessageType.Success,
+      }));
 
-    onConfirm();
+      onConfirm();
+    }
+
+    setLoading(false);
   };
 
   const handleSelectedLanguagesChange = (data: ILanguage[]) => {

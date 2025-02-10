@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { createSystemMessage, EMessageType } from 'store/systemNotifications';
+
 import {
   IProjectLanguage,
   IProjectUpdateError,
@@ -37,6 +41,8 @@ export default function ProjectLanguages({
   onDelete,
   onClose,
 }: IProps) {
+  const dispatch = useDispatch();
+
   const [projectLanguages, setProjectLanguages] = useState(project.languages);
   const [languageData, setLanguageData] = useState<ILanguage[] | undefined>();
 
@@ -183,11 +189,24 @@ export default function ProjectLanguages({
       projectId: project.projectId,
     });
 
-    setIsQuickAddVisible(false);
+    console.log('resultProject', resultProject);
 
-    setAvailableLanguagesList(getAvailableLanguages(resultProject.languages, languageData));
+    if (resultProject.error) {
+      dispatch(createSystemMessage({
+        content: resultProject.message || 'Error Adding Project Language',
+        type: EMessageType.Error,
+      }));
+    } else {
+      dispatch(createSystemMessage({
+        content: 'Language Added Successfully',
+        type: EMessageType.Success,
+      }));
 
-    setProjectLanguages(resultProject.languages);
+      setIsQuickAddVisible(false);
+      setAvailableLanguagesList(getAvailableLanguages(resultProject.languages, languageData));
+      setProjectLanguages(resultProject.languages);
+    }
+
 
     setLoading(false);
   };

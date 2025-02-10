@@ -96,14 +96,14 @@ export default function Key(props: IProps) {
     if ('error' in result) {
       dispatch(createSystemMessage({
         content: 'Error While Saving Key',
-        type: EMessageType.Error
+        type: EMessageType.Error,
       }));
     } else {
       setValues(result.values);
 
       dispatch(createSystemMessage({
         content: 'Key Saved Successfully',
-        type: EMessageType.Success
+        type: EMessageType.Success,
       }));
     }
 
