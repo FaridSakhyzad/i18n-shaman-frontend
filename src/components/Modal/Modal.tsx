@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 import './Modal.scss';
 
 interface IProps {
   children: React.ReactNode;
   customClassNames?: string;
-  onEscapeKeyPress?: () => void;
+  onEscapeKeyPress?: (e: KeyboardEvent) => void;
 }
 
 export default function Modal({ children, customClassNames, onEscapeKeyPress = () => {} }: IProps) {
@@ -17,27 +18,38 @@ export default function Modal({ children, customClassNames, onEscapeKeyPress = (
     };
   }, []);
 
+  const [domReady, setDomReady] = useState(false);
+
+  useEffect(() => {
+    setDomReady(true);
+  }, []);
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.code === 'Escape') {
-      onEscapeKeyPress();
+      onEscapeKeyPress(e);
     }
-  }
+  };
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-    }
+    };
   }, []);
 
-  return (
-    <div className="modal">
-      <div className="modal-backdrop">
-        <div className={`modal-window ${customClassNames || ''}`}>
-          {children}
+  const $portalEl = document.getElementById('modal-portal') as Element;
+
+  return domReady ? (
+    createPortal(
+      <div className="modal">
+        <div className="modal-backdrop">
+          <div className={`modal-window ${customClassNames || ''}`}>
+            {children}
+          </div>
         </div>
-      </div>
-    </div>
-  );
+      </div>,
+      $portalEl,
+    )
+  ) : null;
 }

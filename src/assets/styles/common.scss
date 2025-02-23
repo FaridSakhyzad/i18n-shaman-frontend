@@ -612,6 +612,33 @@
   }
 }
 
+.dialogBadge {
+  display: block;
+  background-color: #929296;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-style: normal;
+  align-content: center;
+
+  &.question {
+    &:before {
+      content: '?';
+      display: block;
+      color: white;
+      font-size: 48px;
+      line-height: 58px;
+      height: 48px;
+      margin: auto;
+      text-align: center;
+    }
+  }
+
+  &.danger {
+    background-color: #f12631;
+  }
+}
+
 .dropdownPanel {
   border-radius: 15px;
   background-color: rgb(255, 255, 255);

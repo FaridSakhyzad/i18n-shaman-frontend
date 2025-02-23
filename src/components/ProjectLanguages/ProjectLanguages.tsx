@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { createSystemMessage, EMessageType } from 'store/systemNotifications';
@@ -94,7 +94,10 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await setMultipleLanguagesVisibility(project.projectId, visibilityData);
 
     if ('error' in result) {
-      console.error(result.message);
+      dispatch(createSystemMessage({
+        content: result.message || 'Error updating All Project Languages visibility',
+        type: EMessageType.Error,
+      }));
     } else {
       setProjectLanguages(result.languages);
     }
@@ -110,7 +113,10 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, false);
 
     if ('error' in result) {
-      console.error(result.message);
+      dispatch(createSystemMessage({
+        content: result.message || 'Error updating Project Language visibility',
+        type: EMessageType.Error,
+      }));
     } else {
       setProjectLanguages(result.languages);
     }
@@ -126,7 +132,10 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, true);
 
     if ('error' in result) {
-      console.error(result.message);
+      dispatch(createSystemMessage({
+        content: result.message || 'Error updating Project Language information',
+        type: EMessageType.Error,
+      }));
     } else {
       setProjectLanguages(result.languages);
     }
@@ -140,13 +149,22 @@ export default function ProjectLanguages({
     onEdit(langId);
   };
 
-  const handleDeleteClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
+  const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState<boolean>(false);
+  const isDeleteConfirmationVisibleRef = useRef<boolean>(isDeleteConfirmationVisible);
+  isDeleteConfirmationVisibleRef.current = isDeleteConfirmationVisible;
+
+  const [langToBeDeletedId, setLangToBeDeletedId] = useState<string>('');
+
+  const deleteProjectLanguage = async (langId: string) => {
     setLoading(true);
 
     const result: IProject | IProjectUpdateError = await deleteLanguage(project.projectId, langId);
 
     if ('error' in result) {
-      console.error(result.message);
+      dispatch(createSystemMessage({
+        content: result.message || 'Error Deleting Project Language',
+        type: EMessageType.Error,
+      }));
     } else {
       setProjectLanguages(result.languages);
 
@@ -155,9 +173,16 @@ export default function ProjectLanguages({
       setAvailableLanguagesList(availableLanguages);
     }
 
+    setLangToBeDeletedId('');
+
     setLoading(false);
 
     onDelete(langId);
+  };
+
+  const handleDeleteClick = async (e: React.MouseEvent<HTMLButtonElement>, langId: string) => {
+    setLangToBeDeletedId(langId);
+    setIsDeleteConfirmationVisible(true);
   };
 
   const [isQuickAddVisible, setIsQuickAddVisible] = useState(false);
@@ -169,6 +194,10 @@ export default function ProjectLanguages({
   const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>([]);
 
   const handleQuickAddSaveClick = async () => {
+    if (loading) {
+      return;
+    }
+
     setIsQuickAddVisible(true);
     setLoading(true);
 
@@ -180,7 +209,7 @@ export default function ProjectLanguages({
         customLabel: '',
         customCodeEnabled: false,
         customCode: '',
-        ...language
+        ...language,
       };
     });
 
@@ -188,8 +217,6 @@ export default function ProjectLanguages({
       languages: languagesData,
       projectId: project.projectId,
     });
-
-    console.log('resultProject', resultProject);
 
     if (resultProject.error) {
       dispatch(createSystemMessage({
@@ -207,7 +234,6 @@ export default function ProjectLanguages({
       setProjectLanguages(resultProject.languages);
     }
 
-
     setLoading(false);
   };
 
@@ -219,112 +245,182 @@ export default function ProjectLanguages({
     onClose();
   };
 
-  return (
-    <Modal
-      customClassNames="modal_withBottomButtons projectLangsModal"
-      onEscapeKeyPress={onClose}
-    >
-      {loading && (<div className="loading projectLangsModal-loading" />)}
+  const renderDeleteConfirmationModal = () => {
+    const handleDeleteConfirmationCloseButtonClick = () => {
+      setIsDeleteConfirmationVisible(false);
+    };
 
-      <div className="modal-header">
-        <h4 className="modal-title">Project Languages</h4>
+    const handleDeleteConfirmationCancelButtonClick = () => {
+      setIsDeleteConfirmationVisible(false);
+    };
 
-        <button
-          type="button"
-          className="modal-closeButton"
-          onClick={handleCloseButtonClick}
-          aria-label="Close modal"
-        />
-      </div>
+    const handleDeleteConfirmationConfirmButtonClick = () => {
+      deleteProjectLanguage(langToBeDeletedId);
+      setIsDeleteConfirmationVisible(false);
+    };
 
-      <div className="modal-content">
-        <div className="projectLangs">
-          {projectLanguages && projectLanguages.map(({
-            id,
-            label,
-            code,
-            visible,
-          }: IProjectLanguage) => (
-            <div className={`projectLangs-item ${visible ? '' : 'isHidden'}`} key={id}>
-              <div className="projectLangs-itemIcon" />
-              <div className="projectLangs-itemTitle">
-                <span className="projectLangs-itemName">{label}</span>
-                <span className="projectLangs-itemCode">{code}</span>
-              </div>
-              <div className="projectLangs-itemControls">
-                {visible ? (
-                  <button
-                    type="button"
-                    className="projectLangs-itemControl projectLangs-itemControl_hide"
-                    aria-label="Hide Language"
-                    onClick={(e) => handleHideLangClick(e, id)}
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    className="projectLangs-itemControl projectLangs-itemControl_show"
-                    aria-label="Hide Language"
-                    onClick={(e) => handleShowLangClick(e, id)}
-                  />
-                )}
-                <button
-                  type="button"
-                  className="projectLangs-itemControl projectLangs-itemControl_edit"
-                  aria-label="Edit Language"
-                  onClick={(e) => handleEditClick(e, id)}
-                />
-                <button
-                  type="button"
-                  className="projectLangs-itemControl projectLangs-itemControl_delete"
-                  aria-label="Delete Language"
-                  onClick={(e) => handleDeleteClick(e, id)}
-                />
-              </div>
-            </div>
-          ))}
-          {(isQuickAddVisible && availableLanguagesList && availableLanguagesList.length > 0) && (
-            <div className="projectLangs-quickControl">
-              <AddLanguageControl
-                fullLanguagesList={availableLanguagesList as ILanguage[]}
-                chipsSelectable={false}
-                onSelectedLanguagesChange={handleSelectedLanguagesChange}
-              />
-              <button type="button" className="button primary projectLangs-quickAddSave" onClick={handleQuickAddSaveClick} aria-label="Save Language" />
-            </div>
-          )}
+    return (
+      <Modal customClassNames="dialogModal">
+        <div className="modal-header">
+          <h4 className="modal-title">Delete Project Language</h4>
+
+          <button
+            type="button"
+            className="modal-closeButton"
+            onClick={handleDeleteConfirmationCloseButtonClick}
+            aria-label="Close modal"
+          />
         </div>
-      </div>
-      <div className="modal-buttonBox">
-        <button
-          type="button"
-          className="button success projectLangs-quickAddButton"
-          onClick={handleQuickAddClick}
-        >
-          Quick Add Language
-        </button>
 
-        <button
-          type="button"
-          className="buttonInline link projectLangs-showAllButton"
-          onClick={() => toggleAllVisibilityClick(true)}
-        >
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          Show All
-        </button>
+        <div className="modal-content">
+          <div className="dialogModal-content">
+            <i className="dialogBadge question danger dialogModal-badge" />
+            <div className="dialogModal-contentText">
+              <p className="dialogModal-contentPara">Are you sure you want to Delete Project Language <b>Russian (Ru)</b> and all it’s translations? <b>Warning: this action can not be reverted.</b></p>
+            </div>
+          </div>
+        </div>
 
-        <button
-          type="button"
-          className="buttonInline link projectLangs-hideAllButton"
-          onClick={() => toggleAllVisibilityClick(false)}
-        >
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          <i className="projectLangs-hideAllIcon" />
-          Hide All
-        </button>
-      </div>
-    </Modal>
+        <div className="modal-buttonBox">
+          <button
+            type="button"
+            className="button secondary dialogModal-button"
+            onClick={handleDeleteConfirmationCancelButtonClick}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="button danger dialogModal-button"
+            onClick={handleDeleteConfirmationConfirmButtonClick}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
+    );
+  };
+
+  const handleProjectLangsEscapeKeyPress = (e: KeyboardEvent) => {
+    if (!isDeleteConfirmationVisibleRef.current) {
+      onClose();
+    }
+  };
+
+  return (
+    <>
+      <Modal
+        customClassNames="modal_withBottomButtons projectLangsModal"
+        onEscapeKeyPress={handleProjectLangsEscapeKeyPress}
+      >
+        {loading && (<div className="loading projectLangsModal-loading" />)}
+
+        <div className="modal-header">
+          <h4 className="modal-title">Project Languages</h4>
+
+          <button
+            type="button"
+            className="modal-closeButton"
+            onClick={handleCloseButtonClick}
+            aria-label="Close modal"
+          />
+        </div>
+
+        <div className="modal-content">
+          <div className="projectLangs">
+            {projectLanguages && projectLanguages.map(({
+              id,
+              label,
+              code,
+              visible,
+            }: IProjectLanguage) => (
+              <div className={`projectLangs-item ${visible ? '' : 'isHidden'}`} key={id}>
+                <div className="projectLangs-itemIcon" />
+                <div className="projectLangs-itemTitle">
+                  <span className="projectLangs-itemName">{label}</span>
+                  <span className="projectLangs-itemCode">{code}</span>
+                </div>
+                <div className="projectLangs-itemControls">
+                  {visible ? (
+                    <button
+                      type="button"
+                      className="projectLangs-itemControl projectLangs-itemControl_hide"
+                      aria-label="Hide Language"
+                      onClick={(e) => handleHideLangClick(e, id)}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      className="projectLangs-itemControl projectLangs-itemControl_show"
+                      aria-label="Hide Language"
+                      onClick={(e) => handleShowLangClick(e, id)}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    className="projectLangs-itemControl projectLangs-itemControl_edit"
+                    aria-label="Edit Language"
+                    onClick={(e) => handleEditClick(e, id)}
+                  />
+                  <button
+                    type="button"
+                    className="projectLangs-itemControl projectLangs-itemControl_delete"
+                    aria-label="Delete Language"
+                    onClick={(e) => handleDeleteClick(e, id)}
+                  />
+                </div>
+              </div>
+            ))}
+            {(isQuickAddVisible && availableLanguagesList && availableLanguagesList.length > 0) && (
+              <div className="projectLangs-quickControl">
+                <AddLanguageControl
+                  fullLanguagesList={availableLanguagesList as ILanguage[]}
+                  chipsSelectable={false}
+                  onSelectedLanguagesChange={handleSelectedLanguagesChange}
+                />
+                <button
+                  type="button"
+                  className="button primary projectLangs-quickAddSave"
+                  onClick={handleQuickAddSaveClick}
+                  aria-label="Save Language"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="modal-buttonBox">
+          <button
+            type="button"
+            className="button success projectLangs-quickAddButton"
+            onClick={handleQuickAddClick}
+          >
+            Quick Add Language
+          </button>
+
+          <button
+            type="button"
+            className="buttonInline link projectLangs-showAllButton"
+            onClick={() => toggleAllVisibilityClick(true)}
+          >
+            <i className="projectLangs-hideAllIcon" />
+            <i className="projectLangs-hideAllIcon" />
+            <i className="projectLangs-hideAllIcon" />
+            Show All
+          </button>
+
+          <button
+            type="button"
+            className="buttonInline link projectLangs-hideAllButton"
+            onClick={() => toggleAllVisibilityClick(false)}
+          >
+            <i className="projectLangs-hideAllIcon" />
+            <i className="projectLangs-hideAllIcon" />
+            <i className="projectLangs-hideAllIcon" />
+            Hide All
+          </button>
+        </div>
+      </Modal>
+      {isDeleteConfirmationVisible && renderDeleteConfirmationModal()}
+    </>
   );
 }

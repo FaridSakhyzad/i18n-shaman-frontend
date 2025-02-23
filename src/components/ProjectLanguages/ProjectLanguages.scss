@@ -195,3 +195,49 @@
     filter: brightness(10);
   }
 }
+
+.dialogModal {
+  width: 560px;
+
+  .modal-title {
+    font-size: 24px;
+    margin: 1px 0 0 -1px;
+  }
+
+  .modal-content {
+    margin-bottom: 24px;
+  }
+
+  .modal-buttonBox {
+    gap: 24px;
+  }
+}
+
+.dialogModal-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 1px;
+}
+
+.dialogModal-badge {
+  flex-shrink: 0;
+  margin-left: -3px;
+}
+
+.dialogModal-contentText {
+  padding-left: 1px;
+  margin-top: 4px;
+}
+
+.dialogModal-contentPara {
+  margin: 0 0 15px 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dialogModal-button {
+  min-width: 140px;
+}

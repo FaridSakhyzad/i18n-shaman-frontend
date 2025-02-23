@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
 import { setValues } from 'store/search';
-import { createSystemMessage, EContentType, EMessageType, removeSystemMessage } from 'store/systemNotifications';
+
 import { ROOT } from 'constants/app';
 import { IKey, IProject } from 'interfaces';
 import {
@@ -18,7 +18,6 @@ import {
 } from 'api/projects';
 import { search } from 'api/search';
 
-import SystemNotifications from 'components/SystemNotifications';
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
@@ -26,7 +25,6 @@ import EditKey from 'components/EditKey';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import ImportLocales from 'components/ImportLocales';
 import ImportComponents from 'components/ImportComponents';
-import { registerComponent } from 'components/SystemNotifications/ComponentRegistry';
 
 import { debounce } from 'utils/utils';
 

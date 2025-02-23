@@ -50,6 +50,7 @@ export default function MainLayout({ children }: IProps) {
         // eslint-disable-next-line react/jsx-no-useless-fragment
         <>{children}</>
       )}
+      <div id="modal-portal" />
     </>
   );
 }
