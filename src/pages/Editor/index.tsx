@@ -29,6 +29,7 @@ import ImportComponents from 'components/ImportComponents';
 import { debounce } from 'utils/utils';
 
 import ItemsList from './ItemsList';
+import Tooltip from 'components/Tooltip';
 
 import './Editor.scss';
 import Modal from '../../components/Modal';
@@ -550,6 +551,24 @@ export default function Editor() {
         </button>
       </div>
 
+      <Tooltip
+        content={`Case sensitive ${caseSensitive ? 'enabled' : 'disabled'}`}
+        anchor="._casing-tooltip-anchor"
+        size="small"
+      />
+
+      <Tooltip
+        content={`Exact match ${exactMatch ? 'enabled' : 'disabled'}`}
+        anchor="._exact-tooltip-anchor"
+        size="small"
+      />
+
+      <Tooltip
+        content="Advanced settings..."
+        anchor="._advanced-tooltip-anchor"
+        size="small"
+      />
+
       <section className="editorToolbar">
         <div className="editorSearch">
           <input
@@ -560,15 +579,15 @@ export default function Editor() {
           />
           <div className="editorSearch-controls">
             <i
-              className={`editorSearch-control editorSearch-control_casing ${caseSensitive ? 'isActive' : ''}`}
+              className={`_casing-tooltip-anchor editorSearch-control editorSearch-control_casing ${caseSensitive ? 'isActive' : ''}`}
               onClick={handleCasingClick}
             />
             <i
-              className={`editorSearch-control editorSearch-control_exactMatch ${exactMatch ? 'isActive' : ''}`}
+              className={`_exact-tooltip-anchor editorSearch-control editorSearch-control_exactMatch ${exactMatch ? 'isActive' : ''}`}
               onClick={handleExactMatchClick}
             />
             <i
-              className="editorSearch-control editorSearch-control_advanced"
+              className={`_advanced-tooltip-anchor editorSearch-control editorSearch-control_advanced ${extendedSearchModalVisible ? 'isActive' : ''}`}
               onClick={handleExtendedSearchClick}
             />
           </div>
