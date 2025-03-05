@@ -209,9 +209,14 @@
   }
 }
 
-.editorToolbar-createKeyButton {
-  width: 130px;
+.editorCreateBlock {
   margin-left: auto;
+  display: flex;
+  gap: 9px;
+}
+
+.editorToolbar-createKeyButton {
+  min-width: 94px;
 }
 
 .itemsList {

@@ -91,15 +91,15 @@ export const updateKey = async (data: IUpdateKey): Promise<IKey | IKeyUpdateErro
   }
 };
 
-interface IGetComponentData {
+interface IgetEntityContent {
   projectId: string;
   userId: string;
   componentId: string;
 }
 
-export const getComponentData = async ({ userId, projectId, componentId }: IGetComponentData) => {
+export const getEntityContent = async ({ userId, projectId, componentId }: IgetEntityContent) => {
   try {
-    return (await apiClient.get(`getComponentData?userId=${userId}&projectId=${projectId}&componentId=${componentId}`)).data;
+    return (await apiClient.get(`getEntityContent?userId=${userId}&projectId=${projectId}&componentId=${componentId}`)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

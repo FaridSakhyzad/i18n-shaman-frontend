@@ -77,7 +77,7 @@ export default function ProjectLanguages({
     setAvailableLanguagesList(availableLanguages);
 
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     fetchLanguagesData();

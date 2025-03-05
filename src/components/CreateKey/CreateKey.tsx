@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 
+import { useSelector } from 'react-redux';
 import Modal from 'components/Modal';
 import { IRootState } from 'store';
 
 import { createProjectEntity, getMultipleEntitiesDataByParentId } from 'api/projects';
-import { IKey, IKeyValue, IProject } from 'interfaces';
+import {
+  EntityType,
+  IKey,
+  IKeyValue,
+  IProject, IProjectLanguage,
+} from 'interfaces';
 
 import {
   validateKeyName,
@@ -12,12 +18,14 @@ import {
 } from '../../utils/Validators';
 
 import './CreateKey.scss';
-import { useSelector } from 'react-redux';
+
+const ITEMS_PER_ROW = 5;
 
 interface IPros {
   projectId: string;
   parentId: string;
   entityPath: string;
+  entityType: EntityType,
   project: IProject | null;
   onCancel: () => void;
   onConfirm: () => void;
@@ -28,6 +36,7 @@ export default function CreateKey({
   projectId,
   parentId,
   entityPath,
+  entityType,
   project,
   onCancel,
   onConfirm,
@@ -38,7 +47,6 @@ export default function CreateKey({
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
   const [keyName, setName] = useState<string>('');
-  const [selectedEntityType, setSelectedEntityType] = useState<string>('string');
   const [siblingKeys, setSiblingKeys] = useState<IKey[] | null>(null);
 
   const [keyValues, setValues] = useState<{ [key: string]: string }>({});
@@ -95,12 +103,12 @@ export default function CreateKey({
     setSelectedLanguageId(e.target.value);
   };
 
-  const handleDescriptionChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(value);
+  const handleTargetLanguageClick = (id: string) => {
+    setSelectedLanguageId(id);
   };
 
-  const handleEntityTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedEntityType(e.target.value);
+  const handleDescriptionChange = ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(value);
   };
 
   const handleCloseButtonClick = () => {
@@ -155,14 +163,50 @@ export default function CreateKey({
       label: keyName,
       description: keyDescription,
       values: newValues,
-      type: selectedEntityType,
-      pathCache: entityPath
+      type: entityType,
+      pathCache: entityPath,
     });
 
     setLoading(false);
 
     onConfirm();
   };
+
+  const getLanguageSelectorItems = () => {
+    if (!project) {
+      return null;
+    }
+
+    const items: any[] = [];
+
+    const { languages } = project;
+
+    let itemsGroupIdx = 0;
+
+    languages.forEach((language, idx) => {
+      if (idx > 0 && idx % ITEMS_PER_ROW === 0) {
+        itemsGroupIdx += 1;
+      }
+
+      if (!items[itemsGroupIdx]) {
+        items[itemsGroupIdx] = [];
+      }
+
+      items[itemsGroupIdx].push(language);
+    });
+
+    if (items.length > ITEMS_PER_ROW) {
+      const lastLineItemsToAdd = ITEMS_PER_ROW - items[items.length - 1].length;
+
+      const itemsToAdd = (new Array(lastLineItemsToAdd)).fill({ id: 'dummy' });
+
+      items[items.length - 1] = items[items.length - 1].concat(itemsToAdd);
+    }
+
+    return items;
+  };
+
+  const targetLanguages = getLanguageSelectorItems();
 
   return (
     <Modal
@@ -174,7 +218,16 @@ export default function CreateKey({
       )}
 
       <div className="modal-header">
-        <h4 className="modal-title">Create New Key</h4>
+        {entityType === EntityType.String && (
+          <h4 className="modal-title">Create New Key</h4>
+        )}
+        {entityType === EntityType.Folder && (
+          <h4 className="modal-title">Create New Folder</h4>
+        )}
+        {entityType === EntityType.Component && (
+          <h4 className="modal-title">Create New Component</h4>
+        )}
+
         <button
           type="button"
           className="modal-closeButton"
@@ -210,62 +263,57 @@ export default function CreateKey({
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="formControl">
-              <div className="formControl-header">
-                <label className="formControl-label" htmlFor="key-name">Type</label>
-              </div>
-              <div className="formControl-body">
-                <div className="formControl-wrapper">
-                  <select
-                    className="select"
-                    onChange={handleEntityTypeChange}
-                  >
-                    <option value="string">String</option>
-                    <option value="folder">Folder</option>
-                    <option value="component">Component</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
+          {entityType === EntityType.String && (
+            <div className="form-row">
+              <div className="formControl">
+                <table className="targetLanguageSelector">
+                  <tbody>
+                    {(targetLanguages) && targetLanguages.map((
+                      (languagesRow, idx) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <tr className="targetLanguageSelector-row" key={idx}>
+                          {languagesRow.map((language: IProjectLanguage, cellIdx: number) => {
+                            if (language.id === 'dummy') {
+                              return (
+                                // eslint-disable-next-line react/no-array-index-key
+                                <td className="targetLanguageSelector-cell" key={`dummy-${cellIdx}`}>
+                                  <span className="targetLanguageSelector-item targetLanguageSelector-item_dummy"/>
+                                </td>
+                              );
+                            }
 
-          <div className="form-row">
-            <div className="formControl">
-              <div className="formControl-header">
-                <label className="formControl-label" htmlFor="key-value">Value for</label>
-
-                {(project && project.languages) && (
-                  <select
-                    className="select createKey-languageSelect"
-                    onChange={handleSelectedLanguageChange}
-                    value={selectedLanguageId}
-                  >
-                    {project.languages.map((language) => (
-                      <option
-                        key={language.id}
-                        value={language.id}
-                      >
-                        {language.label}
-                      </option>
+                            return (
+                              <td className="targetLanguageSelector-cell" key={language.id}>
+                                <span
+                                  className={`targetLanguageSelector-item ${language.id === selectedLanguageId ? 'isActive' : ''}`}
+                                  onClick={() => handleTargetLanguageClick(language.id)}
+                                >
+                                  {language.label}
+                                </span>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      )
                     ))}
-                  </select>
-                )}
-              </div>
-              <div className="formControl-body">
-                <div className="formControl-wrapper">
-                  <textarea
-                    id="key-value"
-                    className="textarea formControl-textarea createKey-valueTextarea"
-                    onChange={handleValueChange}
-                    value={keyValues[selectedLanguageId]}
-                    key={selectedLanguageId}
-                    placeholder="Please Enter Key Value..."
-                  />
+                  </tbody>
+                </table>
+
+                <div className="formControl-body">
+                  <div className="formControl-wrapper">
+                    <textarea
+                      id="key-value"
+                      className="textarea formControl-textarea createKey-valueTextarea"
+                      onChange={handleValueChange}
+                      value={keyValues[selectedLanguageId]}
+                      key={selectedLanguageId}
+                      placeholder="Please Enter Key Value..."
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="form-row">
             <div className="formControl">

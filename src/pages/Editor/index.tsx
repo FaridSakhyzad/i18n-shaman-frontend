@@ -9,7 +9,7 @@ import { getProjects } from 'store/projects';
 import { setValues } from 'store/search';
 
 import { ROOT } from 'constants/app';
-import { IKey, IProject } from 'interfaces';
+import { EntityType, IKey, IProject } from 'interfaces';
 import {
   deleteProjectEntity,
   exportProjectToJson,
@@ -25,11 +25,12 @@ import EditKey from 'components/EditKey';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import ImportLocales from 'components/ImportLocales';
 import ImportComponents from 'components/ImportComponents';
+import Tooltip from 'components/Tooltip';
+import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { debounce } from 'utils/utils';
 
 import ItemsList from './ItemsList';
-import Tooltip from 'components/Tooltip';
 
 import './Editor.scss';
 import Modal from '../../components/Modal';
@@ -53,6 +54,7 @@ export default function Editor() {
 
   const [isCreateKeyModalVisible, setIsCreateKeyModalVisible] = useState<boolean>(false);
   const [newEntityParentId, setNewEntityParentId] = useState<string>();
+  const [newEntityType, setNewEntityType] = useState<EntityType>();
   const [newEntityPath, setNewEntityPath] = useState<string>();
 
   const [isProjectsMenuVisible, setIsProjectsMenuVisible] = useState<boolean>(false);
@@ -87,7 +89,8 @@ export default function Editor() {
     setAddLanguageModalVisible(true);
   };
 
-  const handleNewKeyClick = () => {
+  const handleNewKeyClick = (type: EntityType) => {
+    setNewEntityType(type);
     setNewEntityParentId(currentProjectId);
     setNewEntityPath(ROOT);
     setIsCreateKeyModalVisible(true);
@@ -193,8 +196,82 @@ export default function Editor() {
     changeLanguage('fr');
   };
 
+  const [idOfEntityToDelete, setIdOfEntityToDelete] = useState<string | null>(null);
+
   const deleteEntity = async (id: string) => {
     const result = await deleteProjectEntity(id);
+
+    if ('error' in result) {
+      dispatch(createSystemMessage({
+        content: result.message || 'Error Deleting Entity',
+        type: EMessageType.Error,
+      }));
+    } else {
+      fetchProjectData();
+    }
+  };
+
+  const [isEntityDeleteConfirmVisible, setEntityDeleteConfirmVisible] = useState<boolean>(false);
+
+  const renderDeleteConfirmationModal = () => {
+    const handleDeleteConfirmationCloseButtonClick = () => {
+      setEntityDeleteConfirmVisible(false);
+    };
+
+    const handleDeleteConfirmationCancelButtonClick = () => {
+      setEntityDeleteConfirmVisible(false);
+    };
+
+    const handleDeleteConfirmationConfirmButtonClick = () => {
+      if (!idOfEntityToDelete) {
+        return;
+      }
+
+      deleteEntity(idOfEntityToDelete);
+
+      setEntityDeleteConfirmVisible(false);
+    };
+
+    return (
+      <Modal customClassNames="dialogModal">
+        <div className="modal-header">
+          <h4 className="modal-title">Delete Key/Folder</h4>
+
+          <button
+            type="button"
+            className="modal-closeButton"
+            onClick={handleDeleteConfirmationCloseButtonClick}
+            aria-label="Close modal"
+          />
+        </div>
+
+        <div className="modal-content">
+          <div className="dialogModal-content">
+            <i className="dialogBadge question danger dialogModal-badge" />
+            <div className="dialogModal-contentText">
+              <p className="dialogModal-contentPara">Are you sure you want to Delete Key/Folder and all it’s contents?<b>Warning: This action can not be reverted.</b></p>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal-buttonBox">
+          <button
+            type="button"
+            className="button secondary dialogModal-button"
+            onClick={handleDeleteConfirmationCancelButtonClick}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="button danger dialogModal-button"
+            onClick={handleDeleteConfirmationConfirmButtonClick}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
+    );
   };
 
   const handleItemsListClickEvent = (e: React.SyntheticEvent<HTMLElement>) => {
@@ -209,6 +286,11 @@ export default function Editor() {
     }
 
     const { dataset } = target;
+
+    if (!dataset.id) {
+      return;
+    }
+
     const { clickTarget: elName } = dataset;
 
     if (elName === 'keyName') {
@@ -226,7 +308,8 @@ export default function Editor() {
     }
 
     if (elName === 'deleteEntity') {
-      deleteEntity(dataset.id as string);
+      setIdOfEntityToDelete(dataset.id);
+      setEntityDeleteConfirmVisible(true);
     }
   };
 
@@ -307,7 +390,7 @@ export default function Editor() {
     setExtendedSearchModalVisible(false);
 
     applySearchParams(searchQuery || '', caseSensitive, exactMatch);
-  }
+  };
 
   return (
     <div className="container">
@@ -383,6 +466,7 @@ export default function Editor() {
           projectId={currentProjectId}
           parentId={newEntityParentId}
           entityPath={newEntityPath}
+          entityType={newEntityType as EntityType}
           project={project}
           onClose={() => {
             setIsCreateKeyModalVisible(false);
@@ -392,6 +476,7 @@ export default function Editor() {
           }}
           onConfirm={() => {
             setIsCreateKeyModalVisible(false);
+            fetchProjectData();
           }}
         />
       )}
@@ -415,7 +500,7 @@ export default function Editor() {
       {extendedSearchModalVisible && (
         <Modal
           onEscapeKeyPress={() => {
-            setExtendedSearchModalVisible(false)
+            setExtendedSearchModalVisible(false);
           }}
           customClassNames="modal_searchSettings"
         >
@@ -478,6 +563,8 @@ export default function Editor() {
         </Modal>
       )}
 
+      {isEntityDeleteConfirmVisible && renderDeleteConfirmationModal()}
+
       <div className="header">
         <button type="button" className="button primary" onClick={handleImportLocalesClick}>
           Import Locales
@@ -508,9 +595,9 @@ export default function Editor() {
         {(isProjectsMenuVisible && projectsMenuCoords && projects && projects.length > 1) && (
           <div
             className="editorHeader-projectListMenu"
-            style={{top: projectsMenuCoords.top, left: projectsMenuCoords.left}}
+            style={{ top: projectsMenuCoords.top, left: projectsMenuCoords.left }}
           >
-            {projects.map(({projectName, projectId}) => {
+            {projects.map(({ projectName, projectId }) => {
               if (projectId === currentProjectId) {
                 return null;
               }
@@ -525,7 +612,7 @@ export default function Editor() {
                   >
                     {projectName}
                   </Link>
-                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu"/>
+                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
                 </div>
               );
             })}
@@ -593,13 +680,31 @@ export default function Editor() {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="button success editorToolbar-createKeyButton"
-          onClick={handleNewKeyClick}
-        >
-          Create New Key
-        </button>
+        <div className="editorCreateBlock">
+          <button
+            type="button"
+            className="button success editorToolbar-createKeyButton"
+            onClick={() => handleNewKeyClick(EntityType.String)}
+          >
+            Key
+          </button>
+
+          <button
+            type="button"
+            className="button success editorToolbar-createKeyButton"
+            onClick={() => handleNewKeyClick(EntityType.Folder)}
+          >
+            Folder
+          </button>
+
+          <button
+            type="button"
+            className="button success editorToolbar-createKeyButton"
+            onClick={() => handleNewKeyClick(EntityType.Component)}
+          >
+            Component
+          </button>
+        </div>
       </section>
 
       {(project && searchResultKeys) && (

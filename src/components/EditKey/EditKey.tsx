@@ -11,8 +11,8 @@ import {
   IProject,
 } from 'interfaces';
 
-import { validateKeyName, validationErrors } from '../../utils/Validators';
-import { getComponentData, getKeyData, updateKey } from '../../api/projects';
+import { validateKeyName, validationErrors } from 'utils/Validators';
+import { getKeyData, updateKey } from 'api/projects';
 
 interface IProps {
   keyId: string;
@@ -149,7 +149,7 @@ export default function EditKey({
   };
 
   if (!key) {
-    return null
+    return null;
   }
 
   return (
@@ -223,14 +223,14 @@ export default function EditKey({
                 </div>
                 <div className="formControl-body">
                   <div className="formControl-wrapper">
-                  <textarea
-                    id="key-value"
-                    className="textarea formControl-textarea createKey-valueTextarea"
-                    onChange={handleValueChange}
-                    value={keyValues[selectedLanguageId] ? keyValues[selectedLanguageId].value : ''}
-                    key={selectedLanguageId}
-                    placeholder="Please Enter Key Value..."
-                  />
+                    <textarea
+                      id="key-value"
+                      className="textarea formControl-textarea createKey-valueTextarea"
+                      onChange={handleValueChange}
+                      value={keyValues[selectedLanguageId] ? keyValues[selectedLanguageId].value : ''}
+                      key={selectedLanguageId}
+                      placeholder="Please Enter Key Value..."
+                    />
                   </div>
                 </div>
               </div>

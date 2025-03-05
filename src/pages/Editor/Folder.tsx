@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import clsx from 'clsx';
 
 import { IRootState } from 'store';
-import { getComponentData } from 'api/projects';
+import { getEntityContent } from 'api/projects';
 import { ROOT } from 'constants/app';
 import { EntityType, IKey, IKeyValue, IProjectLanguage } from 'interfaces';
 
@@ -51,7 +51,7 @@ export default function FolderComponent({
       return;
     }
 
-    const result = await getComponentData({
+    const result = await getEntityContent({
       userId: userId as string,
       projectId,
       componentId: id,
@@ -74,7 +74,7 @@ export default function FolderComponent({
       data-path={`${ROOT}/${path !== ROOT ? `${path}/` : ''}${label}`}
     >
       <div className="keyHeader">
-        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick}/>
+        <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
 
         <input type="checkbox" className="checkbox keySelectCheckbox"/>
 
