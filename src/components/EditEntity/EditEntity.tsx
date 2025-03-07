@@ -5,6 +5,7 @@ import { IRootState } from 'store';
 
 import Modal from 'components/Modal';
 import {
+  EntityType,
   IKey,
   IKeyUpdateError,
   IKeyValue,
@@ -14,16 +15,20 @@ import {
 import { validateKeyName, validationErrors } from 'utils/Validators';
 import { getKeyData, updateKey } from 'api/projects';
 
+import './EditEntity.scss';
+
 interface IProps {
   keyId: string;
+  entityType: EntityType,
   project: IProject;
   onClose: () => void;
   onCancel: () => void;
   onSave: () => void;
 }
 
-export default function EditKey({
+export default function EditEntity({
   keyId,
+  entityType,
   project,
   onClose,
   onCancel,
@@ -155,14 +160,24 @@ export default function EditKey({
   return (
     <Modal
       onEscapeKeyPress={onClose}
-      customClassNames="modal_withBottomButtons modal_editProjectLang"
+      customClassNames="modal_withBottomButtons modal_editEntity"
     >
       {loading && (
         <div className="loading modal-loading" />
       )}
 
       <div className="modal-header">
-        <h4 className="modal-title">Edit Key {key.label}</h4>
+        {entityType === EntityType.String && (
+          <h4 className="modal-title">Edit Key <span className="editEntity-name">{key.label}</span></h4>
+        )}
+
+        {entityType === EntityType.Folder && (
+          <h4 className="modal-title">Edit Folder <span className="editEntity-name">{key.label}</span></h4>
+        )}
+
+        {entityType === EntityType.Component && (
+          <h4 className="modal-title">Edit Component <span className="editEntity-name">{key.label}</span></h4>
+        )}
         <button
           type="button"
           className="modal-closeButton"

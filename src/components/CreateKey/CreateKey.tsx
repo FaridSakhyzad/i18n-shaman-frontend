@@ -44,8 +44,6 @@ export default function CreateKey({
 }: IPros) {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { id: userId } = useSelector((state: IRootState) => state.user);
-
   const [keyName, setName] = useState<string>('');
   const [siblingKeys, setSiblingKeys] = useState<IKey[] | null>(null);
 

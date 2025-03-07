@@ -6,7 +6,12 @@ import clsx from 'clsx';
 import { IRootState } from 'store';
 import { getEntityContent } from 'api/projects';
 import { ROOT } from 'constants/app';
-import { EntityType, IKey, IKeyValue, IProjectLanguage } from 'interfaces';
+import {
+  EntityType,
+  IKey,
+  IKeyValue,
+  IProjectLanguage,
+} from 'interfaces';
 
 // eslint-disable-next-line import/no-cycle
 import ItemsList from './ItemsList';
@@ -76,14 +81,14 @@ export default function FolderComponent({
       <div className="keyHeader">
         <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
 
-        <input type="checkbox" className="checkbox keySelectCheckbox"/>
+        <input type="checkbox" className="checkbox keySelectCheckbox" />
 
         <button
           type="button"
           className="keyName"
           title={description}
           data-click-target="keyName"
-          data-key-id={id}
+          data-id={id}
         >
           {label}
         </button>
@@ -92,19 +97,21 @@ export default function FolderComponent({
           <div className="keyHeader-controlsGroup">
             <button
               type="button"
-              className="buttonInline keyHeader-control keyHeader-createKey"
+              className="_new-key buttonInline keyHeader-control keyHeader-createKey"
               data-click-target="newEntity"
               data-parent-id={id}
               data-parent-path={`${pathCache}/${id}`}
+              data-new-entity-type={EntityType.String}
               aria-label="Create New Key"
             />
 
             <button
               type="button"
-              className="buttonInline keyHeader-control keyHeader-createFolder"
+              className="_new-folder buttonInline keyHeader-control keyHeader-createFolder"
               data-click-target="newEntity"
               data-parent-id={id}
               data-parent-path={`${pathCache}/${id}`}
+              data-new-entity-type={type}
               aria-label="Create New Folder"
             />
           </div>
@@ -112,25 +119,28 @@ export default function FolderComponent({
           <div className="keyHeader-controlsGroup">
             <button
               type="button"
-              className="buttonInline keyHeader-control keyHeader-edit"
+              className="_entity-edit buttonInline keyHeader-control keyHeader-edit"
               data-click-target="editEntity"
+              data-entity-type={type}
               data-id={id}
               aria-label="Edit"
             />
 
-            <button
-              type="button"
-              className="buttonInline keyHeader-control keyHeader-move"
-              data-click-target="moveEntity"
-              data-id={id}
-              aria-label="Move"
-            />
+            {/*
+              <button
+                type="button"
+                className="_entity-move buttonInline keyHeader-control keyHeader-move"
+                data-click-target="moveEntity"
+                data-id={id}
+                aria-label="Move"
+              />
+            */}
           </div>
 
           <div className="keyHeader-controlsGroup">
             <button
               type="button"
-              className="buttonInline keyHeader-control keyHeader-delete"
+              className="_entity-delete buttonInline keyHeader-control keyHeader-delete"
               data-click-target="deleteEntity"
               data-id={id}
               aria-label="Delete"

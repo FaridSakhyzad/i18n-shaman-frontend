@@ -21,7 +21,7 @@ import { search } from 'api/search';
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateKey from 'components/CreateKey';
-import EditKey from 'components/EditKey';
+import EditEntity from 'components/EditEntity';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import ImportLocales from 'components/ImportLocales';
 import ImportComponents from 'components/ImportComponents';
@@ -128,6 +128,7 @@ export default function Editor() {
   };
 
   const [inEditKeyId, setInEditKeyId] = useState<string>();
+  const [inEditEntityType, setInEditEntityType] = useState<EntityType>();
   const [isEditKeyModalVisible, setIsEditKeyModalVisible] = useState<boolean>(false);
 
   const onKeyNameClick = (keyId: string) => {
@@ -287,14 +288,10 @@ export default function Editor() {
 
     const { dataset } = target;
 
-    if (!dataset.id) {
-      return;
-    }
-
     const { clickTarget: elName } = dataset;
 
     if (elName === 'keyName') {
-      onKeyNameClick(dataset.keyId as string);
+      onKeyNameClick(dataset.id as string);
     }
 
     if (elName === 'keyLanguage') {
@@ -302,13 +299,20 @@ export default function Editor() {
     }
 
     if (elName === 'newEntity') {
+      setNewEntityType(dataset.newEntityType as EntityType);
       setNewEntityPath(dataset.parentPath as string);
       setNewEntityParentId(dataset.parentId as string);
       setIsCreateKeyModalVisible(true);
     }
 
+    if (elName === 'editEntity') {
+      setInEditKeyId(dataset.id as string);
+      setIsEditKeyModalVisible(true);
+      setInEditEntityType(dataset.entityType as EntityType);
+    }
+
     if (elName === 'deleteEntity') {
-      setIdOfEntityToDelete(dataset.id);
+      setIdOfEntityToDelete(dataset.id as string);
       setEntityDeleteConfirmVisible(true);
     }
   };
@@ -482,8 +486,9 @@ export default function Editor() {
       )}
 
       {isEditKeyModalVisible && (
-        <EditKey
+        <EditEntity
           keyId={inEditKeyId as string}
+          entityType={inEditEntityType as EntityType}
           project={project as IProject}
           onClose={() => {
             setIsEditKeyModalVisible(false);
@@ -655,6 +660,45 @@ export default function Editor() {
         anchor="._advanced-tooltip-anchor"
         size="small"
       />
+
+      {project && (
+        <>
+          <Tooltip
+            content="New Key"
+            anchor="._new-key"
+            size="small_autosize"
+            nightMode
+          />
+
+          <Tooltip
+            content="New Folder"
+            anchor="._new-folder"
+            size="small_autosize"
+            nightMode
+          />
+
+          <Tooltip
+            content="Edit"
+            anchor="._entity-edit"
+            size="small_autosize"
+            nightMode
+          />
+
+          <Tooltip
+            content="Move"
+            anchor="._entity-move"
+            size="small_autosize"
+            nightMode
+          />
+
+          <Tooltip
+            content="Delete"
+            anchor="._entity-delete"
+            size="small_autosize"
+            nightMode
+          />
+        </>
+      )}
 
       <section className="editorToolbar">
         <div className="editorSearch">

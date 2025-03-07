@@ -1,14 +1,21 @@
-import React, { useState, useRef, Fragment, useEffect } from 'react';
-import { IKeyValue, IProjectLanguage } from 'interfaces';
+import React, {
+  useState,
+  useRef,
+  Fragment,
+  useEffect,
+} from 'react';
+
+import { EntityType, IKeyValue, IProjectLanguage } from 'interfaces';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { createSystemMessage, EContentType, EMessageType, removeSystemMessage } from 'store/systemNotifications';
+import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { updateKey } from 'api/projects';
 import { IRootState } from 'store';
 
 import './Key.scss';
 import { ROOT } from '../../constants/app';
+import Tooltip from '../../components/Tooltip';
 
 interface IProps {
   id: string;
@@ -139,7 +146,7 @@ export default function Key(props: IProps) {
           className="keyName"
           title={description}
           data-click-target="keyName"
-          data-key-id={id}
+          data-id={id}
           data-path={`${ROOT}/${path !== ROOT ? `${path}/` : ''}${label}`}
         >
           {label}
@@ -149,25 +156,28 @@ export default function Key(props: IProps) {
           <div className="keyHeader-controlsGroup">
             <button
               type="button"
-              className="buttonInline keyHeader-control keyHeader-edit"
+              className="_entity-edit buttonInline keyHeader-control keyHeader-edit"
               data-click-target="editEntity"
+              data-entity-type={EntityType.String}
               data-id={id}
               aria-label="Edit"
             />
 
-            <button
-              type="button"
-              className="buttonInline keyHeader-control keyHeader-move"
-              data-click-target="moveEntity"
-              data-id={id}
-              aria-label="Move"
-            />
+            {/*
+              <button
+                type="button"
+                className="_entity-move buttonInline keyHeader-control keyHeader-move"
+                data-click-target="moveEntity"
+                data-id={id}
+                aria-label="Move"
+              />
+            */}
           </div>
 
           <div className="keyHeader-controlsGroup">
             <button
               type="button"
-              className="buttonInline keyHeader-control keyHeader-delete"
+              className="_entity-delete buttonInline keyHeader-control keyHeader-delete"
               data-click-target="deleteEntity"
               data-id={id}
               aria-label="Delete"
@@ -187,7 +197,9 @@ export default function Key(props: IProps) {
                 <span
                   data-click-target="keyLanguage"
                   data-language-id={language.id}
-                >{language.customLabelEnabled ? language.customLabel : language.label}</span>
+                >
+                  {language.customLabelEnabled ? language.customLabel : language.label}
+                </span>
               </div>
 
               <div className="keyContent-value">
