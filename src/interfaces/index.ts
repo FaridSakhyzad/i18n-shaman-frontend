@@ -51,6 +51,9 @@ export interface IProject {
   keys: [IKey];
   values: any;
   languages: IProjectLanguage[];
+  keysTotalCount?: number;
+  subfolder?: IKey;
+  upstreamParents?: [IKey]
 }
 
 export interface IProjectUpdateError extends IError {}

@@ -17,6 +17,7 @@ import {
 import ItemsList from './ItemsList';
 
 import './Key.scss';
+import { Link, useParams } from 'react-router-dom';
 
 interface IProps {
   id: string;
@@ -43,6 +44,8 @@ export default function FolderComponent({
   pathCache,
   iteration = 0,
 }: IProps) {
+  const { projectId: currentProjectId = '' } = useParams();
+
   const { id: userId } = useSelector((state: IRootState) => state.user);
 
   const [keys, setKeys] = useState<IKey[]>(initialKeys);
@@ -80,18 +83,21 @@ export default function FolderComponent({
     >
       <div className="keyHeader">
         <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
+        <input type="checkbox" className="checkbox keySelectCheckbox"/>
 
-        <input type="checkbox" className="checkbox keySelectCheckbox" />
+        <Link title={description} className="keyName" to={`/project/${currentProjectId}/${id}`}>{label}</Link>
 
-        <button
-          type="button"
-          className="keyName"
-          title={description}
-          data-click-target="keyName"
-          data-id={id}
-        >
-          {label}
-        </button>
+        {/*
+          <button
+            type="button"
+            className="keyName"
+            title={description}
+            data-click-target="keyName"
+            data-id={id}
+          >
+            {label}
+          </button>
+        */}
 
         <div className="keyHeader-controls">
           <div className="keyHeader-controlsGroup">

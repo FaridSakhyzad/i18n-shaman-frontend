@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'components/Modal';
 
-import { getUserProjectsById } from 'api/projects';
+import { getUserProjectById } from 'api/projects';
 import { IProjectLanguage } from 'interfaces';
 
 import './EditProjectLanguage.scss';
@@ -26,7 +26,7 @@ export default function EditProjectLanguage({
   const [languageInEdit, setLanguageInEdit] = useState<IProjectLanguage | null>(null);
 
   const getProjectsLanguages = async () => {
-    const result = await getUserProjectsById(projectId);
+    const result = await getUserProjectById(projectId);
 
     const language = result.languages.find(({ id }: IProjectLanguage) => id === languageId);
 

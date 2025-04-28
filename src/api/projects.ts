@@ -44,9 +44,9 @@ export const getUserProjects = async (userId: string) => {
   }
 };
 
-export const getUserProjectsById = async (projectId: string) => {
+export const getUserProjectById = async (projectId: string, subFolderId?: string, page: number = 0, itemsPerPage: number = 50) => {
   try {
-    return (await apiClient.get(`getUserProjectById?projectId=${projectId}`)).data;
+    return (await apiClient.get(`getUserProjectById?projectId=${projectId}${subFolderId ? `&subFolderId=${subFolderId}` : ''}&page=${page}&itemsPerPage=${itemsPerPage}`)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

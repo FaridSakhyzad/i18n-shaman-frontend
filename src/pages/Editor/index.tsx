@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeLanguage } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -8,12 +8,12 @@ import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
 import { setValues } from 'store/search';
 
-import { ROOT } from 'constants/app';
+import { DEFAULT_ITEMS_PER_PAGE, ROOT } from 'constants/app';
 import { EntityType, IKey, IProject } from 'interfaces';
 import {
   deleteProjectEntity,
   exportProjectToJson,
-  getUserProjectsById,
+  getUserProjectById,
   importDataToProject,
 } from 'api/projects';
 import { search } from 'api/search';
@@ -34,6 +34,7 @@ import ItemsList from './ItemsList';
 
 import './Editor.scss';
 import Modal from '../../components/Modal';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -46,7 +47,15 @@ export default function Editor() {
   const dispatch = useDispatch<AppDispatch>();
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
-  const { projectId: currentProjectId = '' } = useParams();
+  const { projectId: currentProjectId = '', subFolderId = '' } = useParams();
+
+  const [searchParams] = useSearchParams();
+
+  const initialPage = searchParams.get('page') ? parseInt(searchParams.get('page') as string, 10) : 0;
+  const initialItemsPerPage = searchParams.get('per_page') ? parseInt(searchParams.get('per_page') as string, 10) : DEFAULT_ITEMS_PER_PAGE;
+
+  const [page, setPage] = useState<number>(initialPage);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
 
   const { projects } = useSelector((state: IRootState) => state.projects);
 
@@ -69,7 +78,7 @@ export default function Editor() {
   const fetchProjectData = async () => {
     setLoading(true);
 
-    const result = await getUserProjectsById(currentProjectId);
+    const result = await getUserProjectById(currentProjectId, subFolderId, page, itemsPerPage);
 
     if ('error' in result) {
       console.error(result.message);
@@ -82,17 +91,27 @@ export default function Editor() {
 
   useEffect(() => {
     dispatch(getProjects(userId as string));
+
     fetchProjectData();
-  }, [currentProjectId]);
+  }, [currentProjectId, subFolderId, page]);
 
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
   };
 
   const handleNewKeyClick = (type: EntityType) => {
+    if (!project) {
+      return;
+    }
+
+    const { subfolder } = project;
+
+    const entityPath = subfolder ? `${subfolder.pathCache}/${subfolder.id}` : ROOT;
+    const parentId = subfolder ? subfolder.id : currentProjectId;
+
     setNewEntityType(type);
-    setNewEntityParentId(currentProjectId);
-    setNewEntityPath(ROOT);
+    setNewEntityParentId(parentId);
+    setNewEntityPath(entityPath);
     setIsCreateKeyModalVisible(true);
   };
 
@@ -107,6 +126,7 @@ export default function Editor() {
   };
 
   const handleProjectListNameClick = () => {
+    setPage(0);
     setIsProjectsMenuVisible(false);
   };
 
@@ -184,7 +204,7 @@ export default function Editor() {
 
     formData.append('projectId', projectId as string);
 
-    for (let i = 0; i < files.length; i++) {
+    for (let i = 0; i < files.length; i += 1) {
       formData.append('files', files[i]);
     }
 
@@ -275,6 +295,18 @@ export default function Editor() {
     );
   };
 
+  const goToPage = (targetPage: number) => {
+    const { origin, pathname } = window.location;
+
+    const url = new URL(`${origin}${pathname}`);
+    url.searchParams.set('page', `${targetPage}`);
+    url.searchParams.set('per_page', `${itemsPerPage}`);
+
+    setPage(targetPage);
+
+    window.history.pushState({}, '', url);
+  };
+
   const handleItemsListClickEvent = (e: React.SyntheticEvent<HTMLElement>) => {
     const { target } = e;
 
@@ -315,6 +347,34 @@ export default function Editor() {
       setIdOfEntityToDelete(dataset.id as string);
       setEntityDeleteConfirmVisible(true);
     }
+
+    if (elName === 'pagePrev') {
+      goToPage(page - 1);
+    }
+
+    if (elName === 'pageN') {
+      goToPage(parseInt(dataset.pageIndex as string, 10));
+    }
+
+    if (elName === 'pageNext') {
+      goToPage(page + 1);
+    }
+
+    if (elName === 'pageRew') {
+      goToPage((page - 10) >= 0 ? (page - 10) : 0);
+    }
+
+    if (elName === 'pageFFwd') {
+      if (!project || !project.keysTotalCount) {
+        return;
+      }
+
+      const lastPageIndex = Math.ceil(project.keysTotalCount / itemsPerPage) - 1;
+
+      const nextPageIndex = (page + 10) <= lastPageIndex ? (page + 10) : lastPageIndex;
+
+      goToPage(nextPageIndex);
+    }
   };
 
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -328,7 +388,7 @@ export default function Editor() {
 
   const [searchResultKeys, setSearchResultKeys] = useState<IKey[] | null>(null);
 
-  const applySearchParams = async (value: string, caseSensitive: boolean, exactMatch: boolean) => {
+  const applySearchParams = async (value: string, newCaseSensitive: boolean, newExactMatch: boolean) => {
     if (!value || value.length < 1) {
       setSearchQuery(null);
       setSearchResultKeys(null);
@@ -345,8 +405,8 @@ export default function Editor() {
     const searchResultData = await search({
       projectId: project?.projectId as string,
       query: encodeURIComponent(value),
-      caseSensitive,
-      exact: exactMatch,
+      caseSensitive: newCaseSensitive,
+      exact: newExactMatch,
       searchInKeys,
       searchInValues,
       searchInFolders,
@@ -751,6 +811,10 @@ export default function Editor() {
         </div>
       </section>
 
+      {project && (
+        <Breadcrumbs project={project} />
+      )}
+
       {(project && searchResultKeys) && (
         <div onClick={handleItemsListClickEvent}>
           <ItemsList
@@ -774,6 +838,9 @@ export default function Editor() {
             languages={project.languages}
             path={ROOT}
             pathCache={ROOT}
+            page={page}
+            totalCount={project.keysTotalCount}
+            itemsPerPage={itemsPerPage}
           />
         </div>
       )}

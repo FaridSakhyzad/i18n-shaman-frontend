@@ -7,7 +7,7 @@ import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { ILanguage, IProjectLanguage, IUserLanguagesMapItem } from 'interfaces';
 import { addMultipleLanguages, getAppLanguagesData } from 'api/languages';
-import { getUserProjectsById } from 'api/projects';
+import { getUserProjectById } from 'api/projects';
 
 import AddLanguageControl from './AddLanguageControl';
 
@@ -34,7 +34,7 @@ export default function AddProjectLanguage({
   const [selectedLanguages, setSelectedLanguages] = useState<IProjectLanguage[]>([]);
 
   const getProjectLanguages = async () => {
-    const result = await getUserProjectsById(projectId);
+    const result = await getUserProjectById(projectId);
 
     const languages = await getAppLanguagesData();
 
