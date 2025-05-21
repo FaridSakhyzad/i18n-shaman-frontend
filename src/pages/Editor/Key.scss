@@ -152,7 +152,7 @@
     height: 12px;
     background-color: #cdcfd4;
     mask: url("../../assets/images/icon--dumpster.svg") right center no-repeat;
-    margin: 0 auto 2px auto;
+    margin: 0 auto 1px auto;
   }
 }
 
@@ -181,6 +181,13 @@
   font-size: 16px;
   line-height: 20px;
   min-height: 40px;
+  cursor: pointer;
+
+  &:hover {
+    span {
+      border-bottom: 1px dashed;
+    }
+  }
 }
 
 .keyContent-value {

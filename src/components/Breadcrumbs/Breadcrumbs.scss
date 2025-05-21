@@ -1,4 +1,51 @@
 .breadcrumbs {
   background-color: white;
-  padding: 16px;
+  padding: 17px 30px 13px 30px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1px;
+
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 100;
+
+  animation: growprogress 0.2s linear;
+  animation-fill-mode: forwards;
+  animation-timeline: view();
+  animation-range: calc(100vh - 1px) 100vh;
+}
+
+@keyframes growprogress {
+  to {
+    box-shadow: 0 0 15px 0 rgba(0 0 0 / 0.07);
+  }
+}
+
+.breadcrumbs-link {
+  text-decoration: none;
+  color: var(--link-text-color-2);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.breadcrumbs-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 15px;
+
+  &:before {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 7px;
+    background: url("../../assets/images/icon--breadcrumbs-separator.svg") center center no-repeat;
+    margin-bottom: 2px;
+    margin-left: 2px;
+  }
 }

@@ -45,12 +45,10 @@ export default function ItemsList({
 
   const pagesCount = Math.ceil(totalCount / itemsPerPage);
 
-  let pagesArray = new Array(pagesCount).fill('').map((item, idx) => {
-    return {
-      idx,
-      page: 1 + idx,
-    };
-  });
+  let pagesArray = new Array(pagesCount).fill('').map((item, idx) => ({
+    idx,
+    page: 1 + idx,
+  }));
 
   const pagesFrom = Math.floor(page / TOTAL_PAGES) * TOTAL_PAGES;
   const pagesTo = pagesFrom + TOTAL_PAGES;
@@ -124,7 +122,7 @@ export default function ItemsList({
           <div className="pagination">
             <button
               type="button"
-              className={clsx({'pagination-rew': true, disabled: page === 0})}
+              className={clsx({ 'pagination-rew': true, disabled: page === 0 })}
               aria-label="Rewind"
               data-click-target="pageRew"
             />
@@ -140,7 +138,7 @@ export default function ItemsList({
               <button
                 type="button"
                 key={item.idx}
-                className={clsx({'pagination-item': true, isActive: page === item.idx})}
+                className={clsx({ 'pagination-item': true, isActive: page === item.idx })}
                 data-click-target="pageN"
                 data-page-index={item.idx}
               >
@@ -150,14 +148,14 @@ export default function ItemsList({
 
             <button
               type="button"
-              className={clsx({'pagination-right': true, disabled: page === (pagesCount - 1)})}
+              className={clsx({ 'pagination-right': true, disabled: page === (pagesCount - 1) })}
               aria-label="Next"
               data-click-target="pageNext"
             />
 
             <button
               type="button"
-              className={clsx({'pagination-ffwd': true, disabled: page === (pagesCount - 1)})}
+              className={clsx({ 'pagination-ffwd': true, disabled: page === (pagesCount - 1) })}
               aria-label="Fast Forward"
               data-click-target="pageFFwd"
             />

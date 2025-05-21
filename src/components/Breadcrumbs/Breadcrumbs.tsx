@@ -36,14 +36,14 @@ export default function Breadcrumbs(props: IProps) {
 
   return (
     <div className="breadcrumbs">
-      <Link to={`/project/${project.projectId}`}>#</Link>
+      <Link className="breadcrumbs-link breadcrumbs-link_home" to={`/project/${project.projectId}`}>Home</Link>
       {pathWay.map((entity: IKey) => (
         <Fragment key={entity.id}>
-          <span>&nbsp;&gt;&nbsp;</span>
-          <Link to={`/project/${project.projectId}/${entity.id}`}>{entity.label}</Link>
+          <span className="breadcrumbs-separator" />
+          <Link className="breadcrumbs-link" to={`/project/${project.projectId}/${entity.id}`}>{entity.label}</Link>
         </Fragment>
       ))}
-      <span>&nbsp;&gt;&nbsp;</span>
+      <span className="breadcrumbs-separator"/>
       <span>{subfolder.label}</span>
     </div>
   );

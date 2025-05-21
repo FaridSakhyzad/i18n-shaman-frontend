@@ -15,7 +15,6 @@ import { IRootState } from 'store';
 
 import './Key.scss';
 import { ROOT } from '../../constants/app';
-import Tooltip from '../../components/Tooltip';
 
 interface IProps {
   id: string;
