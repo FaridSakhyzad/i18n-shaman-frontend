@@ -26,7 +26,7 @@ interface IPros {
   parentId: string;
   entityPath: string;
   entityType: EntityType,
-  project: IProject | null;
+  project: IProject;
   onCancel: () => void;
   onConfirm: () => void;
   onClose: () => void;
@@ -95,10 +95,6 @@ export default function CreateKey({
       ...keyValues,
       ...newValue,
     });
-  };
-
-  const handleSelectedLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedLanguageId(e.target.value);
   };
 
   const handleTargetLanguageClick = (id: string) => {

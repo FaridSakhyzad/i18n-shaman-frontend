@@ -46,10 +46,10 @@ export default function ProjectLanguages({
   const [projectLanguages, setProjectLanguages] = useState(project.languages);
   const [languageData, setLanguageData] = useState<ILanguage[] | undefined>();
 
-  const getAvailableLanguages = (projectLanguages: IProjectLanguage[], allLanguages: ILanguage[] | undefined) => {
+  const getAvailableLanguages = (languages: IProjectLanguage[], allLanguages: ILanguage[] | undefined) => {
     const languagesMap:IUserLanguagesMapItem = {};
 
-    projectLanguages.forEach((language: IProjectLanguage) => {
+    languages.forEach((language: IProjectLanguage) => {
       languagesMap[language.code] = language;
     });
 

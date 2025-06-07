@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import clsx from 'clsx';
+
+import { AppDispatch } from 'store';
 import Modal from 'components/Modal';
-import { IProject, IProjectLanguage, IUserLanguagesMapItem } from 'interfaces';
+import {
+  EStatusCode,
+  IError,
+  IProject,
+  IProjectLanguage,
+  IResponse,
+  IUserLanguagesMapItem,
+} from 'interfaces';
 
 import 'components/ImportLocales/ImportLocales.scss';
 import './ImportComponents.scss';
 import { importComponentsToProject } from '../../api/projects';
+import { createSystemMessage, EMessageType } from '../../store/systemNotifications';
+import QuickLanguageAdd from '../QuickLanguageAdd';
 
 interface IProps {
   project: IProject | null;
@@ -30,9 +43,13 @@ export default function ImportComponents(props: IProps) {
     onConfirm,
   } = props;
 
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [selectedTargetLanguageCode, setSelectedTargetLanguageCode] = useState<string>(project?.languages[0].code || '');
+  const [loading, setLoading] = useState(false);
+
+  const [projectLanguages, setProjectLanguages] = useState<IProjectLanguage[]>(project?.languages as IProjectLanguage[] || []);
+
+  const [selectedTargetLanguageCode, setSelectedTargetLanguageCode] = useState<string>(project?.languages[0]?.code || '');
 
   const [formDataInState, setFormDataInState] = useState(new FormData());
 
@@ -103,7 +120,19 @@ export default function ImportComponents(props: IProps) {
   const handleImportButtonClick = async () => {
     setLoading(true);
 
-    const result = await importComponentsToProject(formDataInState);
+    const result: IResponse | IError = await importComponentsToProject(formDataInState);
+
+    if (result.statusCode === EStatusCode.OK) {
+      dispatch(createSystemMessage({
+        content: result.message || 'Success!',
+        type: EMessageType.Success,
+      }));
+    } else {
+      dispatch(createSystemMessage({
+        content: result.message || 'Error Importing Components',
+        type: EMessageType.Error,
+      }));
+    }
 
     setLoading(false);
 
@@ -117,11 +146,9 @@ export default function ImportComponents(props: IProps) {
 
     const items: any[] = [];
 
-    const { languages } = project;
-
     let itemsGroupIdx = 0;
 
-    languages.forEach((language, idx) => {
+    projectLanguages.forEach((language, idx) => {
       if (idx > 0 && idx % ITEMS_PER_ROW === 0) {
         itemsGroupIdx += 1;
       }
@@ -153,7 +180,7 @@ export default function ImportComponents(props: IProps) {
   const handleFileDeleteClick = (idx: number) => {
     const newFilesList = [...filesList];
 
-    newFilesList.splice(idx, 1)
+    newFilesList.splice(idx, 1);
 
     setFilesList(newFilesList);
 
@@ -165,7 +192,7 @@ export default function ImportComponents(props: IProps) {
 
     newFormData.set('projectId', project.projectId as string);
 
-    for (let i = 0; i < formDataInState.getAll('files').length; i++) {
+    for (let i = 0; i < formDataInState.getAll('files').length; i += 1) {
       const file = formDataInState.getAll('files')[i];
       const metaData = formDataInState.getAll('metaData')[i];
 
@@ -178,11 +205,37 @@ export default function ImportComponents(props: IProps) {
     setFormDataInState(newFormData);
   };
 
+  const afterLanguagesAdded = (languagesData: IProjectLanguage[]) => {
+    setProjectLanguages(languagesData);
+  };
+
+  const getLanguageCounters = () => {
+    const result: { [key: string]: number } = {};
+
+    for (let i = 0; i < filesList.length; i += 1) {
+      const { code } = filesList[i];
+
+      if (!result[code]) {
+        result[code] = 0;
+      }
+
+      result[code] += 1;
+    }
+
+    return result;
+  };
+
+  const languageCountersMap = getLanguageCounters();
+
   return (
     <Modal
       customClassNames="modal_withBottomButtons modal_import"
       onEscapeKeyPress={onClose}
     >
+      {loading && (
+        <div className="loading modal-loading" />
+      )}
+
       <div className="modal-header">
         <h4 className="modal-title">Import Component Files to project</h4>
         <button
@@ -216,7 +269,13 @@ export default function ImportComponents(props: IProps) {
                           className={`targetLanguageSelector-item ${language.code === selectedTargetLanguageCode ? 'isActive' : ''}`}
                           onClick={() => handleTargetLanguageClick(language.code)}
                         >
-                          {language.label}
+                          {language.code}
+
+                          {languageCountersMap[language.code] && (
+                            <span className="targetLanguageSelector-filesCount">
+                              &nbsp;({languageCountersMap[language.code]})
+                            </span>
+                          )}
                         </span>
                       </td>
                     );
@@ -228,7 +287,7 @@ export default function ImportComponents(props: IProps) {
         </table>
 
         {filesList.length > 0 && (
-          <h4 className="h4">Component Files For {languagesMap[selectedTargetLanguageCode].label} language</h4>
+          <h4 className="h4">Component Files For {languagesMap[selectedTargetLanguageCode].label} language:</h4>
         )}
 
         <div className="importedFilesList">
@@ -252,9 +311,18 @@ export default function ImportComponents(props: IProps) {
           })}
         </div>
 
-        <span className="button success importedFilesList-upload">
-          {languagesMap[selectedTargetLanguageCode] && (
+        <QuickLanguageAdd
+          project={project as IProject}
+          afterLanguagesAdded={afterLanguagesAdded}
+        />
+
+        <span
+          className={clsx({ 'button success importedFilesList-upload': true, disabled: !targetLanguages || targetLanguages.length < 1 })}
+        >
+          {languagesMap[selectedTargetLanguageCode] ? (
             <>Open Files for {languagesMap[selectedTargetLanguageCode].label} language</>
+          ) : (
+            <>Open Files</>
           )}
           <input
             type="file"
@@ -262,6 +330,7 @@ export default function ImportComponents(props: IProps) {
             accept="application/json"
             multiple
             className="buttonUploadInput"
+            disabled={!targetLanguages || targetLanguages.length < 1}
           />
         </span>
       </div>

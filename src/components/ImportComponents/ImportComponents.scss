@@ -24,6 +24,7 @@
   line-height: 13px;
   font-size: 12px;
   cursor: pointer;
+  text-transform: uppercase;
 
   &:hover {
     background-color: #c6c8cc;
@@ -34,6 +35,10 @@
     color: white;
     cursor: default;
   }
+}
+
+.targetLanguageSelector-filesCount {
+  font-weight: bold;
 }
 
 .targetLanguageSelector-item_dummy {
@@ -100,5 +105,35 @@
     td {
       padding-bottom: 1px;
     }
+  }
+}
+
+.impComponentLangQuickAdd {
+  display: flex;
+  gap: 8px;
+
+  .languagesSelector {
+    flex: 1 1 0
+  }
+}
+
+.impComponentLangQuickAdd-addButton {
+  width: 51px;
+  border-radius: 16px;
+  align-self: flex-start;
+  min-height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:before {
+    content: '';
+    display: block;
+    margin: auto;
+    width: 13px;
+    height: 13px;
+    background: url("../../assets/images/icon--checkbox-checkmark.svg") center left no-repeat;
+    background-size: contain;
+    filter: brightness(10);
   }
 }

@@ -1,0 +1,9 @@
+.modal_export {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+
+  .modal-content {
+    flex: 1 1 0;
+  }
+}

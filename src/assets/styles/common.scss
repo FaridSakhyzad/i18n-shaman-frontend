@@ -36,6 +36,11 @@
   &:hover {
     text-decoration: none;
   }
+
+  &:focus,
+  &:focus-visible {
+    outline: 2px solid var(--link-text-color-1);
+  }
 }
 
 .input {
@@ -241,6 +246,7 @@
       transform: translateY(1px);
     }
 
+    &.disabled,
     &[disabled] {
       background-image: linear-gradient(0deg, rgb(130,158,242) 0%, rgb(146,219,253) 100%);
       color: rgba(255 255 255 / 0.5);
@@ -264,11 +270,12 @@
       outline-offset: 2px;
     }
 
-    &:active:not([disabled]) {
+    &:active:not([disabled], .disabled) {
       box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.15);
       transform: translateY(1px);
     }
 
+    &.disabled,
     &[disabled] {
       border-color: #dbdbd9;
       background-image: linear-gradient(0deg, rgb(227,226,226) 0%, rgb(239,239,239) 55%, rgb(251,251,251) 100%);
@@ -291,12 +298,14 @@
       outline-offset: 2px;
     }
 
-    &:active:not([disabled]) {
+    &:active:not([disabled], .disabled) {
       box-shadow: 0 5px 15px 0 rgba(50, 176, 30, 0.5);
       transform: translateY(1px);
     }
 
+    &.disabled,
     &[disabled] {
+      cursor: default;
       background-image: linear-gradient(0deg, rgb(89,216,79) 0%, rgb(105,229,94) 55%, rgb(121,242,109) 100%);
       color: rgba(255 255 255 / 0.5);
     }
@@ -316,13 +325,15 @@
       outline-offset: 2px;
     }
 
-    &:active:not([disabled]) {
+    &:active:not([disabled], .disabled) {
       box-shadow: 0 5px 15px 0 rgba(151, 18, 28, 0.5);
       transform: translateY(1px);
     }
 
+    &.disabled,
     &[disabled] {
-      background-image: linear-gradient(0deg, rgb(89,216,79) 0%, rgb(105,229,94) 55%, rgb(121,242,109) 100%);
+      cursor: default;
+      background-image: linear-gradient( 90deg, rgb(150,18,28) 0%, rgb(196,28,39) 55%, rgb(241,38,49) 100%);
       color: rgba(255 255 255 / 0.5);
     }
   }
@@ -340,7 +351,9 @@
       outline-offset: 2px;
     }
 
+    &.disabled,
     &[disabled] {
+      cursor: default;
       color: #a5a5a5;
     }
   }

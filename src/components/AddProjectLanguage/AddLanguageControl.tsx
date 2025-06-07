@@ -16,7 +16,7 @@ interface IProps {
 
 export default function AddLanguageControl({
   id = '',
-  selected = [],
+  selected,
   multiple = true,
   classNames = '',
   fullLanguagesList,
@@ -26,7 +26,7 @@ export default function AddLanguageControl({
   onOpen = () => {},
   isOpen = null,
 }: IProps) {
-  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>(selected as ILanguage[]);
+  const [selectedLanguages, setSelectedLanguages] = useState<ILanguage[]>(selected as ILanguage[] || []);
 
   const [languageSearchQuery, setLanguageSearchQuery] = useState<string>('');
 
@@ -42,7 +42,9 @@ export default function AddLanguageControl({
     if (isOpen !== null) {
       setLanguagesPanelVisible(isOpen);
     }
-  }, [isOpen]);
+
+    setSelectedLanguages(selected || []);
+  }, [isOpen, selected]);
 
   const [currentLanguageIdx, setCurrentLanguageIdx] = useState<number>(-1);
 
@@ -173,9 +175,9 @@ export default function AddLanguageControl({
 
   const handleLanguagesListItemClick = (e: React.MouseEvent<HTMLUListElement>) => {
     const { target } = e;
-    const { id } = target as HTMLLIElement;
+    const { id: targetId } = target as HTMLLIElement;
 
-    const langIndex: number = languagesMap[id];
+    const langIndex: number = languagesMap[targetId];
 
     let newSelectedLanguages = [...selectedLanguages];
 
