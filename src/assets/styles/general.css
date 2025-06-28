@@ -12,7 +12,12 @@
   --main-font: normal normal var(--main-font-size)/var(--main-line-heignt) var(--main-font-family);
 
   --main-background-color: #f4f3f6;
+
   --input-background-color: #fff;
+  --input-border-color: #bdbdbd;
+
+  --input-border-color-hover: #527acc;
+  --input-border-color-focus: #295fcc;
 
   --color-error: #e62e2e;
 }

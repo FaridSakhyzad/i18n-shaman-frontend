@@ -26,7 +26,7 @@ export default function EditProjectLanguage({
   const [languageInEdit, setLanguageInEdit] = useState<IProjectLanguage | null>(null);
 
   const getProjectsLanguages = async () => {
-    const result = await getUserProjectById(projectId);
+    const result = await getUserProjectById({ projectId });
 
     const language = result.languages.find(({ id }: IProjectLanguage) => id === languageId);
 

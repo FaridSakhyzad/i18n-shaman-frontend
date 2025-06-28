@@ -24,7 +24,7 @@
 }
 
 .keyHeader-expandIcon {
-  width: 12px;
+  width: 6px;
   height: 11px;
   display: block;
   background: url("../../assets/images/icon--key-name-arrow.svg") right center no-repeat;
@@ -162,9 +162,11 @@
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.15s ease;
   overflow: hidden;
+  margin-top: -1px;
 
   &.expanded {
     grid-template-rows: 1fr;
+    margin-top: 0;
   }
 }
 

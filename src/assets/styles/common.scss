@@ -47,17 +47,17 @@
   font: var(--main-font);
   line-height: 19px;
   height: 31px;
-  border: 1px solid #5ca1e5;
+  border: 1px solid var(--input-border-color);
   border-radius: 16px;
   padding: 5px 14px 2px 14px;
   outline: none;
 
   &:hover {
-    border-color: #527acc;
+    border-color: var(--input-border-color-hover);
   }
 
   &:focus {
-    border-color: #295fcc;
+    border-color: var(--input-border-color-focus);
   }
 
   &[disabled] {
@@ -69,7 +69,7 @@
 
 .textarea {
   font: var(--main-font);
-  border: 1px solid #5ca1e5;
+  border: 1px solid var(--input-border-color);
   border-radius: 15px;
   resize: vertical;
   min-height: 100px;
@@ -77,11 +77,11 @@
   outline: none;
 
   &:hover {
-    border-color: #527acc;
+    border-color: var(--input-border-color-hover);
   }
 
-  &:focus-visible {
-    border-color: #295fcc;
+  &:focus {
+    border-color: var(--input-border-color-focus);
   }
 }
 
@@ -89,7 +89,7 @@
   font: var(--main-font);
   line-height: 19px;
   height: 31px;
-  border: 1px solid #5ca1e5;
+  border: 1px solid var(--input-border-color);
   border-radius: 16px;
   padding: 6px 34px 4px 14px;
   outline: none;
@@ -98,11 +98,11 @@
   color: var(--main-text-color);
 
   &:hover {
-    border-color: #527acc;
+    border-color: var(--input-border-color-hover);
   }
 
-  &:focus-visible {
-    border-color: #295fcc;
+  &:focus {
+    border-color: var(--input-border-color-focus);
   }
 }
 
@@ -222,9 +222,10 @@
   font-size: 14px;
   line-height: 19px;
   border-radius: 65536px;
-  padding: 6px 12px;
+  padding: 7px 12px 5px 12px;
   background-clip: padding-box;
   text-align: center;
+  font-family: var(--main-font-family);
 
   &.primary {
     color: white;
@@ -344,6 +345,7 @@
 
     &:hover {
       background-color: rgba(56, 143, 242, 0.15);
+      text-decoration: none;
     }
 
     &:focus-visible {
@@ -355,6 +357,21 @@
     &[disabled] {
       cursor: default;
       color: #a5a5a5;
+    }
+  }
+
+  &.aqua {
+    background-color: inherit;
+    color: var(--link-text-color-1);
+    border: 1px solid var(--link-text-color-2);
+
+    &:hover {
+      border: 1px solid var(--link-text-color-1);
+    }
+
+    &:focus-visible {
+      outline: 1px solid var(--link-text-color-1);
+      outline-offset: 2px;
     }
   }
 
@@ -580,7 +597,7 @@
     background-color: white;
     border-radius: 50%;
     margin: auto 3px;
-    transition: all 0.2s ease-out;
+    transition: all 0.1s ease-out;
   }
 
   &:hover {

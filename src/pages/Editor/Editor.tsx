@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+
+import clsx from 'clsx';
 
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
@@ -31,10 +32,30 @@ import './Editor.scss';
 import Modal from '../../components/Modal';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import EditorHeader from './EditorHeader';
+import Dropdown from '../../components/Dropdown';
 
 interface IProjectsMenuCoords {
   top: number;
   left: number;
+}
+
+enum EFilter {
+  hideEmpty = 'hideEmpty',
+  hideNonEmpty = 'hideNonEmpty',
+  hideFolders = 'hideFolders',
+  hideComponents = 'hideComponents',
+  hideKeys = 'hideKeys',
+}
+
+enum ESorting {
+  created = 'created',
+  name = 'name',
+  type = 'type',
+}
+
+enum ESortingDirections {
+  asc = 'asc',
+  desc = 'desc',
 }
 
 export default function Editor() {
@@ -50,6 +71,40 @@ export default function Editor() {
 
   const [page, setPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
+
+  const initialSortBy = searchParams.get('sort_by') || 'name';
+  const initialSortDirection = searchParams.get('sort_dir') || 'asc';
+
+  const [sorting, setSorting] = useState<{ sortBy: string, sortDirection: string }>({
+    sortBy: initialSortBy,
+    sortDirection: initialSortDirection,
+  });
+
+  const getInitialFilters = () => {
+    const defaults = {
+      [EFilter.hideEmpty]: false,
+      [EFilter.hideNonEmpty]: false,
+      [EFilter.hideFolders]: false,
+      [EFilter.hideComponents]: false,
+      [EFilter.hideKeys]: false,
+    };
+
+    const data = searchParams.get('filters');
+
+    if (!data) {
+      return defaults;
+    }
+
+    const result: { [key: string]: boolean } = { ...defaults };
+
+    data.split(',').forEach((item: string) => {
+      result[item] = true;
+    });
+
+    return result;
+  };
+
+  const [filters, setFilters] = useState(getInitialFilters());
 
   const { projects } = useSelector((state: IRootState) => state.projects);
 
@@ -72,7 +127,14 @@ export default function Editor() {
   const fetchProjectData = async () => {
     setLoading(true);
 
-    const result = await getUserProjectById(currentProjectId, subFolderId, page, itemsPerPage);
+    const result = await getUserProjectById({
+      projectId: currentProjectId,
+      subFolderId,
+      page,
+      itemsPerPage,
+      ...sorting,
+      filters: filters ? Object.entries(filters).filter(([,value]) => value).map(([filter]) => filter) : null,
+    });
 
     if ('error' in result) {
       console.error(result.message);
@@ -87,7 +149,7 @@ export default function Editor() {
     dispatch(getProjects(userId as string));
 
     fetchProjectData();
-  }, [currentProjectId, subFolderId, page]);
+  }, [currentProjectId, subFolderId, page, sorting, filters]);
 
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
@@ -241,9 +303,10 @@ export default function Editor() {
   };
 
   const goToPage = (targetPage: number) => {
-    const { origin, pathname } = window.location;
+    const { location } = window;
 
-    const url = new URL(`${origin}${pathname}`);
+    const url = new URL(location.href);
+
     url.searchParams.set('page', `${targetPage}`);
     url.searchParams.set('per_page', `${itemsPerPage}`);
 
@@ -387,6 +450,61 @@ export default function Editor() {
     setExtendedSearchModalVisible(false);
 
     applySearchParams(searchQuery || '', caseSensitive, exactMatch);
+  };
+
+  const [isSortingMenuVisible, setIsSortingMenuVisible] = useState<boolean>(false);
+
+  const handleSortByButtonClick = () => {
+    setIsSortingMenuVisible(!isSortingMenuVisible);
+  };
+
+  const handleSortingButtonClick = (sortBy: string, sortDirection: string) => {
+    setIsSortingMenuVisible(false);
+
+    const { location } = window;
+
+    const url = new URL(location.href);
+
+    url.searchParams.set('sort_by', `${sortBy}`);
+    url.searchParams.set('sort_dir', `${sortDirection}`);
+
+    setSorting({ sortBy, sortDirection });
+
+    window.history.pushState({}, '', url);
+  };
+
+  const [isFiltersMenuVisible, setIsFiltersMenuVisible] = useState<boolean>(false);
+
+  const handleFiltersButtonClick = () => {
+    setIsFiltersMenuVisible(!isFiltersMenuVisible);
+  };
+
+  const handleFilteringSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>, filtersData: any) => {
+    const { checked: enabled } = e.target;
+
+    const newFiltersData = {
+      ...filters,
+      [filtersData.filter]: enabled,
+    };
+
+    const { location } = window;
+
+    const url = new URL(location.href);
+
+    const filtersString = Object.entries(newFiltersData)
+      .filter(([, value]) => value)
+      .map((item) => item[0])
+      .join(',');
+
+    if (filtersString.length > 0) {
+      url.searchParams.set('filters', `${filtersString}`);
+    } else {
+      url.searchParams.delete('filters');
+    }
+
+    setFilters(newFiltersData);
+
+    window.history.pushState({}, '', url);
   };
 
   return (
@@ -667,6 +785,126 @@ export default function Editor() {
         </>
       )}
 
+      {isSortingMenuVisible && (
+        <Dropdown
+          anchor="._button-sorting"
+          onOutsideClick={() => setIsSortingMenuVisible(false)}
+          classNames="editorFiltersDropdown"
+        >
+          <div className="editorSorting">
+            <button
+              type="button"
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.created && sorting.sortDirection === ESortingDirections.asc })}
+              onClick={() => handleSortingButtonClick(ESorting.created, ESortingDirections.asc)}
+            >
+              Newest First
+            </button>
+            <button
+              type="button"
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.created && sorting.sortDirection === ESortingDirections.desc })}
+              onClick={() => handleSortingButtonClick(ESorting.created, ESortingDirections.desc)}
+            >
+              Oldest First
+            </button>
+            <button
+              type="button"
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.name && sorting.sortDirection === ESortingDirections.asc })}
+              onClick={() => handleSortingButtonClick(ESorting.name, ESortingDirections.asc)}
+            >
+              By Name A - Z
+            </button>
+            <button
+              type="button"
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.name && sorting.sortDirection === ESortingDirections.desc })}
+              onClick={() => handleSortingButtonClick(ESorting.name, ESortingDirections.desc)}
+            >
+              By Name Z - A
+            </button>
+            <button
+              type="button"
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.type && sorting.sortDirection === ESortingDirections.asc })}
+              onClick={() => handleSortingButtonClick(ESorting.type, ESortingDirections.asc)}
+            >
+              By Type A - Z
+            </button>
+            <button
+              type="button"
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.type && sorting.sortDirection === ESortingDirections.desc })}
+              onClick={() => handleSortingButtonClick(ESorting.type, ESortingDirections.desc)}
+            >
+              By Type Z - A
+            </button>
+          </div>
+        </Dropdown>
+      )}
+
+      {isFiltersMenuVisible && (
+        <Dropdown
+          anchor="._button-filters"
+          onOutsideClick={() => setIsFiltersMenuVisible(false)}
+          classNames="editorFiltersDropdown"
+        >
+          <div className="editorFilters">
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Empty</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hideEmpty]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideEmpty })}
+                />
+              </label>
+            </div>
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Non-Empty</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hideNonEmpty]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideNonEmpty })}
+                />
+              </label>
+            </div>
+            <div className="editorFilters-separator" />
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Folders</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hideFolders]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideFolders })}
+                />
+              </label>
+            </div>
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Components</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hideComponents]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideComponents })}
+                />
+              </label>
+            </div>
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Keys</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hideKeys]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideKeys })}
+                />
+              </label>
+            </div>
+          </div>
+        </Dropdown>
+      )}
+
       <section className="editorToolbar">
         <div className="editorSearch">
           <input
@@ -689,6 +927,24 @@ export default function Editor() {
               onClick={handleExtendedSearchClick}
             />
           </div>
+        </div>
+
+        <div className="editorControls">
+          <button
+            type="button"
+            className="button primary editorControls-button _button-sorting"
+            onClick={handleSortByButtonClick}
+          >
+            Sort by
+          </button>
+
+          <button
+            type="button"
+            className="button primary editorControls-button _button-filters"
+            onClick={handleFiltersButtonClick}
+          >
+            Filters
+          </button>
         </div>
 
         <div className="editorCreateBlock">

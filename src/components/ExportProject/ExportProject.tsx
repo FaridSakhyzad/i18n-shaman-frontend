@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Modal from 'components/Modal';
 import { IProject } from 'interfaces';
-import { exportProjectToJson } from 'api/projects';
+import { EExportFormats, exportProject, IExportProject } from 'api/projects';
 
 import './ExportProject.scss';
+import clsx from 'clsx';
 
 interface IProps {
   project: IProject | null;
@@ -24,6 +25,11 @@ export default function ExportProject(props: IProps) {
   const { projectId = '', projectName } = project || {};
 
   const [loading, setLoading] = useState(false);
+  const [exportFormat, setExportFormat] = useState<EExportFormats>();
+
+  const handleSelectFormatButtonClick = (format: EExportFormats) => {
+    setExportFormat(format);
+  };
 
   const handleCloseButtonClick = () => {
     onClose();
@@ -33,14 +39,39 @@ export default function ExportProject(props: IProps) {
     onCancel();
   };
 
+  const sendXmlExportRequest = async () => {
+    console.log('sendXmlExportRequest');
+    console.log('sendXmlExportRequest');
+    console.log('sendXmlExportRequest');
+
+    const exportSettings: IExportProject = {
+      projectId,
+      format: EExportFormats.androidXml,
+    };
+
+    const response = await exportProject(exportSettings);
+
+    console.log('response', response);
+  };
+
+  useEffect(() => {
+    //console.log('USE EFFECT');
+    //sendXmlExportRequest();
+  }, []);
+
   const handleExportButtonClick = async () => {
     setLoading(true);
 
-    if (!project) {
+    if (!project || !exportFormat) {
       return;
     }
 
-    const response = await exportProjectToJson(projectId as string);
+    const exportSettings: IExportProject = {
+      projectId,
+      format: exportFormat,
+    };
+
+    const response = await exportProject(exportSettings);
 
     const url = window.URL.createObjectURL(new Blob([response.data]));
 
@@ -78,18 +109,45 @@ export default function ExportProject(props: IProps) {
         />
       </div>
 
+      <div className="modal-content">
+        <div className="exportFormatSelect">
+          <button
+            type="button"
+            className={clsx('button exportFormatSelect-button', exportFormat === EExportFormats.json ? 'primary' : 'aqua')}
+            onClick={() => handleSelectFormatButtonClick(EExportFormats.json)}
+          >
+            JSON
+          </button>
+          <button
+            type="button"
+            className={clsx('button exportFormatSelect-button', exportFormat === EExportFormats.androidXml ? 'primary' : 'aqua')}
+            onClick={() => handleSelectFormatButtonClick(EExportFormats.androidXml)}
+          >
+            Android XML
+          </button>
+          <button
+            type="button"
+            className={clsx('button exportFormatSelect-button', exportFormat === EExportFormats.appleStrings ? 'primary' : 'aqua')}
+            onClick={() => handleSelectFormatButtonClick(EExportFormats.appleStrings)}
+          >
+            Apple Strings
+          </button>
+        </div>
+      </div>
+
       <div className="modal-buttonBox">
         <button
           type="button"
-          className="button secondary"
+          className="button modal-button secondary"
           onClick={handleCancelButtonClick}
         >
           Close
         </button>
         <button
           type="button"
-          className="button primary"
+          className="button modal-button primary"
           onClick={handleExportButtonClick}
+          disabled={!exportFormat}
         >
           Export
         </button>

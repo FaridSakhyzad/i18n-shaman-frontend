@@ -7,3 +7,17 @@
     flex: 1 1 0;
   }
 }
+
+.exportFormatSelect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 0 7px 0;
+  min-height: 131px;
+}
+
+.exportFormatSelect-button {
+  width: 140px;
+}

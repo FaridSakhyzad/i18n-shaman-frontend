@@ -44,9 +44,55 @@ export const getUserProjects = async (userId: string) => {
   }
 };
 
-export const getUserProjectById = async (projectId: string, subFolderId?: string, page: number = 0, itemsPerPage: number = 50) => {
+interface IGetUserProjectById {
+  projectId: string;
+  subFolderId?: string;
+  page?: number;
+  itemsPerPage?: number;
+  sortBy?: string;
+  sortDirection?: string;
+  filters?: string[] | null;
+}
+
+export const getUserProjectById = async (params: IGetUserProjectById) => {
+  const {
+    projectId,
+    subFolderId,
+    page = 0,
+    itemsPerPage = 50,
+    sortBy,
+    sortDirection = 'asc',
+    filters,
+  } = params;
+
+  let queryString = `getUserProjectById?projectId=${projectId}`;
+
+  if (subFolderId) {
+    queryString += `&subFolderId=${subFolderId}`;
+  }
+
+  if (page) {
+    queryString += `&page=${page}`;
+  }
+
+  if (itemsPerPage) {
+    queryString += `&itemsPerPage=${itemsPerPage}`;
+  }
+
+  if (sortBy) {
+    queryString += `&sortBy=${sortBy}`;
+
+    if (sortDirection) {
+      queryString += `&sortDirection=${sortDirection}`;
+    }
+  }
+
+  if (filters && filters.length > 0) {
+    queryString += `&filters=${filters.join(',')}`;
+  }
+
   try {
-    return (await apiClient.get(`getUserProjectById?projectId=${projectId}${subFolderId ? `&subFolderId=${subFolderId}` : ''}&page=${page}&itemsPerPage=${itemsPerPage}`)).data;
+    return (await apiClient.get(queryString)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }
@@ -132,8 +178,20 @@ export const getMultipleEntitiesDataByParentId = async ({ projectId, parentId }:
   }
 };
 
-export const exportProjectToJson = async (projectId: string) => {
-  return apiClient.get(`/exportProjectToJson?projectId=${projectId}`, {
+export enum EExportFormats {
+  json = 'json',
+  androidXml = 'android_xml',
+  appleStrings = 'apple_string',
+  phpArray = 'php_array',
+}
+
+export interface IExportProject {
+  projectId: string;
+  format: EExportFormats
+}
+
+export const exportProject = async ({ projectId, format }: IExportProject) => {
+  return apiClient.get(`/exportProject?projectId=${projectId}&format=${format}`, {
     responseType: 'blob',
   });
 };

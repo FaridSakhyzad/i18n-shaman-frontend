@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
 
 import clsx from 'clsx';
 
@@ -17,7 +18,6 @@ import {
 import ItemsList from './ItemsList';
 
 import './Key.scss';
-import { Link, useParams } from 'react-router-dom';
 
 interface IProps {
   id: string;
@@ -117,7 +117,7 @@ export default function FolderComponent({
               data-click-target="newEntity"
               data-parent-id={id}
               data-parent-path={`${pathCache}/${id}`}
-              data-new-entity-type={type}
+              data-new-entity-type={EntityType.Folder}
               aria-label="Create New Folder"
             />
           </div>

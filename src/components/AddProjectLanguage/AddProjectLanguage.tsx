@@ -34,7 +34,7 @@ export default function AddProjectLanguage({
   const [selectedLanguages, setSelectedLanguages] = useState<IProjectLanguage[]>([]);
 
   const getProjectLanguages = async () => {
-    const result = await getUserProjectById(projectId);
+    const result = await getUserProjectById({ projectId });
 
     const languages = await getAppLanguagesData();
 
@@ -284,14 +284,14 @@ export default function AddProjectLanguage({
       <div className="modal-buttonBox">
         <button
           type="button"
-          className="button secondary addProjectLang-cancelButton"
+          className="button secondary modal-button addProjectLang-cancelButton"
           onClick={handleCancelButtonClick}
         >
           Close
         </button>
         <button
           type="button"
-          className="button primary addProjectLang-addButton"
+          className="button primary modal-button addProjectLang-addButton"
           onClick={handleAddButtonClick}
           disabled={selectedLanguages.length === 0}
         >

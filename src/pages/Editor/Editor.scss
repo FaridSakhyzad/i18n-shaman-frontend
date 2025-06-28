@@ -1,5 +1,5 @@
 .header {
-  padding: 21px 29px 18px 29px;
+  padding: 21px 22px 18px 22px;
   display: flex;
   gap: 12px;
   background-color: white;
@@ -10,7 +10,7 @@
   padding: 0;
   margin: 0;
   display: flex;
-  gap: 24px;
+  gap: 6px;
 }
 
 .headerMenu-item {
@@ -18,6 +18,7 @@
 }
 
 .headerMenu-link {
+  display: block;
   text-decoration: none;
 
   &:hover {
@@ -168,12 +169,13 @@
   display: flex;
   align-items: center;
   position: relative;
-  z-index: 110;
+  z-index: 10;
 }
 
 .editorSearch {
   width: 240px;
   position: relative;
+  margin-right: 24px;
 }
 
 .editorSearch-input {
@@ -228,6 +230,80 @@
   &.editorSearch-control_advanced {
     background-image: url("../../assets/images/icon--settings.svg");
   }
+}
+
+.editorControls {
+  display: flex;
+  gap: 12px;
+}
+
+.editorControls-button {
+  min-width: 70px;
+}
+
+.editorFiltersDropdown {
+  &.dropdown {
+    padding: 0;
+  }
+
+  min-width: 200px;
+}
+
+.editorSorting {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.editorSorting-button {
+  text-align: left;
+  border-radius: 15px;
+  padding: 6px 18px;
+
+  &.isActive {
+    font-weight: bold;
+  }
+
+  &:first-child {
+    padding-top: 9px;
+  }
+
+  &:last-child {
+    padding-bottom: 9px;
+  }
+
+  &:not(:first-child) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  &:not(:last-child) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.editorFilters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px 0;
+  padding: 12px 18px;
+}
+
+.editorFilters-row {}
+
+.editorFilters-separator {
+  border-top: 1px solid #e6e6e6;
+}
+
+.editorFilters-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editorFilters-controlLabel {
+  line-height: 19px;
 }
 
 .editorCreateBlock {

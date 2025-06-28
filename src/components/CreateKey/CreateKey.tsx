@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
-import { useSelector } from 'react-redux';
 import Modal from 'components/Modal';
-import { IRootState } from 'store';
 
 import { createProjectEntity, getMultipleEntitiesDataByParentId } from 'api/projects';
 import {
@@ -56,7 +54,7 @@ export default function CreateKey({
 
     const firstLang = project.languages[0];
 
-    return firstLang.id;
+    return firstLang ? firstLang.id : '';
   };
 
   const [selectedLanguageId, setSelectedLanguageId] = useState<string>(getInitialSelectedLanguageId());

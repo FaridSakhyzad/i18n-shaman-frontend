@@ -63,12 +63,12 @@ export default function EditorHeader(props: IProps) {
       <div className="header">
         <ul className="headerMenu">
           <li className="headerMenu-item">
-            <Link className="link headerMenu-link" to="/projects">Projects</Link>
+            <Link className="button ghost headerMenu-link" to="/projects">Projects</Link>
           </li>
           <li className="headerMenu-item">
             <button
               type="button"
-              className="buttonInline link headerMenu-link"
+              className="button ghost headerMenu-link"
               onClick={handleImportLocalesClick}
             >
               Import Locales
@@ -77,7 +77,7 @@ export default function EditorHeader(props: IProps) {
           <li className="headerMenu-item">
             <button
               type="button"
-              className="buttonInline link headerMenu-link"
+              className="button ghost headerMenu-link"
               onClick={handleImportComponentsClick}
             >
               Import Components
@@ -86,7 +86,7 @@ export default function EditorHeader(props: IProps) {
           <li className="headerMenu-item">
             <button
               type="button"
-              className="buttonInline link headerMenu-link"
+              className="button ghost headerMenu-link"
               onClick={handleExportClick}
             >
               Export
