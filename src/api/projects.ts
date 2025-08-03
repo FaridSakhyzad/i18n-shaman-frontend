@@ -1,8 +1,9 @@
 import {
+  IFilter,
   IKey,
   IKeyUpdateError,
   IKeyValue,
-  IProject,
+  IProject, ISearchParams,
 } from 'interfaces';
 import { apiClient } from './client';
 
@@ -51,7 +52,9 @@ interface IGetUserProjectById {
   itemsPerPage?: number;
   sortBy?: string;
   sortDirection?: string;
-  filters?: string[] | null;
+  filters?: IFilter | null;
+  search?: string | null;
+  searchParams?: ISearchParams | null;
 }
 
 export const getUserProjectById = async (params: IGetUserProjectById) => {
@@ -63,6 +66,8 @@ export const getUserProjectById = async (params: IGetUserProjectById) => {
     sortBy,
     sortDirection = 'asc',
     filters,
+    search = null,
+    searchParams,
   } = params;
 
   let queryString = `getUserProjectById?projectId=${projectId}`;
@@ -71,13 +76,8 @@ export const getUserProjectById = async (params: IGetUserProjectById) => {
     queryString += `&subFolderId=${subFolderId}`;
   }
 
-  if (page) {
-    queryString += `&page=${page}`;
-  }
-
-  if (itemsPerPage) {
-    queryString += `&itemsPerPage=${itemsPerPage}`;
-  }
+  queryString += `&page=${page}`;
+  queryString += `&itemsPerPage=${itemsPerPage}`;
 
   if (sortBy) {
     queryString += `&sortBy=${sortBy}`;
@@ -87,8 +87,22 @@ export const getUserProjectById = async (params: IGetUserProjectById) => {
     }
   }
 
-  if (filters && filters.length > 0) {
-    queryString += `&filters=${filters.join(',')}`;
+  if (filters && Object.entries(filters).length > 0) {
+    const filterQueryString = Object.entries(filters).filter(([,value]) => value).map(([filter]) => filter).join(',');
+
+    if (filterQueryString.length > 0) {
+      queryString += `&filters=${filterQueryString}`;
+    }
+  }
+
+  if (search && search.length > 0) {
+    queryString += `&search=${encodeURIComponent(search)}`;
+
+    if (searchParams && Object.entries(searchParams).length > 0) {
+      const searchParamsString = Object.entries(searchParams).filter(([,value]) => value).map(([value]) => value).join(',');
+
+      queryString += `&search_params=${searchParamsString}`;
+    }
   }
 
   try {
@@ -132,20 +146,6 @@ interface IUpdateKey {
 export const updateKey = async (data: IUpdateKey): Promise<IKey | IKeyUpdateError> => {
   try {
     return (await apiClient.post('/updateKey', data)).data;
-  } catch (error: any) {
-    return error.response && error.response.data;
-  }
-};
-
-interface IgetEntityContent {
-  projectId: string;
-  userId: string;
-  componentId: string;
-}
-
-export const getEntityContent = async ({ userId, projectId, componentId }: IgetEntityContent) => {
-  try {
-    return (await apiClient.get(`getEntityContent?userId=${userId}&projectId=${projectId}&componentId=${componentId}`)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

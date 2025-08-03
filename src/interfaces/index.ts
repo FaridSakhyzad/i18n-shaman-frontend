@@ -81,3 +81,63 @@ export enum EntityType {
   Folder = 'folder',
   Component = 'component',
 }
+
+export enum ESorting {
+  created = 'created',
+  name = 'name',
+  type = 'type',
+}
+
+export enum ESortDirection {
+  asc = 'asc',
+  desc = 'desc',
+}
+
+export interface ISorting {
+  sortBy: ESorting;
+  sortDirection: ESortDirection;
+}
+
+export enum ESearchParams {
+  caseSensitive = 'case_sensitive',
+  exactMatch = 'exact_match',
+  skipKeys = 'skip_keys',
+  skipValues = 'skip_values',
+  skipFolders = 'skip_folders',
+  skipComponents = 'skip_components',
+}
+
+export interface ISearchParams {
+  [ESearchParams.caseSensitive]: boolean;
+  [ESearchParams.exactMatch]: boolean;
+  [ESearchParams.skipKeys]: boolean;
+  [ESearchParams.skipValues]: boolean;
+  [ESearchParams.skipFolders]: boolean;
+  [ESearchParams.skipComponents]: boolean;
+}
+
+export enum EFilter {
+  hideEmpty = 'hideEmpty',
+  hidePartiallyPopulated = 'hidePartiallyPopulated',
+  hideFullyPopulated = 'hideFullyPopulated',
+  hideFolders = 'hideFolders',
+  hideComponents = 'hideComponents',
+  hideKeys = 'hideKeys',
+}
+
+export interface IFilter {
+  [EFilter.hideEmpty]: boolean;
+  [EFilter.hidePartiallyPopulated]: boolean;
+  [EFilter.hideFullyPopulated]: boolean;
+  [EFilter.hideFolders]: boolean;
+  [EFilter.hideComponents]: boolean;
+  [EFilter.hideKeys]: boolean;
+}
+
+export interface INavigationData {
+  subFolderId?: string;
+  page?: number;
+  itemsPerPage?: number;
+  sorting: ISorting;
+  filters: IFilter;
+}

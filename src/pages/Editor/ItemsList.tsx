@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react';
 import { DEFAULT_ITEMS_PER_PAGE, PROJECT_ITEMS_MAX_DEPTH } from 'constants/app';
-import { IKey, IKeyValue, IProjectLanguage } from 'interfaces';
+import { IKey, IKeyValue, IProjectLanguage, INavigationData } from 'interfaces';
+import clsx from 'clsx';
+
 import Key from './Key';
 // eslint-disable-next-line import/no-cycle
 import FolderComponent from './Folder';
-import clsx from 'clsx';
 
 interface IProps {
   keys: IKey[],
@@ -22,6 +23,7 @@ interface IProps {
   page?: number;
   totalCount?: number;
   itemsPerPage?: number;
+  navigationData?: INavigationData | {};
 }
 
 const TOTAL_PAGES = 10;
@@ -38,6 +40,7 @@ export default function ItemsList({
   page = 13,
   totalCount = 0,
   itemsPerPage = DEFAULT_ITEMS_PER_PAGE,
+  navigationData = {},
 }: IProps) {
   if (iteration > PROJECT_ITEMS_MAX_DEPTH) {
     return null;
@@ -90,6 +93,7 @@ export default function ItemsList({
                 iteration={iteration}
                 path={path}
                 pathCache={pathCache}
+                navigationData={navigationData}
               />
             </Fragment>
           );
@@ -109,6 +113,7 @@ export default function ItemsList({
                 iteration={iteration}
                 path={path}
                 pathCache={pathCache}
+                navigationData={navigationData}
               />
             </Fragment>
           );

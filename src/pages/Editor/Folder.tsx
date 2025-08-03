@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-
 import clsx from 'clsx';
 
-import { IRootState } from 'store';
-import { getEntityContent } from 'api/projects';
+import { getUserProjectById } from 'api/projects';
 import { ROOT } from 'constants/app';
 import {
   EntityType,
   IKey,
   IKeyValue,
+  INavigationData,
   IProjectLanguage,
 } from 'interfaces';
 
@@ -30,6 +28,7 @@ interface IProps {
   path: string;
   pathCache: string;
   iteration?: number;
+  navigationData?: INavigationData | {}
 }
 
 export default function FolderComponent({
@@ -43,10 +42,9 @@ export default function FolderComponent({
   path,
   pathCache,
   iteration = 0,
+  navigationData = {},
 }: IProps) {
   const { projectId: currentProjectId = '' } = useParams();
-
-  const { id: userId } = useSelector((state: IRootState) => state.user);
 
   const [keys, setKeys] = useState<IKey[]>(initialKeys);
   const [isExpanded, setIsExpanded] = useState(initialKeys.length > 0);
@@ -59,10 +57,10 @@ export default function FolderComponent({
       return;
     }
 
-    const result = await getEntityContent({
-      userId: userId as string,
-      projectId,
-      componentId: id,
+    const result = await getUserProjectById({
+      projectId: currentProjectId,
+      subFolderId: id,
+      ...navigationData,
     });
 
     const { keys: newKeys = [], values: newValues = {} } = result;
@@ -167,6 +165,7 @@ export default function FolderComponent({
               iteration={1 + iteration}
               path={`${path !== ROOT ? `${path}/` : ''}${label}`}
               pathCache={`${pathCache}/${id}`}
+              navigationData={navigationData}
             />
           )}
         </div>

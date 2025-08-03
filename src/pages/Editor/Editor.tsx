@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -6,15 +6,25 @@ import clsx from 'clsx';
 
 import { AppDispatch, IRootState } from 'store';
 import { getProjects } from 'store/projects';
-import { setValues } from 'store/search';
+import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { DEFAULT_ITEMS_PER_PAGE, ROOT } from 'constants/app';
-import { EntityType, IKey, IProject } from 'interfaces';
+
+import {
+  EntityType,
+  IProject,
+  EFilter,
+  ESorting,
+  ISorting,
+  ESortDirection,
+  IFilter,
+  ISearchParams, ESearchParams,
+} from 'interfaces';
+
 import {
   deleteProjectEntity,
   getUserProjectById,
 } from 'api/projects';
-import { search } from 'api/search';
 
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
@@ -22,40 +32,18 @@ import CreateKey from 'components/CreateKey';
 import EditEntity from 'components/EditEntity';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import Tooltip from 'components/Tooltip';
-import { createSystemMessage, EMessageType } from 'store/systemNotifications';
-
-import { debounce } from 'utils/utils';
+import Modal from 'components/Modal';
+import Breadcrumbs from 'components/Breadcrumbs';
+import Dropdown from 'components/Dropdown';
 
 import ItemsList from './ItemsList';
+import EditorHeader from './EditorHeader';
 
 import './Editor.scss';
-import Modal from '../../components/Modal';
-import Breadcrumbs from '../../components/Breadcrumbs';
-import EditorHeader from './EditorHeader';
-import Dropdown from '../../components/Dropdown';
 
 interface IProjectsMenuCoords {
   top: number;
   left: number;
-}
-
-enum EFilter {
-  hideEmpty = 'hideEmpty',
-  hideNonEmpty = 'hideNonEmpty',
-  hideFolders = 'hideFolders',
-  hideComponents = 'hideComponents',
-  hideKeys = 'hideKeys',
-}
-
-enum ESorting {
-  created = 'created',
-  name = 'name',
-  type = 'type',
-}
-
-enum ESortingDirections {
-  asc = 'asc',
-  desc = 'desc',
 }
 
 export default function Editor() {
@@ -64,47 +52,94 @@ export default function Editor() {
   const { id: userId } = useSelector((state: IRootState) => state.user);
   const { projectId: currentProjectId = '', subFolderId = '' } = useParams();
 
-  const [searchParams] = useSearchParams();
+  const useSearchParamsResult = useSearchParams();
 
-  const initialPage = searchParams.get('page') ? parseInt(searchParams.get('page') as string, 10) : 0;
-  const initialItemsPerPage = searchParams.get('per_page') ? parseInt(searchParams.get('per_page') as string, 10) : DEFAULT_ITEMS_PER_PAGE;
+  const urlSearchParams = useSearchParamsResult[0];
+
+  const initialPage = urlSearchParams.get('page') ? parseInt(urlSearchParams.get('page') as string, 10) : 0;
+  const initialItemsPerPage = urlSearchParams.get('per_page') ? parseInt(urlSearchParams.get('per_page') as string, 10) : DEFAULT_ITEMS_PER_PAGE;
 
   const [page, setPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
 
-  const initialSortBy = searchParams.get('sort_by') || 'name';
-  const initialSortDirection = searchParams.get('sort_dir') || 'asc';
+  const initialSortBy = (urlSearchParams.get('sort_by') || ESorting.name) as ESorting;
+  const initialSortDirection = (urlSearchParams.get('sort_dir') || 'asc') as ESortDirection;
 
-  const [sorting, setSorting] = useState<{ sortBy: string, sortDirection: string }>({
+  const [sorting, setSorting] = useState<ISorting>({
     sortBy: initialSortBy,
     sortDirection: initialSortDirection,
   });
 
-  const getInitialFilters = () => {
+  const getInitialFilters = (): IFilter => {
     const defaults = {
       [EFilter.hideEmpty]: false,
-      [EFilter.hideNonEmpty]: false,
+      [EFilter.hideFullyPopulated]: false,
+      [EFilter.hidePartiallyPopulated]: false,
       [EFilter.hideFolders]: false,
       [EFilter.hideComponents]: false,
       [EFilter.hideKeys]: false,
-    };
+    } as IFilter;
 
-    const data = searchParams.get('filters');
+    const data = urlSearchParams.get('filters');
 
     if (!data) {
       return defaults;
     }
 
-    const result: { [key: string]: boolean } = { ...defaults };
+    const result: IFilter = { ...defaults };
 
     data.split(',').forEach((item: string) => {
-      result[item] = true;
+      result[item as EFilter] = true;
     });
 
     return result;
   };
 
-  const [filters, setFilters] = useState(getInitialFilters());
+  const [filters, setFilters] = useState<IFilter>(getInitialFilters());
+
+  const getInitialSearchQuery = () => {
+    const { location } = window;
+
+    const url = new URL(location.href);
+
+    return url.searchParams.get('search') || null;
+  };
+
+  const getInitialSearchParams = (): ISearchParams => {
+    const defaults = {
+      [ESearchParams.caseSensitive]: false,
+      [ESearchParams.exactMatch]: false,
+      [ESearchParams.skipKeys]: false,
+      [ESearchParams.skipValues]: false,
+      [ESearchParams.skipFolders]: false,
+      [ESearchParams.skipComponents]: false,
+    } as ISearchParams;
+
+    const data = urlSearchParams.get('search_params');
+
+    if (!data) {
+      return defaults;
+    }
+
+    const result: ISearchParams = { ...defaults };
+
+    data.split(',').forEach((item: string) => {
+      result[item as ESearchParams] = true;
+    });
+
+    return result;
+  };
+
+  const [searchQuery, setSearchQuery] = useState<string | null>(getInitialSearchQuery());
+  const [searchParams, setSearchParams] = useState<ISearchParams>(getInitialSearchParams());
+
+  const [searchQueryRequest, setSearchQueryRequest] = useState<string | null>(searchQuery);
+
+  const searchQueryRef = useRef(searchQuery);
+  searchQueryRef.current = searchQuery;
+
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
 
   const { projects } = useSelector((state: IRootState) => state.projects);
 
@@ -133,7 +168,9 @@ export default function Editor() {
       page,
       itemsPerPage,
       ...sorting,
-      filters: filters ? Object.entries(filters).filter(([,value]) => value).map(([filter]) => filter) : null,
+      filters,
+      search: searchQuery,
+      searchParams,
     });
 
     if ('error' in result) {
@@ -149,7 +186,7 @@ export default function Editor() {
     dispatch(getProjects(userId as string));
 
     fetchProjectData();
-  }, [currentProjectId, subFolderId, page, sorting, filters]);
+  }, [currentProjectId, subFolderId, page, sorting, filters, searchParams, searchQueryRequest]);
 
   const handleAddLanguageClick = async () => {
     setAddLanguageModalVisible(true);
@@ -385,59 +422,61 @@ export default function Editor() {
     }
   };
 
-  const [searchQuery, setSearchQuery] = useState<string | null>(null);
-  const [caseSensitive, setCaseSensitive] = useState<boolean>(false);
-  const [exactMatch, setExactMatch] = useState<boolean>(false);
+  const [searchTimeoutId, setSearchTimeoutId] = useState<number | null>(null);
 
-  const [searchInKeys, setSearchInKeys] = useState<boolean>(true);
-  const [searchInValues, setSearchInValues] = useState<boolean>(true);
-  const [searchInFolders, setSearchInFolders] = useState<boolean>(true);
-  const [searchInComponents, setSearchInComponents] = useState<boolean>(true);
+  const applySearchParams = () => {
+    window.clearTimeout(searchTimeoutId as number);
 
-  const [searchResultKeys, setSearchResultKeys] = useState<IKey[] | null>(null);
+    const timeoutId = window.setTimeout(() => {
+      const { current: searchQueryData } = searchQueryRef;
+      const { current: searchParamsData } = searchParamsRef;
 
-  const applySearchParams = async (value: string, newCaseSensitive: boolean, newExactMatch: boolean) => {
-    if (!value || value.length < 1) {
-      setSearchQuery(null);
-      setSearchResultKeys(null);
-      dispatch(setValues(null));
+      const { location } = window;
 
-      return;
-    }
+      const url = new URL(location.href);
 
-    setSearchQuery(value);
+      if (searchQueryData && searchQueryData.length > 0) {
+        url.searchParams.set('search', `${searchQueryData}`);
+      } else {
+        url.searchParams.delete('search');
+      }
 
-    setSearchResultKeys(null);
-    dispatch(setValues(null));
+      const searchParamsString = Object.entries(searchParamsData)
+        .filter(([, value]) => value)
+        .map((item) => item[0])
+        .join(',');
 
-    const searchResultData = await search({
-      projectId: project?.projectId as string,
-      query: encodeURIComponent(value),
-      caseSensitive: newCaseSensitive,
-      exact: newExactMatch,
-      searchInKeys,
-      searchInValues,
-      searchInFolders,
-      searchInComponents,
-    });
+      if (searchParamsString.length > 0) {
+        url.searchParams.set('search_params', searchParamsString);
+      } else {
+        url.searchParams.delete('search_params');
+      }
 
-    const { keys = [], values } = searchResultData;
+      window.history.pushState({}, '', url);
 
-    setSearchResultKeys([...keys]);
+      setSearchQueryRequest(searchQueryData);
 
-    dispatch(setValues({ ...values }));
+      setSearchTimeoutId(null);
+    }, 1000);
+
+    setSearchTimeoutId(timeoutId);
   };
 
-  const handleSearchQueryChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => applySearchParams(e.target.value, caseSensitive, exactMatch), 1000);
+  const handleSearchQueryChange = ({ target: { value: query } }: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(query);
 
-  const handleCasingClick = () => {
-    setCaseSensitive(!caseSensitive);
-    applySearchParams(searchQuery || '', !caseSensitive, exactMatch);
+    applySearchParams();
   };
 
-  const handleExactMatchClick = () => {
-    setExactMatch(!exactMatch);
-    applySearchParams(searchQuery || '', caseSensitive, !exactMatch);
+  const handleSearchParamChange = (searchParam: ESearchParams) => {
+    const newSearchParams: ISearchParams = {
+      ...searchParams,
+      [searchParam]: !searchParams[searchParam],
+    };
+
+    setSearchParams(newSearchParams);
+
+    applySearchParams();
   };
 
   const [extendedSearchModalVisible, setExtendedSearchModalVisible] = useState<boolean>(false);
@@ -448,8 +487,6 @@ export default function Editor() {
 
   const handleExtendedSearchCloseClick = () => {
     setExtendedSearchModalVisible(false);
-
-    applySearchParams(searchQuery || '', caseSensitive, exactMatch);
   };
 
   const [isSortingMenuVisible, setIsSortingMenuVisible] = useState<boolean>(false);
@@ -458,7 +495,7 @@ export default function Editor() {
     setIsSortingMenuVisible(!isSortingMenuVisible);
   };
 
-  const handleSortingButtonClick = (sortBy: string, sortDirection: string) => {
+  const handleSortingButtonClick = (sortBy: ESorting, sortDirection: ESortDirection) => {
     setIsSortingMenuVisible(false);
 
     const { location } = window;
@@ -618,8 +655,8 @@ export default function Editor() {
                 <input
                   type="checkbox"
                   className="switcher"
-                  checked={searchInKeys}
-                  onChange={() => setSearchInKeys(!searchInKeys)}
+                  checked={!searchParams[ESearchParams.skipKeys]}
+                  onChange={() => handleSearchParamChange(ESearchParams.skipKeys)}
                 />
                 <span className="searchSettings-controlText">Keys</span>
               </label>
@@ -629,8 +666,8 @@ export default function Editor() {
                 <input
                   type="checkbox"
                   className="switcher"
-                  checked={searchInValues}
-                  onChange={() => setSearchInValues(!searchInValues)}
+                  checked={!searchParams[ESearchParams.skipValues]}
+                  onChange={() => handleSearchParamChange(ESearchParams.skipValues)}
                 />
                 <span className="searchSettings-controlText">Values</span>
               </label>
@@ -640,8 +677,8 @@ export default function Editor() {
                 <input
                   type="checkbox"
                   className="switcher"
-                  checked={searchInFolders}
-                  onChange={() => setSearchInFolders(!searchInFolders)}
+                  checked={!searchParams[ESearchParams.skipFolders]}
+                  onChange={() => handleSearchParamChange(ESearchParams.skipFolders)}
                 />
                 <span className="searchSettings-controlText">Folders</span>
               </label>
@@ -651,8 +688,8 @@ export default function Editor() {
                 <input
                   type="checkbox"
                   className="switcher"
-                  checked={searchInComponents}
-                  onChange={() => setSearchInComponents(!searchInComponents)}
+                  checked={!searchParams[ESearchParams.skipComponents]}
+                  onChange={() => handleSearchParamChange(ESearchParams.skipComponents)}
                 />
                 <span className="searchSettings-controlText">Components</span>
               </label>
@@ -729,13 +766,13 @@ export default function Editor() {
       </div>
 
       <Tooltip
-        content={`Case sensitive ${caseSensitive ? 'enabled' : 'disabled'}`}
+        content={`Case sensitive ${searchParams[ESearchParams.caseSensitive] ? 'enabled' : 'disabled'}`}
         anchor="._casing-tooltip-anchor"
         size="small"
       />
 
       <Tooltip
-        content={`Exact match ${exactMatch ? 'enabled' : 'disabled'}`}
+        content={`Exact match ${searchParams[ESearchParams.exactMatch] ? 'enabled' : 'disabled'}`}
         anchor="._exact-tooltip-anchor"
         size="small"
       />
@@ -794,43 +831,43 @@ export default function Editor() {
           <div className="editorSorting">
             <button
               type="button"
-              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.created && sorting.sortDirection === ESortingDirections.asc })}
-              onClick={() => handleSortingButtonClick(ESorting.created, ESortingDirections.asc)}
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.created && sorting.sortDirection === ESortDirection.asc })}
+              onClick={() => handleSortingButtonClick(ESorting.created, ESortDirection.asc)}
             >
               Newest First
             </button>
             <button
               type="button"
-              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.created && sorting.sortDirection === ESortingDirections.desc })}
-              onClick={() => handleSortingButtonClick(ESorting.created, ESortingDirections.desc)}
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.created && sorting.sortDirection === ESortDirection.desc })}
+              onClick={() => handleSortingButtonClick(ESorting.created, ESortDirection.desc)}
             >
               Oldest First
             </button>
             <button
               type="button"
-              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.name && sorting.sortDirection === ESortingDirections.asc })}
-              onClick={() => handleSortingButtonClick(ESorting.name, ESortingDirections.asc)}
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.name && sorting.sortDirection === ESortDirection.asc })}
+              onClick={() => handleSortingButtonClick(ESorting.name, ESortDirection.asc)}
             >
               By Name A - Z
             </button>
             <button
               type="button"
-              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.name && sorting.sortDirection === ESortingDirections.desc })}
-              onClick={() => handleSortingButtonClick(ESorting.name, ESortingDirections.desc)}
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.name && sorting.sortDirection === ESortDirection.desc })}
+              onClick={() => handleSortingButtonClick(ESorting.name, ESortDirection.desc)}
             >
               By Name Z - A
             </button>
             <button
               type="button"
-              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.type && sorting.sortDirection === ESortingDirections.asc })}
-              onClick={() => handleSortingButtonClick(ESorting.type, ESortingDirections.asc)}
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.type && sorting.sortDirection === ESortDirection.asc })}
+              onClick={() => handleSortingButtonClick(ESorting.type, ESortDirection.asc)}
             >
               By Type A - Z
             </button>
             <button
               type="button"
-              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.type && sorting.sortDirection === ESortingDirections.desc })}
-              onClick={() => handleSortingButtonClick(ESorting.type, ESortingDirections.desc)}
+              className={clsx('button ghost editorSorting-button', { isActive: sorting.sortBy === ESorting.type && sorting.sortDirection === ESortDirection.desc })}
+              onClick={() => handleSortingButtonClick(ESorting.type, ESortDirection.desc)}
             >
               By Type Z - A
             </button>
@@ -847,23 +884,34 @@ export default function Editor() {
           <div className="editorFilters">
             <div className="editorFilters-row">
               <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Partially Populated Keys</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hidePartiallyPopulated]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hidePartiallyPopulated })}
+                />
+              </label>
+            </div>
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
+                <span className="editorFilters-controlLabel">Hide Fully Populated Keys</span>
+                <input
+                  type="checkbox"
+                  className="switcher"
+                  checked={filters[EFilter.hideFullyPopulated]}
+                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideFullyPopulated })}
+                />
+              </label>
+            </div>
+            <div className="editorFilters-row">
+              <label className="editorFilters-control">
                 <span className="editorFilters-controlLabel">Hide Empty</span>
                 <input
                   type="checkbox"
                   className="switcher"
                   checked={filters[EFilter.hideEmpty]}
                   onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideEmpty })}
-                />
-              </label>
-            </div>
-            <div className="editorFilters-row">
-              <label className="editorFilters-control">
-                <span className="editorFilters-controlLabel">Hide Non-Empty</span>
-                <input
-                  type="checkbox"
-                  className="switcher"
-                  checked={filters[EFilter.hideNonEmpty]}
-                  onChange={(e) => handleFilteringSwitcherChange(e, { filter: EFilter.hideNonEmpty })}
                 />
               </label>
             </div>
@@ -911,16 +959,17 @@ export default function Editor() {
             type="text"
             className="input editorSearch-input"
             placeholder="Search..."
+            value={searchQuery || ''}
             onChange={handleSearchQueryChange}
           />
           <div className="editorSearch-controls">
             <i
-              className={`_casing-tooltip-anchor editorSearch-control editorSearch-control_casing ${caseSensitive ? 'isActive' : ''}`}
-              onClick={handleCasingClick}
+              className={`_casing-tooltip-anchor editorSearch-control editorSearch-control_casing ${searchParams[ESearchParams.caseSensitive] ? 'isActive' : ''}`}
+              onClick={() => handleSearchParamChange(ESearchParams.caseSensitive)}
             />
             <i
-              className={`_exact-tooltip-anchor editorSearch-control editorSearch-control_exactMatch ${exactMatch ? 'isActive' : ''}`}
-              onClick={handleExactMatchClick}
+              className={`_exact-tooltip-anchor editorSearch-control editorSearch-control_exactMatch ${searchParams[ESearchParams.exactMatch] ? 'isActive' : ''}`}
+              onClick={() => handleSearchParamChange(ESearchParams.exactMatch)}
             />
             <i
               className={`_advanced-tooltip-anchor editorSearch-control editorSearch-control_advanced ${extendedSearchModalVisible ? 'isActive' : ''}`}
@@ -978,20 +1027,7 @@ export default function Editor() {
         <Breadcrumbs project={project} />
       )}
 
-      {(project && searchResultKeys) && (
-        <div onClick={handleItemsListClickEvent}>
-          <ItemsList
-            keys={searchResultKeys}
-            parentId={project.projectId}
-            projectId={project.projectId}
-            languages={project.languages}
-            path={ROOT}
-            pathCache={ROOT}
-          />
-        </div>
-      )}
-
-      {project && !searchQuery && (!searchResultKeys || searchResultKeys.length === 0) && (
+      {project && (
         <div onClick={handleItemsListClickEvent}>
           <ItemsList
             keys={project.keys}
@@ -1004,6 +1040,12 @@ export default function Editor() {
             page={page}
             totalCount={project.keysTotalCount}
             itemsPerPage={itemsPerPage}
+            navigationData={{
+              page,
+              itemsPerPage,
+              sorting,
+              filters,
+            }}
           />
         </div>
       )}

@@ -246,7 +246,7 @@
     padding: 0;
   }
 
-  min-width: 200px;
+  min-width: 220px;
 }
 
 .editorSorting {
@@ -300,6 +300,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0 12px;
 }
 
 .editorFilters-controlLabel {
