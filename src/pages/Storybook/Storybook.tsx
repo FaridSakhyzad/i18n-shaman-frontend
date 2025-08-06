@@ -6,7 +6,7 @@ export default function Storybook() {
   return (
     <div className="storybook">
       <h1>Storybook</h1>
-      <hr/>
+      <hr />
 
       <form className="form">
         <div className="form-row">
