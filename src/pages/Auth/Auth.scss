@@ -32,25 +32,18 @@
   width: 300px;
 }
 
+.authFormBox_login {
+  width: 360px;
+}
+
 .authForm {
   gap: 18px;
   position: relative;
-  padding-bottom: 36px;
-  margin-bottom: 30px;
-
-  &:after {
-    content: '';
-    display: block;
-    position: absolute;
-    bottom: 0;
-    height: 1px;
-    left: 15px;
-    right: 15px;
-    background-color: rgba(0, 0, 0, 0.3);
-  }
 }
 
-.authForm-row {}
+.authForm-row_controls {
+  margin-top: 10px;
+}
 
 .authForm-input {
   display: block;
@@ -63,16 +56,100 @@
 }
 
 .authFormMisc {
+  position: relative;
   display: flex;
   justify-content: space-between;
+  padding-top: 36px;
+  margin-top: 30px;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    height: 1px;
+    left: 15px;
+    right: 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
 }
 
 .authFormMisc-button {
+  display: inline-block;
+  text-decoration: underline;
+
   &:hover {
     color: var(--link-text-color-1);
   }
 }
 
-.authFormMisc-buttonLink {
+.modal_resetPassword {
+  width: 100%;
+  max-width: 480px;
+  min-height: 180px;
+
+  .modal-content {
+    align-content: center;
+  }
+}
+
+.modal_signupSuccess {
+  width: 100%;
+  max-width: 480px;
+  min-height: 180px;
+  padding-top: 40px;
+
+  .modal-content {
+    align-content: center;
+  }
+
+  .modal-title {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.resetPwdForm {
+  gap: 18px;
+  position: relative;
+}
+
+.resetPwdFormMisc {
+  position: relative;
+  display: flex;
+  padding-top: 30px;
+  margin-top: 36px;
+  gap: 36px;
+  align-items: center;
+  justify-content: center;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    height: 1px;
+    left: 15px;
+    right: 15px;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.resetPwdForm-buttonSend {
+  width: 68%;
+  margin: auto;
+}
+
+.resetPwdFormMisc-button {
   text-decoration: underline;
+
+  &:hover {
+    color: var(--link-text-color-1);
+  }
+}
+
+.signupSuccess-loginButton {
+  width: 68%;
+  margin: auto;
+  display: block;
 }

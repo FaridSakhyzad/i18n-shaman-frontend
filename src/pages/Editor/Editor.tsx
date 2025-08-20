@@ -700,9 +700,7 @@ export default function Editor() {
 
       {isEntityDeleteConfirmVisible && renderDeleteConfirmationModal()}
 
-      <EditorHeader
-        project={project}
-      />
+      <EditorHeader project={project} />
 
       <div className="editorHeader">
         {projects && projects.length > 1 ? (

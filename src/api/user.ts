@@ -1,14 +1,14 @@
 import { apiClient } from './client';
 
 export interface IRegisterUserDto {
-  login: string;
+  email: string;
   password: string;
 }
 
-export const registerUser = async ({ login, password }: IRegisterUserDto) => {
+export const registerUser = async ({ email, password }: IRegisterUserDto) => {
   try {
     return (await apiClient.post('auth/register', {
-      login,
+      email,
       password,
     })).data;
   } catch (error: any) {
@@ -17,14 +17,14 @@ export const registerUser = async ({ login, password }: IRegisterUserDto) => {
 };
 
 export interface ILoginUserDto {
-  login: string;
+  email: string;
   password: string;
 }
 
-export const loginUser = async ({ login, password }: ILoginUserDto) => {
+export const loginUser = async ({ email, password }: ILoginUserDto) => {
   try {
     return (await apiClient.post('auth/login', {
-      login,
+      email,
       password,
     })).data;
   } catch (error: any) {
@@ -35,6 +35,52 @@ export const loginUser = async ({ login, password }: ILoginUserDto) => {
 export const verifyUser = async () => {
   try {
     return (await apiClient.get('auth/verifyUser')).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const logout = async (userId: string) => {
+  try {
+    return (await apiClient.post('auth/logout', { userId })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const resetPasswordRequest = async (email: string) => {
+  try {
+    return (await apiClient.get(`auth/resetPasswordRequest?email=${email}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const validateResetToken = async (resetToken: string) => {
+  try {
+    return (await apiClient.post('auth/validateResetToken', { resetToken })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const getPasswordResetSecurityToken = async () => {
+  try {
+    return (await apiClient.get('auth/getPasswordResetSecurityToken')).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export interface ISetNewPasswordDto {
+  securityToken: string,
+  resetToken: string,
+  password: string
+}
+
+export const setNewPassword = async (data: ISetNewPasswordDto) => {
+  try {
+    return (await apiClient.post('auth/setNewPassword', data)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

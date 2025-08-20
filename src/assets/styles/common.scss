@@ -8,6 +8,10 @@
   font-weight: normal;
   font-size: 24px;
   margin: 0;
+
+  &.success {
+    color: var(--color-success);
+  }
 }
 
 .h3 {
@@ -224,6 +228,7 @@ input:-webkit-autofill:focus {
   display: inline-block;
   cursor: pointer;
   border: none;
+  text-decoration: none;
   font-size: 14px;
   line-height: 19px;
   border-radius: 65536px;
@@ -264,7 +269,7 @@ input:-webkit-autofill:focus {
     border: 1px solid rgb(189, 189, 187);
     background-image: linear-gradient(0deg, rgb(198,197,196) 0%, rgb(223,223,222) 55%, rgb(248,248,248) 100%);
     box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.15);
-    padding: 5px 11px;
+    padding: 7px 12px 5px 12px;
 
     &:hover {
       border-color: rgb(189, 189, 187);
@@ -423,6 +428,11 @@ input:-webkit-autofill:focus {
 
 .form-row {
   display: flex;
+}
+
+.form-error {
+  color: var(--color-error);
+  padding: 0 4px;
 }
 
 .formControl {

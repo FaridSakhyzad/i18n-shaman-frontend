@@ -9,6 +9,8 @@ import {
   getProjects,
 } from 'store/projects';
 
+import { logout } from 'api/user';
+
 import {
   IProject,
 } from 'interfaces';
@@ -58,8 +60,22 @@ export default function Projects() {
     dispatch(getProjects(userId as string));
   }, []);
 
+  const handleLogoutClick = async () => {
+    const result = await logout(userId as string);
+
+    window.location.reload();
+  };
+
   return (
     <div className="container">
+      <div className="header">
+        <ul className="headerMenu headerMenu_end">
+          <li className="headerMenuItem">
+            <button type="button" className="button ghost headerMenu-link" onClick={handleLogoutClick}>Logout</button>
+          </li>
+        </ul>
+      </div>
+      <hr />
       <h1>Projects</h1>
       <hr />
       <div className="grid">

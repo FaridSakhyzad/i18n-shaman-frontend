@@ -12,7 +12,7 @@ import {
   IProject,
 } from 'interfaces';
 
-import { validateKeyName, validationErrors } from 'utils/Validators';
+import { validateKeyName } from 'utils/validators';
 import { getKeyData, updateKey } from 'api/projects';
 
 import './EditEntity.scss';
@@ -80,7 +80,7 @@ export default function EditEntity({
     const validationResult = validateKeyName(value, key.id, key.parentId, project.keys);
 
     if (validationResult.error) {
-      setKeyNameError(validationErrors[validationResult.error]);
+      setKeyNameError(validationResult.error);
     }
 
     setKey({

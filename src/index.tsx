@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
   RouterProvider,
+  Navigate,
 } from 'react-router-dom';
 
 import './assets/styles/fonts.css';
@@ -15,6 +16,8 @@ import appstore from './store';
 import './i18n';
 
 import Auth from './pages/Auth';
+import ResetPassword from './pages/ResetPassword';
+
 import Projects from './pages/Projects';
 import Editor from './pages/Editor';
 import Profile from './pages/Profile';
@@ -24,15 +27,37 @@ import MainLayout from './MainLayout';
 import PrivateRoute from './PrivateRoute';
 
 import reportWebVitals from './reportWebVitals';
+import { validateResetToken } from './api/user';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Auth />,
+    element: <Navigate to="/auth" replace />,
   },
   {
     path: '/auth',
     element: <Auth />,
+  },
+  {
+    path: '/reset-password/:resetToken?',
+    element: <ResetPassword />,
+    loader: async ({ params }) => {
+      const { resetToken } = params;
+
+      if (!resetToken || resetToken.length < 1) {
+        window.location.href = '/';
+      }
+
+      const result = await validateResetToken(resetToken as string);
+
+      if (result.errors || !result.success) {
+        window.location.href = '/';
+
+        return false;
+      }
+
+      return true;
+    },
   },
   {
     path: '/projects',

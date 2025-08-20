@@ -14,7 +14,6 @@ export default function PrivateRoute(props: IProps) {
   const { id: userId } = useSelector(({ user }: IRootState) => user);
 
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    !userId ? <Navigate to={redirectPath as string} /> : <>{component}</>
+    !userId ? <Navigate to={redirectPath as string} /> : component
   );
 }

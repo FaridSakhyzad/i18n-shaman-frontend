@@ -10,10 +10,7 @@ import {
   IProject, IProjectLanguage,
 } from 'interfaces';
 
-import {
-  validateKeyName,
-  validationErrors,
-} from '../../utils/Validators';
+import { validateKeyName } from 'utils/validators';
 
 import './CreateKey.scss';
 
@@ -77,7 +74,7 @@ export default function CreateKey({
       const validationResult = validateKeyName(value, null, parentId, siblingKeys as IKey[]);
 
       if (validationResult.error) {
-        setKeyNameError(validationErrors[validationResult.error]);
+        setKeyNameError(validationResult.error);
       }
     }
 
@@ -130,7 +127,7 @@ export default function CreateKey({
 
     if (validationResult.error) {
       setLoading(false);
-      setKeyNameError(validationErrors[validationResult.error]);
+      setKeyNameError(validationResult.error);
       return;
     }
 

@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import ImportLocales from 'components/ImportLocales';
 import ImportComponents from 'components/ImportComponents';
 import { IProject } from 'interfaces';
 import ExportProject from 'components/ExportProject/ExportProject';
+import { logout } from 'api/user';
+import { IRootState } from 'store';
 
 interface IProps {
   project: IProject | null;
 }
 
 export default function EditorHeader(props: IProps) {
+  const { id: userId } = useSelector((state: IRootState) => state.user);
+
   const { project } = props;
 
   const { projectId = '' } = project || {};
@@ -29,6 +34,12 @@ export default function EditorHeader(props: IProps) {
 
   const handleExportClick = async () => {
     setIsExportProjectModalVisible(true);
+  };
+
+  const handleLogoutClick = async () => {
+    await logout(userId as string);
+
+    window.location.reload();
   };
 
   return (
@@ -91,6 +102,11 @@ export default function EditorHeader(props: IProps) {
             >
               Export
             </button>
+          </li>
+        </ul>
+        <ul className="headerMenu headerMenu_end">
+          <li className="headerMenu-item">
+            <button type="button" className="button ghost headerMenu-link" onClick={handleLogoutClick}>Logout</button>
           </li>
         </ul>
       </div>
