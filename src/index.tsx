@@ -25,9 +25,10 @@ import Storybook from './pages/Storybook';
 
 import MainLayout from './MainLayout';
 import PrivateRoute from './PrivateRoute';
+import GuestOnlyRoute from './GuestOnlyRoute';
 
 import reportWebVitals from './reportWebVitals';
-import { validateResetToken } from './api/user';
+import resetPasswordLoader from './pages/ResetPassword/loader';
 
 const router = createBrowserRouter([
   {
@@ -36,28 +37,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/auth',
-    element: <Auth />,
+    element: <GuestOnlyRoute redirectPath="/projects" component={<Auth />} />,
   },
   {
     path: '/reset-password/:resetToken?',
-    element: <ResetPassword />,
-    loader: async ({ params }) => {
-      const { resetToken } = params;
-
-      if (!resetToken || resetToken.length < 1) {
-        window.location.href = '/';
-      }
-
-      const result = await validateResetToken(resetToken as string);
-
-      if (result.errors || !result.success) {
-        window.location.href = '/';
-
-        return false;
-      }
-
-      return true;
-    },
+    element: <GuestOnlyRoute redirectPath="/projects" component={<ResetPassword />} />,
+    loader: resetPasswordLoader,
   },
   {
     path: '/projects',

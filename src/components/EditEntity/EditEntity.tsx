@@ -79,8 +79,8 @@ export default function EditEntity({
 
     const validationResult = validateKeyName(value, key.id, key.parentId, project.keys);
 
-    if (validationResult.error) {
-      setKeyNameError(validationResult.error);
+    if (!validationResult.success) {
+      setKeyNameError(validationResult.errors[0].message);
     }
 
     setKey({

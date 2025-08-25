@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import './ResetPassword.css';
 import { getPasswordResetSecurityToken, setNewPassword } from 'api/user';
 import { EPasswordValidationErrors, validatePassword } from 'utils/validators';
+import Modal from 'components/Modal';
 
 export default function ResetPassword() {
   const { resetToken } = useParams<{ resetToken: string }>();
@@ -13,6 +14,7 @@ export default function ResetPassword() {
   }
 
   const [formGeneralError, setFormGeneralError] = useState<string | null>(null);
+  const [showResetSuccess, setShowResetSuccess] = useState<boolean>(false);
 
   const handleSetNewPwdFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,20 +38,67 @@ export default function ResetPassword() {
 
     const validationResult = validatePassword(password);
 
-    if (validationResult.error) {
-      setFormGeneralError(validationResult.error);
+    if (!validationResult.success) {
+      setFormGeneralError(validationResult.errors ? validationResult.errors[0].message : EPasswordValidationErrors.INVALID);
+
+      return;
     }
 
-    const securityToken = await getPasswordResetSecurityToken();
+    const getSecurityTokenResult = await getPasswordResetSecurityToken();
+
+    if (!getSecurityTokenResult.success || getSecurityTokenResult.errors) {
+      window.location.href = '/';
+
+      return;
+    }
+
+    const { data: { token } } = getSecurityTokenResult;
 
     const result = await setNewPassword({
       password,
-      securityToken,
+      securityToken: token,
       resetToken,
     });
 
-    console.log('result', result);
+    if (result.success && !result.errors) {
+      setShowResetSuccess(true);
+
+      return;
+    }
+
+    if (result.status === 403) {
+      window.location.href = '/';
+
+      return;
+    }
+
+    if (result.status === 406) {
+      setFormGeneralError(EPasswordValidationErrors.INVALID);
+
+      return;
+    }
+
+    window.location.href = '/';
   };
+
+  if (showResetSuccess) {
+    return (
+      <Modal customClassNames="modal_withBottomButtons modal_signupSuccess">
+        <div className="modal-header">
+          <h2 className="h2 modal-title success">Password Reset Successful</h2>
+        </div>
+        <div className="modal-content">
+          <a
+            href="/auth"
+            type="button"
+            className="button success signupSuccess-loginButton"
+          >
+            Login to Website
+          </a>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <div className="setNewPwdPage">

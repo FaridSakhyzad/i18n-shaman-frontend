@@ -73,8 +73,8 @@ export default function CreateKey({
     if (submitAttemptMade) {
       const validationResult = validateKeyName(value, null, parentId, siblingKeys as IKey[]);
 
-      if (validationResult.error) {
-        setKeyNameError(validationResult.error);
+      if (!validationResult.success) {
+        setKeyNameError(validationResult.errors[0].message);
       }
     }
 
@@ -125,9 +125,9 @@ export default function CreateKey({
 
     const validationResult = validateKeyName(keyName, project.projectId, parentId, siblingKeysData);
 
-    if (validationResult.error) {
+    if (!validationResult.success) {
       setLoading(false);
-      setKeyNameError(validationResult.error);
+      setKeyNameError(validationResult.errors[0].message);
       return;
     }
 

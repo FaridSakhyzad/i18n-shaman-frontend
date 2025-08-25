@@ -16,25 +16,31 @@ import {
 import { restoreSession } from 'store/user';
 
 import './Auth.scss';
+import {
+  CombinedValidationMessage,
+  validateEmail, validatePassword,
+} from 'utils/validators';
 
 enum ETabs {
   Login = 'login',
-  Register = 'register'
+  Register = 'register',
 }
 
 enum ELoginErrorMessageTexts {
   PLEASE_ENTER_EMAIL = 'Please enter your Email',
+  PLEASE_ENTER_VALID_EMAIL = 'Please enter valid Email',
   PLEASE_ENTER_PASSWORD = 'Please enter your Password',
+  PLEASE_ENTER_VALID_PASSWORD = 'Please enter valid Password',
 }
 
 type ILoginErrors = {
-  emailError?: ELoginErrorMessageTexts,
-  passwordError?: ELoginErrorMessageTexts,
+  emailError?: ELoginErrorMessageTexts | CombinedValidationMessage,
+  passwordError?: ELoginErrorMessageTexts | CombinedValidationMessage,
 };
 
 type ISignupErrors = {
-  emailError?: ELoginErrorMessageTexts,
-  passwordError?: ELoginErrorMessageTexts,
+  emailError?: ELoginErrorMessageTexts | CombinedValidationMessage,
+  passwordError?: ELoginErrorMessageTexts | CombinedValidationMessage,
 };
 
 type TErrorCode =
@@ -116,42 +122,62 @@ export default function Auth() {
     setActiveTab(tab);
   };
 
+  const [singUpAttemptMade, setSingUpAttemptMade] = useState<boolean>(false);
+  const [loginAttemptMade, setLoginAttemptMade] = useState<boolean>(false);
+
   const [loginGeneralError, setLoginGeneralError] = useState<EApiLoginErrorMessageTexts | null>(null);
   const [loginErrors, setLoginErrors] = useState<ILoginErrors | null>(null);
 
-  const handleLoginInputChange = () => {
-    if (loginErrors) {
-      setLoginErrors(null);
+  const [loginEmail, setLoginEmail] = useState<string | null>('');
+  const [loginPassword, setLoginPassword] = useState<string | null>('');
+
+  const handleLoginInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginGeneralError(null);
+    setLoginEmail(e.target.value);
+
+    if (!loginAttemptMade) {
+      return;
     }
+
+    const errors = { ...loginErrors };
+
+    const emailValidationResult = validateEmail(e.target.value);
+
+    if (!emailValidationResult.success) {
+      errors.emailError = emailValidationResult.errors.length > 0 ? emailValidationResult.errors[0].message : ELoginErrorMessageTexts.PLEASE_ENTER_VALID_EMAIL;
+    } else {
+      delete errors.emailError;
+    }
+
+    setLoginErrors(errors);
+  };
+
+  const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginPassword(e.target.value);
   };
 
   const handleLoginFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
+    setLoginAttemptMade(true);
+
     setLoading(true);
 
     setLoginGeneralError(null);
     setLoginErrors(null);
 
-    const formData = new FormData(e.target as HTMLFormElement);
-
-    const data: ILoginUserDto = {
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-    };
-
     const errors = { ...loginErrors };
 
-    if (!data.email || data.email.length < 1) {
+    if (!loginEmail || loginEmail.length < 1) {
       errors.emailError = ELoginErrorMessageTexts.PLEASE_ENTER_EMAIL;
     }
 
-    if (!data.password || data.password.length < 1) {
+    if (!loginPassword || loginPassword.length < 1) {
       errors.passwordError = ELoginErrorMessageTexts.PLEASE_ENTER_PASSWORD;
     }
 
-    if (!data.email || data.email.length < 1 || !data.password || data.password.length < 1) {
+    if (!loginEmail || loginEmail.length < 1 || !loginPassword || loginPassword.length < 1) {
       setLoginErrors(errors);
       setLoading(false);
 
@@ -161,15 +187,19 @@ export default function Auth() {
     const result: {
       error: string,
       statusCode: TErrorCode
-    } = await loginUser(data);
+    } = await loginUser({ email: loginEmail as string, password: loginPassword as string });
 
     if (result.error) {
       setLoginGeneralError(API_LOGIN_ERROR_MESSAGES[result.statusCode]);
+      setLoading(false);
     } else {
       dispatch(restoreSession());
       navigate('/projects');
     }
   };
+
+  const [singUpEmail, setSingUpEmail] = useState<string | null>('');
+  const [singUpPassword, setSingUpPassword] = useState<string | null>('');
 
   const [singUpGeneralError, setSingUpGeneralError] = useState<EApiSignupErrorMessageTexts | null>(null);
   const [singUpErrors, setSingUpErrors] = useState<ISignupErrors | null>(null);
@@ -180,29 +210,43 @@ export default function Auth() {
     e.preventDefault();
     e.stopPropagation();
 
+    setSingUpAttemptMade(true);
+
     setLoading(true);
 
     setSingUpErrors(null);
     setSingUpGeneralError(null);
 
-    const formData = new FormData(e.target as HTMLFormElement);
-
-    const data: IRegisterUserDto = {
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-    };
-
     const errors = { ...singUpErrors };
 
-    if (!data.email || data.email.length < 1) {
+    if (!singUpEmail || singUpEmail.length < 1) {
       errors.emailError = ELoginErrorMessageTexts.PLEASE_ENTER_EMAIL;
     }
 
-    if (!data.password || data.password.length < 1) {
+    if (!singUpPassword || singUpPassword.length < 1) {
       errors.passwordError = ELoginErrorMessageTexts.PLEASE_ENTER_PASSWORD;
     }
 
-    if (!data.email || data.email.length < 1 || !data.password || data.password.length < 1) {
+    if (!singUpEmail || singUpEmail.length < 1 || !singUpPassword || singUpPassword.length < 1) {
+      setSingUpErrors(errors);
+      setLoading(false);
+
+      return;
+    }
+
+    const emailValidationResult = validateEmail(singUpEmail);
+
+    if (!emailValidationResult.success) {
+      errors.emailError = emailValidationResult.errors.length > 0 ? emailValidationResult.errors[0].message : ELoginErrorMessageTexts.PLEASE_ENTER_VALID_EMAIL;
+    }
+
+    const passwordValidationResult = validatePassword(singUpPassword);
+
+    if (!passwordValidationResult.success) {
+      errors.passwordError = passwordValidationResult.errors.length > 0 ? passwordValidationResult.errors[0].message : ELoginErrorMessageTexts.PLEASE_ENTER_VALID_PASSWORD;
+    }
+
+    if (errors.emailError || errors.passwordError) {
       setSingUpErrors(errors);
       setLoading(false);
 
@@ -212,7 +256,7 @@ export default function Auth() {
     const result: {
       errors: { [key: string]: string }[],
       code: TErrorCode
-    } = await registerUser(data);
+    } = await registerUser({ email: singUpEmail as string, password: singUpPassword as string });
 
     if (result.errors) {
       setSingUpGeneralError(API_SIGNUP_ERROR_MESSAGES[result.code]);
@@ -221,6 +265,48 @@ export default function Auth() {
     }
 
     setLoading(false);
+  };
+
+  const handleSignupEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSingUpGeneralError(null);
+    setSingUpEmail(e.target.value);
+
+    if (!singUpAttemptMade) {
+      return;
+    }
+
+    const errors = { ...singUpErrors };
+
+    const emailValidationResult = validateEmail(e.target.value);
+
+    if (!emailValidationResult.success) {
+      errors.emailError = emailValidationResult.errors.length > 0 ? emailValidationResult.errors[0].message : ELoginErrorMessageTexts.PLEASE_ENTER_VALID_EMAIL;
+    } else {
+      delete errors.emailError;
+    }
+
+    setSingUpErrors(errors);
+  };
+
+  const handleSignupPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSingUpGeneralError(null);
+    setSingUpPassword(e.target.value);
+
+    if (!singUpAttemptMade) {
+      return;
+    }
+
+    const errors = { ...singUpErrors };
+
+    const passwordValidationResult = validatePassword(e.target.value);
+
+    if (!passwordValidationResult.success) {
+      errors.passwordError = passwordValidationResult.errors.length > 0 ? passwordValidationResult.errors[0].message : ELoginErrorMessageTexts.PLEASE_ENTER_VALID_PASSWORD;
+    } else {
+      delete errors.passwordError;
+    }
+
+    setSingUpErrors(errors);
   };
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -417,7 +503,7 @@ export default function Auth() {
                             placeholder="Password"
                             name="password"
                             className="input formControl-input"
-                            onChange={handleLoginInputChange}
+                            onChange={handlePasswordInputChange}
                           />
                         </div>
                       </div>
@@ -476,6 +562,7 @@ export default function Auth() {
                           placeholder="Email"
                           name="email"
                           className="input formControl-input"
+                          onChange={handleSignupEmailChange}
                         />
                       </div>
                     </div>
@@ -500,6 +587,7 @@ export default function Auth() {
                           placeholder="Password"
                           name="password"
                           className="input formControl-input"
+                          onChange={handleSignupPasswordChange}
                         />
                       </div>
                     </div>
