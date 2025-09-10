@@ -1,0 +1,12 @@
+.updatePasswordForm {
+    max-width: 500px;
+    --row-title-width: 150px;
+}
+
+.updatePasswordForm-row_controls {
+    margin-top: 10px;
+}
+
+.updatePasswordForm-submitButton {
+    min-width: 170px;
+}

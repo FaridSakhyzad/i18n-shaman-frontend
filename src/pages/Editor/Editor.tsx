@@ -26,9 +26,12 @@ import {
   getUserProjectById,
 } from 'api/projects';
 
+import Header from 'components/Header';
+import { EHeaderModes } from 'components/Header/Header';
+
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
-import CreateKey from 'components/CreateKey';
+import CreateEntity from 'components/CreateEntity';
 import EditEntity from 'components/EditEntity';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import Tooltip from 'components/Tooltip';
@@ -37,9 +40,9 @@ import Breadcrumbs from 'components/Breadcrumbs';
 import Dropdown from 'components/Dropdown';
 
 import ItemsList from './ItemsList';
-import EditorHeader from './EditorHeader';
 
 import './Editor.scss';
+import Footer from '../../components/Footer';
 
 interface IProjectsMenuCoords {
   top: number;
@@ -545,7 +548,7 @@ export default function Editor() {
   };
 
   return (
-    <div className="container">
+    <>
       {/*
         <h1>{t('Welcome to React')}</h1>
         <h1>{t('key1')}</h1>
@@ -596,7 +599,7 @@ export default function Editor() {
       )}
 
       {isCreateKeyModalVisible && newEntityParentId && newEntityPath && (
-        <CreateKey
+        <CreateEntity
           projectId={currentProjectId}
           parentId={newEntityParentId}
           entityPath={newEntityPath}
@@ -700,7 +703,7 @@ export default function Editor() {
 
       {isEntityDeleteConfirmVisible && renderDeleteConfirmationModal()}
 
-      <EditorHeader project={project} />
+      <Header mode={EHeaderModes.EDITOR} project={project} />
 
       <div className="editorHeader">
         {projects && projects.length > 1 ? (
@@ -1047,6 +1050,7 @@ export default function Editor() {
           />
         </div>
       )}
-    </div>
+      <Footer />
+    </>
   );
 }

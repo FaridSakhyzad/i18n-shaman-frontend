@@ -156,6 +156,22 @@ export default function Dropdown(props: IProps) {
     };
   }, []);
 
+  const attachWindowMutateListeners = () => {
+    window.addEventListener('resize', calculatePosition)
+  }
+
+  const detachWindowMutateListeners = () => {
+    window.removeEventListener('resize', calculatePosition);
+  }
+
+  useEffect(() => {
+    attachWindowMutateListeners();
+
+    return () => {
+      detachWindowMutateListeners();
+    };
+  }, []);
+
   if (!open) {
     return null;
   }

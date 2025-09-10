@@ -8,14 +8,14 @@ interface ISettings {
 
 interface IInitialState {
   id: string | null;
-  login: string | null;
+  email: string | null;
   loading: boolean;
   settings: ISettings;
 }
 
 const initialState: IInitialState = {
   id: null,
-  login: null,
+  email: null,
   loading: true,
   settings: {
     language: null,
@@ -65,11 +65,11 @@ const userSlice = createAppSlice({
           return;
         }
 
-        const { id, login } = action.payload;
+        const { id, email } = action.payload;
 
         state.loading = false;
         state.id = id;
-        state.login = login;
+        state.email = email;
       })
       .addCase(restoreSession.rejected, (state) => {
         state.loading = false;

@@ -1,0 +1,63 @@
+.userMenuButton {
+    display: block;
+    width: 31px;
+    height: 31px;
+    background: #f4f3f6;
+    border-radius: 50%;
+    border: none;
+    font-size: 0;
+    cursor: pointer;
+}
+
+.userMenuDropdown {
+    margin-top: 5px;
+    min-width: 220px;
+
+    &.dropdown {
+        padding: 12px 0;
+    }
+}
+
+.userMenu-title {
+    margin: 0;
+    font-weight: normal;
+    padding: 8px 24px;
+}
+
+.userMenuList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.userMenuList-item {}
+
+.userMenuList-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+    padding: 8px 24px;
+
+    &.isActive {
+        font-weight: bold;
+        color: var(--main-text-color);
+    }
+
+    &:first-child {
+        padding-top: 9px;
+    }
+
+    &:last-child {
+        padding-bottom: 9px;
+    }
+}
+
+.userMenuList-separator {
+    display: block;
+    border: none;
+    width: calc(100% - 48px);
+    height: 1px;
+    background: #bdc2c7;
+    margin: 10px 24px;
+}

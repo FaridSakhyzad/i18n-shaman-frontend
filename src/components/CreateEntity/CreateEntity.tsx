@@ -12,7 +12,7 @@ import {
 
 import { validateKeyName } from 'utils/validators';
 
-import './CreateKey.scss';
+import './CreateEntity.scss';
 
 const ITEMS_PER_ROW = 5;
 
@@ -27,7 +27,7 @@ interface IPros {
   onClose: () => void;
 }
 
-export default function CreateKey({
+export default function CreateEntity({
   projectId,
   parentId,
   entityPath,
@@ -124,6 +124,8 @@ export default function CreateKey({
     setSiblingKeys(siblingKeysData);
 
     const validationResult = validateKeyName(keyName, project.projectId, parentId, siblingKeysData);
+
+    console.log('validationResult',validationResult);
 
     if (!validationResult.success) {
       setLoading(false);

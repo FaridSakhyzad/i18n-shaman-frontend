@@ -13,20 +13,27 @@ export default function ResetPassword() {
     window.location.href = '/';
   }
 
+  const [submitAttemptMade, setSubmitAttemptMade] = useState<boolean>(false);
+
   const [formGeneralError, setFormGeneralError] = useState<string | null>(null);
   const [showResetSuccess, setShowResetSuccess] = useState<boolean>(false);
+
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
   const handleSetNewPwdFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setSubmitAttemptMade(true);
     setFormGeneralError(null);
 
-    const formData = new FormData(e.target as HTMLFormElement);
-
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirm_password') as string;
-
     if (!resetToken || resetToken.length < 1) {
+      return;
+    }
+
+    if (!password || !confirmPassword) {
+      setFormGeneralError(EPasswordValidationErrors.BOTH_PASSWORDS_REQUIRED);
+
       return;
     }
 
@@ -81,6 +88,64 @@ export default function ResetPassword() {
     window.location.href = '/';
   };
 
+  const handlePasswordFieldChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(value);
+    setFormGeneralError(null);
+
+    if (!submitAttemptMade) {
+      return;
+    }
+
+    if (!value || !confirmPassword) {
+      setFormGeneralError(EPasswordValidationErrors.BOTH_PASSWORDS_REQUIRED);
+
+      return;
+    }
+
+    if (value !== confirmPassword) {
+      setFormGeneralError(EPasswordValidationErrors.PASSWORDS_DONT_MATCH);
+
+      return;
+    }
+
+    const validationResult = validatePassword(value);
+
+    if (!validationResult.success) {
+      setFormGeneralError(validationResult.errors ? validationResult.errors[0].message : EPasswordValidationErrors.INVALID);
+
+      return;
+    }
+  }
+
+  const handleConfirmPasswordFieldChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(value);
+    setFormGeneralError(null);
+
+    if (!submitAttemptMade) {
+      return;
+    }
+
+    if (!password || !value) {
+      setFormGeneralError(EPasswordValidationErrors.BOTH_PASSWORDS_REQUIRED);
+
+      return;
+    }
+
+    if (password !== value) {
+      setFormGeneralError(EPasswordValidationErrors.PASSWORDS_DONT_MATCH);
+
+      return;
+    }
+
+    const validationResult = validatePassword(value);
+
+    if (!validationResult.success) {
+      setFormGeneralError(validationResult.errors ? validationResult.errors[0].message : EPasswordValidationErrors.INVALID);
+
+      return;
+    }
+  }
+
   if (showResetSuccess) {
     return (
       <Modal customClassNames="modal_withBottomButtons modal_signupSuccess">
@@ -108,6 +173,12 @@ export default function ResetPassword() {
         </div>
 
         <form className="form setNewPwdForm" onSubmit={handleSetNewPwdFormSubmit}>
+          {formGeneralError && (
+            <div className="form-error">
+              {formGeneralError}
+            </div>
+          )}
+
           <div className="form-row">
             <div className="formControl">
               <div className="formControl-header">
@@ -120,7 +191,7 @@ export default function ResetPassword() {
                     placeholder="New Password please"
                     name="password"
                     className="input formControl-input"
-                    required
+                    onChange={handlePasswordFieldChange}
                   />
                 </div>
               </div>
@@ -145,7 +216,7 @@ export default function ResetPassword() {
                     placeholder="Confirm Your New Password please"
                     name="confirm_password"
                     className="input formControl-input"
-                    required
+                    onChange={handleConfirmPasswordFieldChange}
                   />
                 </div>
               </div>
@@ -156,12 +227,6 @@ export default function ResetPassword() {
               </div>
             </div>
           </div>
-
-          {formGeneralError && (
-            <div className="form-row">
-              <div className="form-error">{formGeneralError}</div>
-            </div>
-          )}
 
           <div className="form-row setNewPwdForm-row_controls">
             <button type="submit" className="button primary setNewPwdForm-submitButton">Set New Password</button>

@@ -1,0 +1,46 @@
+.header {
+    padding: 9px 26px;
+    display: flex;
+    background-color: white;
+}
+
+.logo {
+    display: block;
+    width: 100px;
+    height: 41px;
+    background: url("../../assets/images/logo.svg");
+}
+
+.headerMenu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.headerMenu-item {
+    display: block;
+}
+
+.headerMenu-link {
+    display: block;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.headerMenu_start {
+    margin-left: 24px;
+}
+
+.headerMenu_editorMenu {
+    margin-left: 36px;
+}
+
+.headerMenu_end {
+    margin-left: auto;
+}

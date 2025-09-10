@@ -86,6 +86,42 @@ export const setNewPassword = async (data: ISetNewPasswordDto) => {
   }
 };
 
+export const getUpdatePasswordSecurityToken = async (userId: string) => {
+  try {
+    return (await apiClient.get(`auth/getUpdatePasswordSecurityToken?userId=${userId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export interface IUpdatePasswordDto {
+  userId: string;
+  newPassword: string;
+  password: string;
+  confirmPassword: string;
+  securityToken: string;
+}
+
+export const updatePassword = async ({
+  userId,
+  securityToken,
+  password,
+  newPassword,
+  confirmPassword,
+}: IUpdatePasswordDto) => {
+  try {
+    return (await apiClient.post('auth/updatePassword', {
+      userId,
+      securityToken,
+      password,
+      newPassword,
+      confirmPassword,
+    })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
 export const setLanguage = async (userId: string, language: string) => {
   try {
     return (await apiClient.post('user/setLanguage', { userId, language })).data;

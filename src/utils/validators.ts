@@ -1,14 +1,22 @@
 import { IKey } from '../interfaces';
 
+const PASSWORD_MIN_LENGTH = 6;
+
 export enum EEntityValidationErrors {
   DUPLICATE_KEY = 'Key name already exist. Please Enter Unique Key Name',
 }
 
+export enum EValidationErrors {
+  THIS_FIELD_REQUIRED = 'This field is required.',
+}
+
 export enum EPasswordValidationErrors {
   INVALID = 'Error: Invalid Password',
-  TOO_SHORT = 'Error: Password is too short',
-  TOO_WEAK = 'Error: Password is too weak',
+  TOO_SHORT = 'The password must be at least 6 characters.',
+  TOO_WEAK = 'Password must contain letters in mixed case, a number and a special symbol',
   PASSWORDS_DONT_MATCH = 'Error: Passwords don\'t match.',
+  BOTH_PASSWORDS_REQUIRED = 'Both Password fields are required.',
+  PASSWORD_REQUIRED = 'Password field is required.',
 }
 
 export enum EEmailValidationErrors {
@@ -43,7 +51,7 @@ export const validateKeyName = (label: string, id: string | null, parentId: stri
   }
 
   return {
-    success: errors.length > 0,
+    success: errors.length < 1,
     errors,
   };
 };
@@ -66,7 +74,7 @@ export const validateEmail = (email: string): IValidationResponse => {
 export const validatePassword = (password: string): IValidationResponse => {
   const errors: IValidationResponseError[] = [];
 
-  if (password.length < 6) {
+  if (password.length < PASSWORD_MIN_LENGTH) {
     errors.push({
       message: EPasswordValidationErrors.TOO_SHORT,
     });

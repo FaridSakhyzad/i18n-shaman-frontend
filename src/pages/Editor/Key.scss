@@ -62,7 +62,9 @@
   appearance: none;
 
   &:hover {
-    text-decoration: underline;
+    //text-decoration: underline;
+    border-bottom: 1px dashed;
+    margin-bottom: -1px;
   }
 }
 
@@ -287,6 +289,12 @@
   & > .keyHeader {
     .keyName {
       color: #db8f42;
+
+      &:hover {
+        text-decoration: underline;
+        border: none;
+        margin-bottom: 0;
+      }
     }
   }
 
