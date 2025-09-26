@@ -182,8 +182,8 @@ export default function AddProjectLanguage({
         />
       </div>
       <div className="modal-content">
-        <form className="form">
-          <div className="form-row">
+        <form className="formMk1">
+          <div className="formMk1-row">
             <div className="formControl">
               {fullLanguagesList.length > 0 && (
                 <AddLanguageControl
@@ -197,13 +197,13 @@ export default function AddProjectLanguage({
 
           <div className={`languagesOptionsBox ${selectedLanguages[currentLanguageIdx] ? 'isActive' : ''}`}>
             {selectedLanguages[currentLanguageIdx] && (
-              <section key={currentLanguageIdx} className="form languagesOptions">
+              <section key={currentLanguageIdx} className="formMk1 languagesOptions">
                 <div className="row">
                   <h3 className="h3">
                     Options for <b>{selectedLanguages[currentLanguageIdx].label} ({selectedLanguages[currentLanguageIdx].code})</b>
                   </h3>
                 </div>
-                <div className="form-row">
+                <div className="formMk1-row">
                   <div className="formControl">
                     <div className="formControl-header">
                       <label className="formControl-label" htmlFor="custom_code">
@@ -233,7 +233,7 @@ export default function AddProjectLanguage({
                   </div>
                 </div>
 
-                <div className="form-row">
+                <div className="formMk1-row">
                   <div className="formControl">
                     <div className="formControl-header">
                       <label className="formControl-label" htmlFor="custom_language">
@@ -263,7 +263,7 @@ export default function AddProjectLanguage({
                   </div>
                 </div>
 
-                <div className="form-row">
+                <div className="formMk1-row">
                   <label className="checkboxControl">
                     <input
                       type="checkbox"

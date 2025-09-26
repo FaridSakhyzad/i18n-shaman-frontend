@@ -129,3 +129,15 @@ export const setLanguage = async (userId: string, language: string) => {
     return error.response && error.response.data;
   }
 };
+
+interface IUserSettingsPreferencesData {
+  projectsOrder: string[]
+}
+
+export const savePreferences = async (userId: string, data: IUserSettingsPreferencesData) => {
+  try {
+    return (await apiClient.post('user/savePreferences', { userId, data })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};

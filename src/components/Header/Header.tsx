@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { IRootState, AppDispatch } from 'store';
+import { useSelector } from 'react-redux';
+import { IRootState } from 'store';
 import { Link } from 'react-router-dom';
-import Dropdown from '../Dropdown';
-import { logout } from 'api/user';
 
+import { logout } from 'api/user';
+import { IProject } from 'interfaces';
+
+import Dropdown from '../Dropdown';
 import ImportLocales from '../ImportLocales';
 import ImportComponents from '../ImportComponents';
 import ExportProject from '../ExportProject/ExportProject';
-import { IProject } from 'interfaces';
 
 import './Header.css';
 
@@ -29,13 +30,15 @@ export default function Header(props: IProps) {
 
   const { projectId = '' } = project || {};
 
-  const dispatch = useDispatch<AppDispatch>();
-
   const [userMenuVisible, setUserMenuVisible] = useState<boolean>(false);
 
   const toggleUserMenu = () => {
     setUserMenuVisible(!userMenuVisible);
-  }
+  };
+
+  const [isImportLocalesModalVisible, setImportLocalesModalVisible] = useState<boolean>(false);
+  const [isImportComponentsModalVisible, setImportComponentsModalVisible] = useState<boolean>(false);
+  const [isExportProjectModalVisible, setIsExportProjectModalVisible] = useState<boolean>(false);
 
   const handleImportLocalesClick = () => {
     setImportLocalesModalVisible(true);
@@ -54,10 +57,6 @@ export default function Header(props: IProps) {
 
     window.location.reload();
   };
-
-  const [isImportLocalesModalVisible, setImportLocalesModalVisible] = useState<boolean>(false);
-  const [isImportComponentsModalVisible, setImportComponentsModalVisible] = useState<boolean>(false);
-  const [isExportProjectModalVisible, setIsExportProjectModalVisible] = useState<boolean>(false);
 
   return (
     <>
@@ -89,16 +88,16 @@ export default function Header(props: IProps) {
       )}
 
       <header className="header">
-        <a href="/" className="logo" />
+        <a href="/" className="logo" aria-label="logo" />
         <ul className="headerMenu headerMenu_start">
           <li className="headerMenuItem">
-            <Link to='/projects' className="button ghost headerMenu-link">Projects</Link>
+            <Link to="/projects" className="button ghost headerMenu-link">Projects</Link>
           </li>
           <li className="headerMenuItem">
-            <Link to='/projects' className="button ghost headerMenu-link">Master of Keys</Link>
+            <Link to="/projects" className="button ghost headerMenu-link">Master of Keys</Link>
           </li>
           <li className="headerMenuItem">
-            <Link to='/projects' className="button ghost headerMenu-link">Releases</Link>
+            <Link to="/projects" className="button ghost headerMenu-link">Releases</Link>
           </li>
         </ul>
 
@@ -142,10 +141,9 @@ export default function Header(props: IProps) {
             {userMenuVisible && (
               <Dropdown
                 anchor="._button-user-menu"
-                onOutsideClick={() => {
-                }}
+                onOutsideClick={() => setUserMenuVisible(false)}
                 classNames="userMenuDropdown"
-                orientation={'tr-br'}
+                orientation="tr-br"
               >
                 <div className="userMenu">
                   <h3 className="userMenu-title">{email}</h3>

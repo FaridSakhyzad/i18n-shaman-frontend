@@ -415,9 +415,9 @@ export default function Auth() {
               </div>
               <div className="modal-content">
                 <div className="resetPwdFormBox">
-                  <form className="form resetPwdForm" onSubmit={handleResetPasswordFormSubmit}>
+                  <form className="formMk1 resetPwdForm" onSubmit={handleResetPasswordFormSubmit}>
 
-                    <div className="form-row">
+                    <div className="formMk1-row">
                       <div className="formControl">
                         <div className="formControl-header">
                           <label className="formControl-label">Please enter Your Email</label>
@@ -434,7 +434,7 @@ export default function Auth() {
                       </div>
                     </div>
 
-                    <div className="form-row authForm-row_controls">
+                    <div className="formMk1-row authForm-row_controls">
                       <button type="submit" className="button primary resetPwdForm-buttonSend">Reset Password</button>
                     </div>
                   </form>
@@ -457,13 +457,13 @@ export default function Auth() {
             </div>
             <div className="modal-content">
               <div className="authFormBox">
-                <form className="form authForm" onSubmit={handleLoginFormSubmit}>
+                <form className="formMk1 authForm" onSubmit={handleLoginFormSubmit}>
                   {loginGeneralError && (
-                    <div className="form-error">
+                    <div className="formMk1-error">
                       {loginGeneralError}
                     </div>
                   )}
-                  <div className="form-row">
+                  <div className="formMk1-row">
                     <div className="formControl">
                       <div className="formControl-header">
                         <label className="formControl-label">Email</label>
@@ -487,7 +487,7 @@ export default function Auth() {
                       </div>
                     </div>
                   </div>
-                  <div className="form-row">
+                  <div className="formMk1-row">
                     <div className="formControl">
                       <div className="formControl-header">
                         <label className="formControl-label">Password</label>
@@ -516,7 +516,7 @@ export default function Auth() {
                       </div>
                     </div>
                   </div>
-                  <div className="form-row authForm-row_controls">
+                  <div className="formMk1-row authForm-row_controls">
                     <button type="submit" className="button primary authForm-loginButton">Login</button>
                   </div>
                 </form>
@@ -545,13 +545,13 @@ export default function Auth() {
               <h2 className="h2">Sign up</h2>
             </div>
             <div className="authFormBox authFormBox_login">
-              <form className="form authForm" onSubmit={handleRegisterFormSubmit}>
+              <form className="formMk1 authForm" onSubmit={handleRegisterFormSubmit}>
                 {singUpGeneralError && (
-                  <div className="form-error">
+                  <div className="formMk1-error">
                     {singUpGeneralError}
                   </div>
                 )}
-                <div className="form-row">
+                <div className="formMk1-row">
                   <div className="formControl">
                     <div className="formControl-header">
                       <label className="formControl-label">Email</label>
@@ -575,7 +575,7 @@ export default function Auth() {
                     </div>
                   </div>
                 </div>
-                <div className="form-row">
+                <div className="formMk1-row">
                   <div className="formControl">
                     <div className="formControl-header">
                       <label className="formControl-label">Password</label>
@@ -608,7 +608,7 @@ export default function Auth() {
                     </div>
                   </div>
                 </div>
-                <div className="form-row authForm-row_controls">
+                <div className="formMk1-row authForm-row_controls">
                   <button type="submit" className="button success authForm-loginButton">Register</button>
                 </div>
               </form>

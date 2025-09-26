@@ -1,55 +1,58 @@
 import React, { useState } from 'react';
 import Modal from 'components/Modal';
-
-import {
-  IProject,
-} from 'interfaces';
+import { createProject } from '../../store/projects';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, IRootState } from '../../store';
 
 interface IProps {
-  project: IProject;
   onClose: () => void;
   onCancel: () => void;
-  onSave: (project: IProject) => void;
 }
 
-export default function EditProject({
-  project: projectFromProps,
+export default function CreateProject({
   onClose,
   onCancel,
-  onSave,
 }: IProps) {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { id: userId } = useSelector((state: IRootState) => state.user);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [project, setProject] = useState<IProject>(projectFromProps);
-
-  const handleProjectNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProject({
-      ...project,
-      projectName: e.target.value,
-    });
+  const handleCloseButtonClick = () => {
+    onClose();
   };
 
   const handleCancelClick = () => {
     onCancel();
   };
 
-  const handleCloseButtonClick = () => {
+  const [newProjectName, setNewProjectName] = useState<string>('');
+
+  const handleNewProjectNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setNewProjectName(value);
+  };
+
+  const handleSaveClick = async () => {
+    setLoading(true);
+
+    dispatch(createProject({
+      userId: userId as string,
+      newProjectName,
+    }));
+
+    setLoading(false);
+
     onClose();
   };
 
-  const handleSaveClick = () => {
-    setLoading(true);
-    onSave(project);
-  };
-
   return (
-    <Modal customClassNames="modal_withBottomButtons modal_editProject">
+    <Modal customClassNames="modal_withBottomButtons modal_newProject">
       {loading && (
         <div className="loading modal-loading" />
       )}
 
       <div className="modal-header">
-        <h4 className="modal-title">Edit Project</h4>
+        <h4 className="modal-title">Create New Project</h4>
 
         <button
           type="button"
@@ -70,8 +73,8 @@ export default function EditProject({
                 type="text"
                 className="input formControl-input"
                 placeholder="Please Enter Project Name..."
-                onChange={handleProjectNameChange}
-                value={project.projectName}
+                onChange={handleNewProjectNameChange}
+                value={newProjectName}
               />
             </div>
             <div className="formControl-footer">
@@ -93,7 +96,7 @@ export default function EditProject({
         </button>
         <button
           type="button"
-          className="button primary modal-button"
+          className="button success modal-button"
           onClick={handleSaveClick}
         >
           Save

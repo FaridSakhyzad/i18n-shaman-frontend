@@ -119,8 +119,8 @@ export default function EditProjectLanguage({
       </div>
 
       <div className="modal-content">
-        <form className="form">
-          <div className="form-row">
+        <form className="formMk1">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label" htmlFor="custom_code">
@@ -149,7 +149,7 @@ export default function EditProjectLanguage({
             </div>
           </div>
 
-          <div className="form-row">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label" htmlFor="custom_language">
@@ -178,7 +178,7 @@ export default function EditProjectLanguage({
             </div>
           </div>
 
-          <div className="form-row">
+          <div className="formMk1-row">
             <label className="checkboxControl">
               <input
                 type="checkbox"

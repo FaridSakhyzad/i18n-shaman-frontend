@@ -29,6 +29,7 @@ interface IProps {
   onClose: () => void;
   onHideAll: () => void;
   onHide: (langId: string) => void;
+  onAddLanguage?: () => void;
   onEdit: (langId: string) => void;
   onDelete: (langId: string) => void;
 }
@@ -38,6 +39,7 @@ export default function ProjectLanguages({
   onHideAll,
   onHide,
   onEdit,
+  onAddLanguage = () => {},
   onDelete,
   onClose,
 }: IProps) {
@@ -235,6 +237,8 @@ export default function ProjectLanguages({
     }
 
     setLoading(false);
+
+    onAddLanguage();
   };
 
   const handleSelectedLanguagesChange = (data: ILanguage[]) => {

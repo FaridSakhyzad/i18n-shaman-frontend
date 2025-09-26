@@ -39,26 +39,6 @@ export default function ExportProject(props: IProps) {
     onCancel();
   };
 
-  const sendXmlExportRequest = async () => {
-    console.log('sendXmlExportRequest');
-    console.log('sendXmlExportRequest');
-    console.log('sendXmlExportRequest');
-
-    const exportSettings: IExportProject = {
-      projectId,
-      format: EExportFormats.androidXml,
-    };
-
-    const response = await exportProject(exportSettings);
-
-    console.log('response', response);
-  };
-
-  useEffect(() => {
-    //console.log('USE EFFECT');
-    //sendXmlExportRequest();
-  }, []);
-
   const handleExportButtonClick = async () => {
     setLoading(true);
 

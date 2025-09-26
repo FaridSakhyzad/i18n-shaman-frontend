@@ -54,7 +54,7 @@ export default function ResetPassword() {
     const getSecurityTokenResult = await getPasswordResetSecurityToken();
 
     if (!getSecurityTokenResult.success || getSecurityTokenResult.errors) {
-      window.location.href = '/';
+      setFormGeneralError(getSecurityTokenResult.errors ? getSecurityTokenResult.detail : 'Unknown Error');
 
       return;
     }
@@ -172,14 +172,14 @@ export default function ResetPassword() {
           <h2 className="h2">Set new password</h2>
         </div>
 
-        <form className="form setNewPwdForm" onSubmit={handleSetNewPwdFormSubmit}>
+        <form className="formMk1 setNewPwdForm" onSubmit={handleSetNewPwdFormSubmit}>
           {formGeneralError && (
-            <div className="form-error">
+            <div className="formMk1-error">
               {formGeneralError}
             </div>
           )}
 
-          <div className="form-row">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label">New Password</label>
@@ -204,7 +204,7 @@ export default function ResetPassword() {
 
           </div>
 
-          <div className="form-row">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label">Confirm Password</label>
@@ -228,7 +228,7 @@ export default function ResetPassword() {
             </div>
           </div>
 
-          <div className="form-row setNewPwdForm-row_controls">
+          <div className="formMk1-row setNewPwdForm-row_controls">
             <button type="submit" className="button primary setNewPwdForm-submitButton">Set New Password</button>
           </div>
         </form>

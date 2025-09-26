@@ -418,39 +418,23 @@ input:-webkit-autofill:focus {
   z-index: 100;
 }
 
-.form {
+.formMk1 {
   display: flex;
   flex-direction: column;
   gap: 24px;
-
-  --row-title-width: 120px;
-  --row-content-width: 1fr;
 }
 
-.form-row {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: var(--row-title-width) var(--row-content-width);
-}
-
-.form-rowTitle {
+.formMk1-row {
   display: flex;
-  justify-content: flex-end;
-  grid-column: 1 / 2;
 }
 
-.form-rowLabel {
-  display: block;
-  margin-top: 6px;
-  line-height: 19px;
-  text-align: right;
-}
+.formMk1-rowTitle {}
 
-.form-rowContent {
-  grid-column: 2 / 3;
-}
+.formMk1-rowLabel {}
 
-.form-error {
+.formMk1-rowContent {}
+
+.formMk1-error {
   color: var(--color-error);
   padding: 0 4px;
   transition: all 0.15s ease;
@@ -459,6 +443,50 @@ input:-webkit-autofill:focus {
     margin-bottom: -20px;
   }
 }
+
+
+.formMk2 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  --row-title-width: 120px;
+  --row-content-width: 1fr;
+}
+
+.formMk2-row {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: var(--row-title-width) var(--row-content-width);
+}
+
+.formMk2-rowTitle {
+  display: flex;
+  justify-content: flex-end;
+  grid-column: 1 / 2;
+}
+
+.formMk2-rowLabel {
+  display: block;
+  margin-top: 6px;
+  line-height: 19px;
+  text-align: right;
+}
+
+.formMk2-rowContent {
+  grid-column: 2 / 3;
+}
+
+.formMk2-error {
+  color: var(--color-error);
+  padding: 0 4px;
+  transition: all 0.15s ease;
+
+  @starting-style {
+    margin-bottom: -20px;
+  }
+}
+
 
 .formControl {
   width: 100%;
@@ -708,8 +736,10 @@ input:-webkit-autofill:focus {
 }
 
 .dialogBadge {
+  --main-color-1: #929296;
+
   display: block;
-  background-color: #929296;
+  border: 1px solid var(--main-color-1);
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -720,7 +750,7 @@ input:-webkit-autofill:focus {
     &:before {
       content: '?';
       display: block;
-      color: white;
+      color: var(--main-color-1);
       font-size: 48px;
       line-height: 58px;
       height: 48px;
@@ -730,7 +760,7 @@ input:-webkit-autofill:focus {
   }
 
   &.danger {
-    background-color: #f12631;
+    --main-color-1: #f12631;
   }
 }
 
@@ -928,16 +958,21 @@ input:-webkit-autofill:focus {
 }
 
 .pageHeader {
-  min-height: 82px;
-  padding: 0 30px 0 30px;
+  min-height: 80px;
+  padding: 0 24px 0 30px;
   display: flex;
   align-items: center;
 }
 
 .pageHeader-title {
   font-size: 36px;
+  line-height: 1;
   color: #333;
-  text-shadow: 0px -1px 0px rgba(255, 255, 255, 0.004),0px 1px 2px rgba(0, 0, 0, 0.1);
+  margin: 3px 0 -3px -2px;
+}
+
+.pageHeader-controlsEnd {
+  margin-left: auto;
 }
 
 .pageBody {
@@ -948,4 +983,8 @@ input:-webkit-autofill:focus {
 
 .pageBody-title {
   margin-bottom: 24px;
+}
+
+.pageBody-section {
+  margin-bottom: 42px;
 }

@@ -290,14 +290,18 @@ export default function Editor() {
       setEntityDeleteConfirmVisible(false);
     };
 
-    const handleDeleteConfirmationConfirmButtonClick = () => {
+    const handleDeleteConfirmationConfirmButtonClick = async () => {
       if (!idOfEntityToDelete) {
         return;
       }
 
-      deleteEntity(idOfEntityToDelete);
+      setLoading(true);
+
+      await deleteEntity(idOfEntityToDelete);
 
       setEntityDeleteConfirmVisible(false);
+
+      setLoading(false);
     };
 
     return (
@@ -547,6 +551,25 @@ export default function Editor() {
     window.history.pushState({}, '', url);
   };
 
+  const onKeyEditSave = async () => {
+    setIsEditKeyModalVisible(false);
+    setLoading(true);
+    await fetchProjectData();
+    setLoading(false);
+  };
+
+  const onProjectLanguagesAdd = async () => {
+    setLoading(true);
+    await fetchProjectData();
+    setLoading(false);
+  };
+
+  const onProjectLanguagesEditDelete = async () => {
+    setLoading(true);
+    await fetchProjectData();
+    setLoading(false);
+  };
+
   return (
     <>
       {/*
@@ -577,7 +600,8 @@ export default function Editor() {
           onHideAll={() => {}}
           onHide={() => {}}
           onEdit={onLanguageEdit}
-          onDelete={() => {}}
+          onAddLanguage={onProjectLanguagesAdd}
+          onDelete={onProjectLanguagesEditDelete}
           onClose={() => { setIsLanguagesModalVisible(false); }}
         />
       )}
@@ -629,9 +653,7 @@ export default function Editor() {
           onCancel={() => {
             setIsEditKeyModalVisible(false);
           }}
-          onSave={() => {
-            setIsEditKeyModalVisible(false);
-          }}
+          onSave={onKeyEditSave}
         />
       )}
 

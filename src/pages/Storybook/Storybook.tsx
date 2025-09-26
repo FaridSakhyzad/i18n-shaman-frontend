@@ -8,8 +8,8 @@ export default function Storybook() {
       <h1>Storybook</h1>
       <hr />
 
-      <form className="form">
-        <div className="form-row">
+      <form className="formMk1">
+        <div className="formMk1-row">
           <div className="formControl">
             <div className="formControl-header">
               <label className="formControl-label">Email</label>
@@ -27,7 +27,7 @@ export default function Storybook() {
           </div>
         </div>
 
-        <div className="form-row">
+        <div className="formMk1-row">
           <div className="formControl">
             <div className="formControl-header">
               <label className="formControl-label">Password</label>
@@ -47,7 +47,7 @@ export default function Storybook() {
           </div>
         </div>
 
-        <div className="form-row">
+        <div className="formMk1-row">
           <div className="formControl hasError">
             <div className="formControl-header">
               <label className="formControl-label">First Name*</label>
@@ -68,7 +68,7 @@ export default function Storybook() {
           </div>
         </div>
 
-        <div className="form-row">
+        <div className="formMk1-row">
           <div className="formControl">
             <div className="formControl-header">
               <label className="formControl-label">Second Name* <i className="formControl-infoIcon"/></label>
@@ -81,7 +81,7 @@ export default function Storybook() {
           </div>
         </div>
 
-        <div className="form-row">
+        <div className="formMk1-row">
           <div className="formControl">
             <div className="formControl-header">
               <label className="formControl-label">About yourself</label>

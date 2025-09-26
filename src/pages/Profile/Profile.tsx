@@ -20,7 +20,7 @@ interface IPasswordUpdateErrors {
 }
 
 export default function Profile() {
-  const { id: userId } = useSelector((state: IRootState) => state.user);
+  const { id: userId, email: userEmail } = useSelector((state: IRootState) => state.user);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -197,96 +197,104 @@ export default function Profile() {
       </div>
       <div className="pageBody">
         <div className="container">
-          <h2 className="h2 pageBody-title">Update Password</h2>
-          <form className="form updatePasswordForm" onSubmit={handleNewPasswordFormSubmit}>
-            {passwordUpdateGeneralError && (
-              <div className="form-error">{passwordUpdateGeneralError}</div>
-            )}
+          <section className="pageBody-section">
+            <h2 className="h2 pageBody-title">Email</h2>
+            <p>{userEmail}</p>
+          </section>
 
-            <div className="form-row">
-              <div className="form-rowTitle">
-                <label className="form-rowLabel">Password</label>
-              </div>
-              <div className="form-rowContent">
-                <div className="formControl autoError">
-                  <div className="formControl-body">
-                    <div className="formControl-wrapper">
-                      <input
-                        type="password"
-                        placeholder="Current password"
-                        name="password"
-                        className="input formControl-input"
-                        onChange={handlePasswordInputChange}
-                        value={password}
-                      />
+          <section className="pageBody-section">
+            <h2 className="h2 pageBody-title">Update Password</h2>
+            <form className="formMk2 updatePasswordForm" onSubmit={handleNewPasswordFormSubmit}>
+              {passwordUpdateGeneralError && (
+                <div className="formMk2-error">{passwordUpdateGeneralError}</div>
+              )}
+
+              <div className="formMk2-row">
+                <div className="formMk2-rowTitle">
+                  <label className="formMk2-rowLabel">Password</label>
+                </div>
+                <div className="formMk2-rowContent">
+                  <div className="formControl autoError">
+                    <div className="formControl-body">
+                      <div className="formControl-wrapper">
+                        <input
+                          type="password"
+                          placeholder="Current password"
+                          name="password"
+                          className="input formControl-input"
+                          onChange={handlePasswordInputChange}
+                          value={password}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="formControl-footer">
-                    {passwordUpdateErrors && passwordUpdateErrors.passwordError && (
-                      <div className="formControl-error">{passwordUpdateErrors.passwordError}</div>
-                    )}
+                    <div className="formControl-footer">
+                      {passwordUpdateErrors && passwordUpdateErrors.passwordError && (
+                        <div className="formControl-error">{passwordUpdateErrors.passwordError}</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-rowTitle">
-                <label className="form-rowLabel">New Password</label>
-              </div>
-              <div className="form-rowContent">
-                <div className="formControl autoError">
-                  <div className="formControl-body">
-                    <div className="formControl-wrapper">
-                      <input
-                        type="password"
-                        placeholder="New password"
-                        name="password"
-                        className="input formControl-input"
-                        onChange={handleNewPasswordInputChange}
-                        value={newPassword}
-                      />
+              <div className="formMk2-row">
+                <div className="formMk2-rowTitle">
+                  <label className="formMk2-rowLabel">New Password</label>
+                </div>
+                <div className="formMk2-rowContent">
+                  <div className="formControl autoError">
+                    <div className="formControl-body">
+                      <div className="formControl-wrapper">
+                        <input
+                          type="password"
+                          placeholder="New password"
+                          name="password"
+                          className="input formControl-input"
+                          onChange={handleNewPasswordInputChange}
+                          value={newPassword}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="formControl-footer">
-                    {passwordUpdateErrors && passwordUpdateErrors.newPasswordError && (
-                      <div className="formControl-error">{passwordUpdateErrors.newPasswordError}</div>
-                    )}
+                    <div className="formControl-footer">
+                      {passwordUpdateErrors && passwordUpdateErrors.newPasswordError && (
+                        <div className="formControl-error">{passwordUpdateErrors.newPasswordError}</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-rowTitle">
-                <label className="form-rowLabel">Confirm New Password</label>
-              </div>
-              <div className="form-rowContent">
-                <div className="formControl autoError">
-                  <div className="formControl-body">
-                    <div className="formControl-wrapper">
-                      <input
-                        type="password"
-                        placeholder="Confirm New Password"
-                        name="confirmPassword"
-                        className="input formControl-input"
-                        onChange={handleConfirmPasswordInputChange}
-                        value={confirmPassword}
-                      />
+              <div className="formMk2-row">
+                <div className="formMk2-rowTitle">
+                  <label className="formMk2-rowLabel">Confirm New Password</label>
+                </div>
+                <div className="formMk2-rowContent">
+                  <div className="formControl autoError">
+                    <div className="formControl-body">
+                      <div className="formControl-wrapper">
+                        <input
+                          type="password"
+                          placeholder="Confirm New Password"
+                          name="confirmPassword"
+                          className="input formControl-input"
+                          onChange={handleConfirmPasswordInputChange}
+                          value={confirmPassword}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="formControl-footer">
-                    {passwordUpdateErrors && passwordUpdateErrors.confirmPasswordError && (
-                      <div className="formControl-error">{passwordUpdateErrors.confirmPasswordError}</div>
-                    )}
+                    <div className="formControl-footer">
+                      {passwordUpdateErrors && passwordUpdateErrors.confirmPasswordError && (
+                        <div className="formControl-error">{passwordUpdateErrors.confirmPasswordError}</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-rowContent">
-                <button type="submit" className="button primary updatePasswordForm-submitButton">Set New Password</button>
+              <div className="formMk2-row">
+                <div className="formMk2-rowContent">
+                  <button type="submit" className="button primary updatePasswordForm-submitButton">Set New Password
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </section>
         </div>
       </div>
       <Footer />

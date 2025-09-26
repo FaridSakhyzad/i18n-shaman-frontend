@@ -187,8 +187,8 @@ export default function EditEntity({
       </div>
 
       <div className="modal-content">
-        <form className="form">
-          <div className="form-row">
+        <form className="formMk1">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label" htmlFor="key-name">Name</label>
@@ -214,7 +214,7 @@ export default function EditEntity({
           </div>
 
           {keyValues && (
-            <div className="form-row">
+            <div className="formMk1-row">
               <div className="formControl">
                 <div className="formControl-header">
                   <label className="formControl-label" htmlFor="key-value">Value for</label>
@@ -252,7 +252,7 @@ export default function EditEntity({
             </div>
           )}
 
-          <div className="form-row">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label" htmlFor="key-description">Description</label>

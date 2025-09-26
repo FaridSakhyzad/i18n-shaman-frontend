@@ -44,9 +44,9 @@ export interface IKey {
 export interface IKeyUpdateError extends IError {}
 
 export interface ILanguage {
-  id: string,
-  label: string,
-  code: string
+  id: string;
+  label: string;
+  code: string;
 }
 
 export interface IProjectLanguage extends ILanguage {

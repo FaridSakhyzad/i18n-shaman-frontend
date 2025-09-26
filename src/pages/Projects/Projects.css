@@ -61,3 +61,226 @@
     background: #bdc2c7;
     margin: 10px 24px;
 }
+
+.pageBody_projectsPage {
+    padding: 0;
+}
+
+.projectsList {
+    display: flex;
+    flex-direction: column;
+}
+
+.projectsList-item {
+    background-color: #fff;
+    padding: 11px 24px 10px 30px;
+    border-bottom: 1px solid #e5e5e5;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.projectsList-item_isDragging {
+    border: none;
+    box-shadow: 0 20px 60px 0 rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.projectsList-dragHandle {
+    position: absolute;
+    top: 2px;
+    left: 13px;
+    bottom: 0;
+    width: 9px;
+    height: 13px;
+    cursor: move;
+    margin: auto;
+    z-index: 1;
+
+    &:before,
+    &:after {
+        content: '';
+        display: block;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background-color: #c6c7cd;
+        position: absolute;
+        top: 1px;
+        scale: 0.6666;
+        box-shadow: 0 6px 0 0 #c6c7cd, 0 12px 0 0 #c6c7cd;
+    }
+
+    &:before {
+        left: 1px;
+    }
+
+    &:after {
+        right: 1px;
+    }
+}
+
+.project {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.project-expandButton {
+    --accent-color: #c6c7cd;
+
+    display: block;
+    padding: 0;
+    margin: 0 13px 0 0;
+    border: 1px solid var(--accent-color);
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+
+    &:before,
+    &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 1px;
+        background-color: var(--accent-color);
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+
+    &:after {
+        rotate: 90deg;
+    }
+
+    &:hover {
+        --accent-color: var(--link-text-color-2)
+    }
+}
+
+.project-content {
+    padding: 5px 0 2px 0;
+}
+
+.project-name {
+    display: table;
+    line-height: 1;
+    color: #5ca1e6;
+    text-decoration: none;
+    margin: 0 0 4px 0;
+
+    &:hover {
+        color: var(--link-text-color-1);
+        text-decoration: underline;
+    }
+
+    &:only-child {
+        margin-bottom: 0;
+    }
+}
+
+.project-languages {
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    display: flex;
+    gap: 18px;
+}
+
+.project-languageItem {}
+
+.project-controls {
+    grid-row: 0 / 2;
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+}
+
+.project-controlsButton {
+    font-size: 0;
+    width: 23px;
+    height: 23px;
+    padding: 0;
+    margin: 0;
+    display: block;
+    position: relative;
+
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        margin: auto;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    &:hover {
+        background: #cdcfd4;
+
+        &:before {
+            background: #fff;
+        }
+    }
+}
+
+.project-controlsButton_edit {
+    &:before {
+        width: 11px;
+        height: 12px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        mask: url("../../assets/images/icon--pen.svg") center center no-repeat;
+    }
+}
+
+.project-controlsButton_download {
+    &:before {
+        width: 9px;
+        height: 12px;
+        top: 2px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        mask: url("../../assets/images/icon--download.svg") center center no-repeat;
+    }
+}
+
+.project-controlsButton_delete {
+    &:before {
+        width: 11px;
+        height: 12px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.25);
+        mask: url("../../assets/images/icon--dumpster.svg") center center no-repeat;
+    }
+}
+
+.modal_editProject {
+    width: 100%;
+    max-width: 480px;
+}
+
+.modal_newProject {
+    width: 100%;
+    max-width: 520px;
+
+    .modal-buttonBox {
+        .button {
+            min-width: 120px;
+        }
+    }
+}

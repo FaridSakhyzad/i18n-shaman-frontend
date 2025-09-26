@@ -1,16 +1,14 @@
 /* eslint-disable no-param-reassign */
 import { buildCreateSlice, asyncThunkCreator, createAsyncThunk } from '@reduxjs/toolkit';
 import { verifyUser, setLanguage } from 'api/user';
-
-interface ISettings {
-  language: string | null,
-}
+import { IUserPreferences, IUserSettings } from '../interfaces/user';
 
 interface IInitialState {
   id: string | null;
   email: string | null;
   loading: boolean;
-  settings: ISettings;
+  settings: IUserSettings;
+  preferences: IUserPreferences;
 }
 
 const initialState: IInitialState = {
@@ -19,6 +17,9 @@ const initialState: IInitialState = {
   loading: true,
   settings: {
     language: null,
+  },
+  preferences: {
+    projectsOrder: [],
   },
 };
 
@@ -65,11 +66,12 @@ const userSlice = createAppSlice({
           return;
         }
 
-        const { id, email } = action.payload;
+        const { id, email, preferences } = action.payload;
 
         state.loading = false;
         state.id = id;
         state.email = email;
+        state.preferences = preferences || [];
       })
       .addCase(restoreSession.rejected, (state) => {
         state.loading = false;

@@ -125,8 +125,6 @@ export default function CreateEntity({
 
     const validationResult = validateKeyName(keyName, project.projectId, parentId, siblingKeysData);
 
-    console.log('validationResult',validationResult);
-
     if (!validationResult.success) {
       setLoading(false);
       setKeyNameError(validationResult.errors[0].message);
@@ -228,8 +226,8 @@ export default function CreateEntity({
       </div>
 
       <div className="modal-content">
-        <form className="form">
-          <div className="form-row">
+        <form className="formMk1">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label" htmlFor="key-name">Name*</label>
@@ -255,7 +253,7 @@ export default function CreateEntity({
           </div>
 
           {entityType === EntityType.String && (
-            <div className="form-row">
+            <div className="formMk1-row">
               <div className="formControl">
                 <table className="targetLanguageSelector">
                   <tbody>
@@ -306,7 +304,7 @@ export default function CreateEntity({
             </div>
           )}
 
-          <div className="form-row">
+          <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">
                 <label className="formControl-label" htmlFor="key-description">Description</label>
