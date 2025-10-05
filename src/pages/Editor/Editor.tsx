@@ -723,6 +723,42 @@ export default function Editor() {
         </Modal>
       )}
 
+      {isProjectsMenuVisible && (
+        <Dropdown
+          anchor="._button-projects-menu"
+          onOutsideClick={() => setIsProjectsMenuVisible(false)}
+          classNames="editorHeader-projectListMenu"
+        >
+          {projects && projects.map(({projectName, projectId}) => {
+            if (projectId === currentProjectId) {
+              return (
+                <div
+                  className={`editorHeader-projectListItem ${projectId === currentProjectId && 'editorHeader-projectListItem_active'}`}
+                  key={projectId}
+                >
+                  <span className='editorHeader-projectListLink editorHeader-projectListItem_active'>{projectName}</span>
+                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
+                </div>
+              )
+            }
+
+            return (
+              <div className="editorHeader-projectListItem" key={projectId}>
+                <Link
+                  className="editorHeader-projectListLink"
+                  to={`/project/${projectId}`}
+                  key={projectId}
+                  onClick={handleProjectListNameClick}
+                >
+                  {projectName}
+                </Link>
+                <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
+              </div>
+            );
+          })}
+        </Dropdown>
+      )}
+
       {isEntityDeleteConfirmVisible && renderDeleteConfirmationModal()}
 
       <Header mode={EHeaderModes.EDITOR} project={project} />
@@ -731,7 +767,7 @@ export default function Editor() {
         {projects && projects.length > 1 ? (
           <button
             type="button"
-            className="buttonInline editorHeader-currentProjectButton"
+            className="buttonInline editorHeader-currentProjectButton _button-projects-menu"
             onClick={handleProjectNameClick}
           >
             {project?.projectName}
@@ -740,33 +776,6 @@ export default function Editor() {
           <span className="buttonInline editorHeader-currentProject">
             {project?.projectName}
           </span>
-        )}
-
-        {(isProjectsMenuVisible && projectsMenuCoords && projects && projects.length > 1) && (
-          <div
-            className="editorHeader-projectListMenu"
-            style={{ top: projectsMenuCoords.top, left: projectsMenuCoords.left }}
-          >
-            {projects.map(({ projectName, projectId }) => {
-              if (projectId === currentProjectId) {
-                return null;
-              }
-
-              return (
-                <div className="editorHeader-projectListItem" key={projectId}>
-                  <Link
-                    className="editorHeader-projectListLink"
-                    to={`/project/${projectId}`}
-                    key={projectId}
-                    onClick={handleProjectListNameClick}
-                  >
-                    {projectName}
-                  </Link>
-                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
-                </div>
-              );
-            })}
-          </div>
         )}
 
         {(project && project.languages) && (

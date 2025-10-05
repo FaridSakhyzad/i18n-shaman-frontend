@@ -53,14 +53,22 @@
   }
 }
 
+.editorHeader-projectListItem_active {
+  .editorHeader-projectListLink {
+    color: var(--main-text-color);
+  }
+}
+
 .editorHeader-projectListLink {
   font-size: 20px;
   color: var(--link-text-color-2);
   text-decoration: none;
 
-  &:hover {
-    text-decoration: underline;
-    color: var(--link-text-color-1);
+  &:not(.editorHeader-projectListItem_active) {
+    &:hover {
+      text-decoration: underline;
+      color: var(--link-text-color-1);
+    }
   }
 }
 
