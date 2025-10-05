@@ -149,10 +149,10 @@ export default function Header(props: IProps) {
                   <h3 className="userMenu-title">{email}</h3>
                   <ul className="userMenuList">
                     <li className="userMenuList-item">
-                      <Link className="button ghost userMenuList-link" to='/settings'>Settings</Link>
+                      <Link className="button ghost userMenuList-link" to="/settings">Settings</Link>
                     </li>
                     <li className="userMenuList-item">
-                      <Link className="button ghost userMenuList-link" to='/profile'>Profile</Link>
+                      <Link className="button ghost userMenuList-link" to="/profile">Profile</Link>
                     </li>
                     <li className="userMenuList-item">
                       <hr className="userMenuList-separator" />

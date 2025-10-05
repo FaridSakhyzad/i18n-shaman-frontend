@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
 
 import { AppDispatch, IRootState } from 'store';
-import { getProjects } from 'store/projects';
+import { getProjects, updateProject } from 'store/projects';
 import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { DEFAULT_ITEMS_PER_PAGE, ROOT } from 'constants/app';
@@ -38,21 +38,17 @@ import Tooltip from 'components/Tooltip';
 import Modal from 'components/Modal';
 import Breadcrumbs from 'components/Breadcrumbs';
 import Dropdown from 'components/Dropdown';
+import Footer from 'components/Footer';
 
 import ItemsList from './ItemsList';
 
 import './Editor.scss';
-import Footer from '../../components/Footer';
-
-interface IProjectsMenuCoords {
-  top: number;
-  left: number;
-}
+import EditProject from '../Projects/EditProject';
 
 export default function Editor() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { id: userId } = useSelector((state: IRootState) => state.user);
+  const { id: userId, preferences } = useSelector((state: IRootState) => state.user);
   const { projectId: currentProjectId = '', subFolderId = '' } = useParams();
 
   const useSearchParamsResult = useSearchParams();
@@ -154,7 +150,6 @@ export default function Editor() {
   const [newEntityPath, setNewEntityPath] = useState<string>();
 
   const [isProjectsMenuVisible, setIsProjectsMenuVisible] = useState<boolean>(false);
-  const [projectsMenuCoords, setProjectsMenuCoords] = useState<IProjectsMenuCoords>();
 
   const [isLanguagesModalVisible, setIsLanguagesModalVisible] = useState<boolean>(false);
 
@@ -211,19 +206,27 @@ export default function Editor() {
     setIsCreateKeyModalVisible(true);
   };
 
-  const handleProjectNameClick = ({ currentTarget }: React.MouseEvent<HTMLElement>) => {
+  const handleProjectNameClick = () => {
     setIsProjectsMenuVisible(!isProjectsMenuVisible);
-
-    if (!isProjectsMenuVisible) {
-      const { top, left, height } = currentTarget.getBoundingClientRect();
-
-      setProjectsMenuCoords({ top: top + height, left });
-    }
   };
 
   const handleProjectListNameClick = () => {
     setPage(0);
     setIsProjectsMenuVisible(false);
+  };
+
+  const [inEditProjectId, setInEditProjectId] = useState<string | null>(null);
+
+  const handleProjectListMenuClick = (projectId: string) => {
+    setInEditProjectId(projectId);
+  };
+
+  const handleProjectSave = async (data: IProject) => {
+    await dispatch(updateProject(data));
+
+    await fetchProjectData();
+
+    setInEditProjectId(null);
   };
 
   const handleProjectLanguagesButtonClick = () => {
@@ -570,6 +573,24 @@ export default function Editor() {
     setLoading(false);
   };
 
+  const getOrderedProjects = () => {
+    if (!projects) {
+      return null;
+    }
+
+    const projectsMap: Map<string, IProject> = new Map<string, IProject>(projects.map((project) => [project.projectId, project]));
+
+    const result: (IProject | undefined)[] = [];
+
+    preferences.projectsOrder.forEach((id) => {
+      result.push(projectsMap.get(id));
+    });
+
+    return result;
+  };
+
+  const orderedProjects: IProject[] = getOrderedProjects() as IProject[];
+
   return (
     <>
       {/*
@@ -578,6 +599,15 @@ export default function Editor() {
         <h1>{t('key2.key2_inner_key1')}</h1>
         <h1>{t('key3.dotted.name')}</h1>
       */}
+
+      {projects && inEditProjectId && (
+        <EditProject
+          project={projects.find((projectData: IProject) => projectData.projectId === inEditProjectId) as IProject}
+          onSave={handleProjectSave}
+          onClose={() => setInEditProjectId(null)}
+          onCancel={() => setInEditProjectId(null)}
+        />
+      )}
 
       {isAddLanguageModalVisible && (
         <AddProjectLanguage
@@ -729,17 +759,22 @@ export default function Editor() {
           onOutsideClick={() => setIsProjectsMenuVisible(false)}
           classNames="editorHeader-projectListMenu"
         >
-          {projects && projects.map(({projectName, projectId}) => {
+          {orderedProjects && orderedProjects.map(({ projectName, projectId }) => {
             if (projectId === currentProjectId) {
               return (
                 <div
                   className={`editorHeader-projectListItem ${projectId === currentProjectId && 'editorHeader-projectListItem_active'}`}
                   key={projectId}
                 >
-                  <span className='editorHeader-projectListLink editorHeader-projectListItem_active'>{projectName}</span>
-                  <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
+                  <span className="editorHeader-projectListLink editorHeader-projectListItem_active">{projectName}</span>
+                  <button
+                    type="button"
+                    className="editorHeader-projectListSubmenu"
+                    aria-label="Project Menu"
+                    onClick={() => handleProjectListMenuClick(projectId)}
+                  />
                 </div>
-              )
+              );
             }
 
             return (
@@ -752,7 +787,12 @@ export default function Editor() {
                 >
                   {projectName}
                 </Link>
-                <button type="button" className="editorHeader-projectListSubmenu" aria-label="Project Menu" />
+                <button
+                  type="button"
+                  className="editorHeader-projectListSubmenu"
+                  aria-label="Project Menu"
+                  onClick={() => handleProjectListMenuClick(projectId)}
+                />
               </div>
             );
           })}
