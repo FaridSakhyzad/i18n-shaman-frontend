@@ -16,6 +16,30 @@ export const registerUser = async ({ email, password }: IRegisterUserDto) => {
   }
 };
 
+export const validateVerificationToken = async (verificationToken: string) => {
+  try {
+    return (await apiClient.post('auth/validateVerificationToken', { verificationToken })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const getEmailVerificationSecurityToken = async (verificationToken: string) => {
+  try {
+    return (await apiClient.post('auth/getEmailVerificationSecurityToken', { verificationToken })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+export const verifyEmail = async (verificationToken: string, verificationSecurityToken: string) => {
+  try {
+    return (await apiClient.post('auth/verifyEmail', { verificationToken, verificationSecurityToken })).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
 export interface ILoginUserDto {
   email: string;
   password: string;

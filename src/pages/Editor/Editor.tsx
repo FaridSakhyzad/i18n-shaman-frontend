@@ -578,6 +578,10 @@ export default function Editor() {
       return null;
     }
 
+    if (!preferences.projectsOrder) {
+      return projects;
+    }
+
     const projectsMap: Map<string, IProject> = new Map<string, IProject>(projects.map((project) => [project.projectId, project]));
 
     const result: (IProject | undefined)[] = [];

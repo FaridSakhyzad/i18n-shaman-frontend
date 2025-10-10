@@ -71,7 +71,7 @@ const userSlice = createAppSlice({
         state.loading = false;
         state.id = id;
         state.email = email;
-        state.preferences = preferences || [];
+        state.preferences = preferences || {};
       })
       .addCase(restoreSession.rejected, (state) => {
         state.loading = false;

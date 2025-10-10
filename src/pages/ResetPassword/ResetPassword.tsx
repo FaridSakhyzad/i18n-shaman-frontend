@@ -115,7 +115,7 @@ export default function ResetPassword() {
 
       return;
     }
-  }
+  };
 
   const handleConfirmPasswordFieldChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmPassword(value);
@@ -144,7 +144,7 @@ export default function ResetPassword() {
 
       return;
     }
-  }
+  };
 
   if (showResetSuccess) {
     return (

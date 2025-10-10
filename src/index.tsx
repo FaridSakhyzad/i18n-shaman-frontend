@@ -17,6 +17,8 @@ import './i18n';
 
 import Auth from './pages/Auth';
 import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
+import verifyEmailLoader from './pages/VerifyEmail/loader';
 
 import Projects from './pages/Projects';
 import Editor from './pages/Editor';
@@ -43,6 +45,11 @@ const router = createBrowserRouter([
     path: '/reset-password/:resetToken?',
     element: <GuestOnlyRoute redirectPath="/projects" component={<ResetPassword />} />,
     loader: resetPasswordLoader,
+  },
+  {
+    path: '/verify-email/:verificationToken?',
+    element: <GuestOnlyRoute redirectPath="/" component={<VerifyEmail />} />,
+    loader: verifyEmailLoader,
   },
   {
     path: '/projects',

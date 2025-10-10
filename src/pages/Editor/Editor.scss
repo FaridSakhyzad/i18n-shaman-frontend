@@ -51,6 +51,12 @@
   &:not(:first-child) {
     border-top: 1px solid rgba(0 0 0 / 0.05);
   }
+
+  &:hover {
+    .editorHeader-projectListSubmenu {
+      opacity: 1;
+    }
+  }
 }
 
 .editorHeader-projectListItem_active {
@@ -86,6 +92,7 @@
   margin: 0 0 0 auto;
   background-color: transparent;
   cursor: pointer;
+  opacity: 0.3;
 
   &:before {
     content: '';

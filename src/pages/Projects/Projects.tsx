@@ -158,6 +158,10 @@ export default function Projects() {
       return null;
     }
 
+    if (!projectsOrder) {
+      return projects;
+    }
+
     const projectsMap: Map<string, IProject> = new Map<string, IProject>(projects.map((project) => [project.projectId, project]));
 
     const result = [];
@@ -205,7 +209,7 @@ export default function Projects() {
             modifiers={[restrictToParentElement]}
           >
             <SortableContext
-              items={projectsOrder}
+              items={projectsOrder || []}
               strategy={verticalListSortingStrategy}
             >
               {orderedProjects && orderedProjects.map((project: IProject) => (
