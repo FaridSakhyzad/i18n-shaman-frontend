@@ -125,9 +125,14 @@ interface ICreateEntity {
 
 export const createProjectEntity = async (data: ICreateEntity) => apiClient.post('/createProjectEntity', data);
 
-export const deleteProjectEntity = async (id: string) => {
+export interface IDeleteEntitiesRequest {
+  projectId: string;
+  entityIds: string[]
+}
+
+export const deleteProjectEntities = async (data: IDeleteEntitiesRequest) => {
   try {
-    return (await apiClient.delete(`/deleteProjectEntity?id=${id}`)).data;
+    return (await apiClient.delete('/deleteProjectEntities', { data })).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }
@@ -146,6 +151,19 @@ interface IUpdateKey {
 export const updateKey = async (data: IUpdateKey): Promise<IKey | IKeyUpdateError> => {
   try {
     return (await apiClient.post('/updateKey', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+interface IDuplicateEntity {
+  projectId: string;
+  entityIds: string[];
+}
+
+export const duplicateEntities = async (data: IDuplicateEntity) => {
+  try {
+    return (await apiClient.post('/duplicateEntities', data)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

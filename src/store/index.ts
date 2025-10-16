@@ -6,6 +6,8 @@ import projectsReducer from './projects';
 import searchReducer from './search';
 import systemNotificationsSlice from './systemNotifications';
 
+import editorPageSlice from './editorPage';
+
 export const store = configureStore({
   reducer: {
     app: appReducer,
@@ -13,6 +15,7 @@ export const store = configureStore({
     projects: projectsReducer,
     search: searchReducer,
     systemNotifications: systemNotificationsSlice,
+    editorPage: editorPageSlice,
   },
 });
 

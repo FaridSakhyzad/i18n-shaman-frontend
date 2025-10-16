@@ -3,7 +3,10 @@ import { Link, useParams } from 'react-router-dom';
 import clsx from 'clsx';
 
 import { getUserProjectById } from 'api/projects';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { ROOT } from 'constants/app';
+
 import {
   EntityType,
   IKey,
@@ -16,6 +19,8 @@ import {
 import ItemsList from './ItemsList';
 
 import './Key.scss';
+import { IRootState } from '../../store';
+import { setSelectedEntities } from '../../store/editorPage';
 
 interface IProps {
   id: string;
@@ -46,9 +51,13 @@ export default function FolderComponent({
 }: IProps) {
   const { projectId: currentProjectId = '' } = useParams();
 
+  const dispatch = useDispatch();
+
   const [keys, setKeys] = useState<IKey[]>(initialKeys);
   const [isExpanded, setIsExpanded] = useState(initialKeys.length > 0);
   const [keyValues, setKeyValues] = useState<{ [parentId: string]: { [languageId: string]: IKeyValue } }>({});
+
+  const { selectedEntities } = useSelector((state: IRootState) => state.editorPage);
 
   const handleExpandIconClick = async () => {
     setIsExpanded(!isExpanded);
@@ -69,6 +78,20 @@ export default function FolderComponent({
     setKeys(newKeys);
   };
 
+  const handleSelectEntityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+
+    const uniqueEntityIds = new Set<string>(selectedEntities);
+
+    if (checked) {
+      uniqueEntityIds.add(id);
+    } else {
+      uniqueEntityIds.delete(id);
+    }
+
+    dispatch(setSelectedEntities(Array.from(uniqueEntityIds)));
+  };
+
   return (
     <section
       className={clsx({
@@ -81,7 +104,13 @@ export default function FolderComponent({
     >
       <div className="keyHeader">
         <i className={`keyHeader-expandIcon ${isExpanded ? 'expanded' : ''}`} onClick={handleExpandIconClick} />
-        <input type="checkbox" className="checkbox keySelectCheckbox"/>
+
+        <input
+          type="checkbox"
+          checked={selectedEntities.includes(id)}
+          onChange={handleSelectEntityChange}
+          className="checkbox keySelectCheckbox"
+        />
 
         <Link title={description} className="keyName" to={`/project/${currentProjectId}/${id}`}>{label}</Link>
 
@@ -128,6 +157,15 @@ export default function FolderComponent({
               data-entity-type={type}
               data-id={id}
               aria-label="Edit"
+            />
+
+            <button
+              type="button"
+              className="_entity-duplicate buttonInline keyHeader-control keyHeader-duplicate"
+              data-click-target="duplicateEntity"
+              data-entity-type={EntityType.String}
+              data-id={id}
+              aria-label="Copy"
             />
 
             {/*

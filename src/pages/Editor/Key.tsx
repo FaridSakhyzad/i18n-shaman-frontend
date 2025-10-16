@@ -15,6 +15,7 @@ import { IRootState } from 'store';
 
 import './Key.scss';
 import { ROOT } from '../../constants/app';
+import { setSelectedEntities } from '../../store/editorPage';
 
 interface IProps {
   id: string;
@@ -47,6 +48,8 @@ export default function Key(props: IProps) {
 
   const { keyValues: valuesFromState } = useSelector((state: IRootState) => state.search);
   const { id: userId } = useSelector((state: IRootState) => state.user);
+
+  const { selectedEntities } = useSelector((state: IRootState) => state.editorPage);
 
   const [loading, setLoading] = useState(false);
 
@@ -136,10 +139,30 @@ export default function Key(props: IProps) {
     setEditValueId('');
   };
 
+  const handleSelectEntityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+
+    const uniqueEntityIds = new Set<string>(selectedEntities);
+
+    if (checked) {
+      uniqueEntityIds.add(id);
+    } else {
+      uniqueEntityIds.delete(id);
+    }
+
+    dispatch(setSelectedEntities(Array.from(uniqueEntityIds)));
+  };
+
   return (
     <section className="key key_string">
       <div className="keyHeader">
-        <input type="checkbox" className="checkbox keySelectCheckbox" />
+        <input
+          type="checkbox"
+          checked={selectedEntities.includes(id)}
+          onChange={handleSelectEntityChange}
+          className="checkbox keySelectCheckbox"
+        />
+
         <button
           type="button"
           className="keyName"
@@ -160,6 +183,15 @@ export default function Key(props: IProps) {
               data-entity-type={EntityType.String}
               data-id={id}
               aria-label="Edit"
+            />
+
+            <button
+              type="button"
+              className="_entity-duplicate buttonInline keyHeader-control keyHeader-duplicate"
+              data-click-target="duplicateEntity"
+              data-entity-type={EntityType.String}
+              data-id={id}
+              aria-label="Copy"
             />
 
             {/*

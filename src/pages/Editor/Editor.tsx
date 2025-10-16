@@ -6,6 +6,7 @@ import clsx from 'clsx';
 
 import { AppDispatch, IRootState } from 'store';
 import { getProjects, updateProject } from 'store/projects';
+import { setSelectedEntities } from 'store/editorPage';
 import { createSystemMessage, EMessageType } from 'store/systemNotifications';
 
 import { DEFAULT_ITEMS_PER_PAGE, ROOT } from 'constants/app';
@@ -22,7 +23,8 @@ import {
 } from 'interfaces';
 
 import {
-  deleteProjectEntity,
+  deleteProjectEntities,
+  duplicateEntities,
   getUserProjectById,
 } from 'api/projects';
 
@@ -41,15 +43,16 @@ import Dropdown from 'components/Dropdown';
 import Footer from 'components/Footer';
 
 import ItemsList from './ItemsList';
+import EditProject from '../Projects/EditProject';
 
 import './Editor.scss';
-import EditProject from '../Projects/EditProject';
 
 export default function Editor() {
   const dispatch = useDispatch<AppDispatch>();
 
   const { id: userId, preferences } = useSelector((state: IRootState) => state.user);
   const { projectId: currentProjectId = '', subFolderId = '' } = useParams();
+  const { selectedEntities } = useSelector((state: IRootState) => state.editorPage);
 
   const useSearchParamsResult = useSearchParams();
 
@@ -270,7 +273,10 @@ export default function Editor() {
   const [idOfEntityToDelete, setIdOfEntityToDelete] = useState<string | null>(null);
 
   const deleteEntity = async (id: string) => {
-    const result = await deleteProjectEntity(id);
+    const result = await deleteProjectEntities({
+      projectId: currentProjectId,
+      entityIds: [id],
+    });
 
     if ('error' in result) {
       dispatch(createSystemMessage({
@@ -362,7 +368,7 @@ export default function Editor() {
     window.history.pushState({}, '', url);
   };
 
-  const handleItemsListClickEvent = (e: React.SyntheticEvent<HTMLElement>) => {
+  const handleItemsListClickEvent = async (e: React.SyntheticEvent<HTMLElement>) => {
     const { target } = e;
 
     if (!(target instanceof HTMLElement)) {
@@ -401,6 +407,19 @@ export default function Editor() {
     if (elName === 'deleteEntity') {
       setIdOfEntityToDelete(dataset.id as string);
       setEntityDeleteConfirmVisible(true);
+    }
+
+    if (elName === 'duplicateEntity') {
+      setLoading(true);
+
+      await duplicateEntities({
+        projectId: currentProjectId,
+        entityIds: [dataset.id as string],
+      });
+
+      await fetchProjectData();
+
+      setLoading(false);
     }
 
     if (elName === 'pagePrev') {
@@ -582,7 +601,7 @@ export default function Editor() {
       return projects;
     }
 
-    const projectsMap: Map<string, IProject> = new Map<string, IProject>(projects.map((project) => [project.projectId, project]));
+    const projectsMap: Map<string, IProject> = new Map<string, IProject>(projects.map((projectData) => [projectData.projectId, projectData]));
 
     const result: (IProject | undefined)[] = [];
 
@@ -594,6 +613,67 @@ export default function Editor() {
   };
 
   const orderedProjects: IProject[] = getOrderedProjects() as IProject[];
+
+  const [selectionMenuVisible, setSelectionMenuVisible] = useState<boolean>(false);
+
+  const handleSelectAllCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+
+    if (checked) {
+      dispatch(setSelectedEntities(project?.keys.map((key) => key.id)));
+    } else {
+      dispatch(setSelectedEntities([]));
+    }
+
+    setSelectionMenuVisible(false);
+  };
+
+  const handleSelectionButtonClick = () => {
+    setSelectionMenuVisible(!selectionMenuVisible);
+  };
+
+  const handleSelectAllButtonClick = () => {
+    dispatch(setSelectedEntities(project?.keys.map((key) => key.id)));
+    setSelectionMenuVisible(false);
+  };
+
+  const handleSelectNoneButtonClick = () => {
+    dispatch(setSelectedEntities([]));
+    setSelectionMenuVisible(false);
+  };
+
+  const handleToggleSelectedVisibility = () => {};
+
+  const handleDeleteSelectedClick = async () => {
+    const result = await deleteProjectEntities({
+      projectId: currentProjectId,
+      entityIds: selectedEntities,
+    });
+
+    if ('error' in result) {
+      dispatch(createSystemMessage({
+        content: result.message || 'Error Deleting Entity',
+        type: EMessageType.Error,
+      }));
+    } else {
+      fetchProjectData();
+    }
+  };
+
+  const handleDuplicateSelectedClick = async () => {
+    setLoading(true);
+
+    const result = await duplicateEntities({
+      projectId: currentProjectId,
+      entityIds: selectedEntities,
+    });
+
+    dispatch(setSelectedEntities([]));
+
+    fetchProjectData();
+
+    setLoading(false);
+  };
 
   return (
     <>
@@ -895,6 +975,13 @@ export default function Editor() {
             size="small_autosize"
             nightMode
           />
+
+          <Tooltip
+            content="Make a Copy"
+            anchor="._entity-duplicate"
+            size="small_autosize"
+            nightMode
+          />
         </>
       )}
 
@@ -1029,7 +1116,68 @@ export default function Editor() {
         </Dropdown>
       )}
 
+      {selectionMenuVisible && (
+        <Dropdown
+          anchor="._button-seelction"
+          onOutsideClick={() => setSelectionMenuVisible(false)}
+          classNames="editorEntitiesSelectDropdown"
+        >
+          <div className="dropdownListMk1">
+            <button
+              type="button"
+              className="button ghost dropdownListMk1-button"
+              onClick={handleSelectAllButtonClick}
+            >
+              Select All
+            </button>
+            <button
+              type="button"
+              className="button ghost dropdownListMk1-button"
+              onClick={handleSelectNoneButtonClick}
+            >
+              Select None
+            </button>
+          </div>
+        </Dropdown>
+      )}
+
       <section className="editorToolbar">
+        <div className="editorBatchOps">
+          <div className="editorBatchOps-mainControl">
+            <input
+              type="checkbox"
+              onChange={handleSelectAllCheckboxChange}
+              checked={selectedEntities.length === project?.keys.length}
+              className={clsx({
+                'checkbox editorBatchOps-select': true,
+                'editorBatchOps-select_partially': selectedEntities.length > 0 && selectedEntities.length !== project?.keys.length,
+              })}
+            />
+            <button
+              type="button"
+              className="editorBatchOps-menuButton _button-seelction"
+              aria-label="Selection Menu"
+              onClick={handleSelectionButtonClick}
+            />
+          </div>
+
+          {selectedEntities.length > 0 && (
+            <div className="editorBatchOps-controls">
+              <i
+                className="editorBatchOps-control editorBatchOps-control_hide"
+                onClick={handleToggleSelectedVisibility}
+              />
+              <i
+                className="editorBatchOps-control editorBatchOps-control_copy"
+                onClick={handleDuplicateSelectedClick}
+              />
+              <i
+                className="editorBatchOps-control editorBatchOps-control_delete"
+                onClick={handleDeleteSelectedClick}
+              />
+            </div>
+          )}
+        </div>
         <div className="editorSearch">
           <input
             type="text"

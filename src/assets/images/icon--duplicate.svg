@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="11" height="14" viewBox="0 0 11 14">
+  <defs>
+    <style>
+      .cls-1 {
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="icon--duplicate.svg" class="cls-1" d="M10,14H3a1,1,0,0,1-1-1V12H1a1,1,0,0,1-1-1V1A1,1,0,0,1,1,0H8A1,1,0,0,1,9,1V2h1a1,1,0,0,1,1,1V13A1,1,0,0,1,10,14ZM8,1H1V11H2V3A1,1,0,0,1,3,2H8V1Zm2,2H3V13h7V3ZM9,5H4V4H9V5ZM9,7H4V6H9V7ZM9,9H4V8H9V9Zm0,3H4V10H9v2Z"/>
+</svg>

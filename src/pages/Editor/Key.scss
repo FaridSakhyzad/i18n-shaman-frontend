@@ -21,6 +21,10 @@
   &:last-child {
     margin-bottom: 0;
   }
+
+  &:hover {
+    background-color: #ffffff;
+  }
 }
 
 .keyHeader-expandIcon {
@@ -31,7 +35,7 @@
   cursor: pointer;
   position: absolute;
   top: 18px;
-  left: 9px;
+  left: 13px;
   transition: transform 0.2s ease;
 
   &.expanded {
@@ -40,7 +44,7 @@
 }
 
 .keySelectCheckbox {
-  display: none;
+  display: block;
   align-self: center;
   margin-bottom: 2px;
   margin-right: 12px;
@@ -107,6 +111,18 @@
     height: 15px;
     background-color: #cdcfd4;
     mask: url("../../assets/images/icon--key-01.svg") right center no-repeat;
+    margin: 0 auto 0 auto;
+  }
+}
+
+.keyHeader-duplicate {
+  &:before {
+    content: '';
+    display: block;
+    width: 11px;
+    height: 14px;
+    background-color: #cdcfd4;
+    mask: url("../../assets/images/icon--duplicate.svg") right center no-repeat;
     margin: 0 auto 0 auto;
   }
 }

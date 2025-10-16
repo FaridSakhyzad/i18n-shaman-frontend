@@ -197,6 +197,11 @@ export default function CreateEntity({
 
   const targetLanguages = getLanguageSelectorItems();
 
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <Modal
       customClassNames="modal_withBottomButtons modal_createKey"
@@ -226,7 +231,7 @@ export default function CreateEntity({
       </div>
 
       <div className="modal-content">
-        <form className="formMk1">
+        <form className="formMk1" onSubmit={handleFormSubmit}>
           <div className="formMk1-row">
             <div className="formControl">
               <div className="formControl-header">

@@ -123,7 +123,7 @@ input:-webkit-autofill:focus {
   height: 15px;
   appearance: none;
   border-radius: 3px;
-  border: 1px solid #5ca1e5;
+  border: 1px solid var(--input-border-color);
   background-color: white;
   cursor: pointer;
 
@@ -139,7 +139,7 @@ input:-webkit-autofill:focus {
   }
 
   &:hover:not([disabled]) {
-    border-color: #295fcc;
+    border-color: var(--input-border-color-hover);
   }
 
   &:focus-visible {
