@@ -90,7 +90,7 @@ export default function Key(props: IProps) {
   const handleValueSave = async () => {
     setLoading(true);
 
-    const preparedValues = Object.entries(values).map(([_key, keyValue]) => keyValue);
+    const preparedValues: IKeyValue[] = Object.entries(values).map(([_key, keyValue]) => keyValue);
 
     const result = await updateKey({
       id,
@@ -194,15 +194,13 @@ export default function Key(props: IProps) {
               aria-label="Copy"
             />
 
-            {/*
-              <button
-                type="button"
-                className="_entity-move buttonInline keyHeader-control keyHeader-move"
-                data-click-target="moveEntity"
-                data-id={id}
-                aria-label="Move"
-              />
-            */}
+            <button
+              type="button"
+              className="_entity-move buttonInline keyHeader-control keyHeader-move"
+              data-click-target="moveEntity"
+              data-id={id}
+              aria-label="Move"
+            />
           </div>
 
           <div className="keyHeader-controlsGroup">

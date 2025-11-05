@@ -78,7 +78,7 @@
   align-self: flex-start;
   justify-self: flex-start;
   display: flex;
-  gap: 12px;
+  gap: 18px;
 }
 
 .keyHeader-controlsGroup {
@@ -93,13 +93,14 @@
   border-radius: 50%;
   cursor: pointer;
   color: #faf9fb;
+  background-color: rgba(205, 207, 212, 0.7);
+
+  &:before {
+    background-color: #fff;
+  }
 
   &:hover {
-    background-color: #cdcfd4;
-
-    &:before {
-      background-color: #fff;
-    }
+    background-color: #b5b6ba;
   }
 }
 
@@ -109,7 +110,6 @@
     display: block;
     width: 15px;
     height: 15px;
-    background-color: #cdcfd4;
     mask: url("../../assets/images/icon--key-01.svg") right center no-repeat;
     margin: 0 auto 0 auto;
   }
@@ -121,7 +121,6 @@
     display: block;
     width: 11px;
     height: 14px;
-    background-color: #cdcfd4;
     mask: url("../../assets/images/icon--duplicate.svg") right center no-repeat;
     margin: 0 auto 0 auto;
   }
@@ -133,7 +132,6 @@
     display: block;
     width: 15px;
     height: 11px;
-    background-color: #cdcfd4;
     mask: url("../../assets/images/icon--folder.svg") right center no-repeat;
     margin: 0 auto 0 auto;
   }
@@ -145,7 +143,6 @@
     display: block;
     width: 11px;
     height: 12px;
-    background-color: #cdcfd4;
     mask: url("../../assets/images/icon--pen.svg") right center no-repeat;
     margin: 0 auto 1px auto;
   }
@@ -156,8 +153,7 @@
     content: '';
     display: block;
     width: 13px;
-    height: 15px;
-    background-color: #cdcfd4;
+    height: 11px;
     mask: url("../../assets/images/icon--move.svg") right center no-repeat;
     margin: 0 auto;
   }
@@ -169,7 +165,6 @@
     display: block;
     width: 11px;
     height: 12px;
-    background-color: #cdcfd4;
     mask: url("../../assets/images/icon--dumpster.svg") right center no-repeat;
     margin: 0 auto 1px auto;
   }

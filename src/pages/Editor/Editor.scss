@@ -233,11 +233,26 @@
   border-radius: 10px;
 }
 
+.editorBatchOps-controlsBox {
+  overflow-x: hidden;
+
+  .editorBatchOps-controls {
+   margin-left: -109px;
+  }
+
+  &.isActive {
+    .editorBatchOps-controls {
+      margin-left: 0;
+    }
+  }
+}
+
 .editorBatchOps-controls {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 0 24px 0 4px;
+  transition: margin-left 0.15s ease;
 }
 
 .editorBatchOps-control {
@@ -271,6 +286,15 @@
     width: 19px;
     height: 14px;
     mask: url("../../assets/images/icon--eye-disabled.svg") center no-repeat;
+  }
+}
+
+.editorBatchOps-control_move {
+  &:before {
+    width: 13px;
+    height: 11px;
+    mask: url("../../assets/images/icon--move.svg") center no-repeat;
+    left: 2px;
   }
 }
 

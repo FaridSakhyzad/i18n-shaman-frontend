@@ -37,6 +37,7 @@ export default function EditEntity({
   const [loading, setLoading] = useState<boolean>(true);
 
   const [key, setKey] = useState<IKey>();
+  const [entityLabel, setEntityLabel] = useState<string>();
   const [keyValues, setValues] = useState<{ [key: string]: IKeyValue }>({});
 
   const { id: userId } = useSelector((state: IRootState) => state.user);
@@ -45,6 +46,8 @@ export default function EditEntity({
     const keyData = await getKeyData({ userId: userId as string, projectId: project.projectId, keyId });
 
     const { key = {}, values = {} } = keyData;
+
+    setEntityLabel(key.label);
 
     setKey(key);
     setValues(values[keyId]);
@@ -168,15 +171,15 @@ export default function EditEntity({
 
       <div className="modal-header">
         {entityType === EntityType.String && (
-          <h4 className="modal-title">Edit Key <span className="editEntity-name">{key.label}</span></h4>
+          <h4 className="modal-title">Edit Key <span className="editEntity-name">{entityLabel}</span></h4>
         )}
 
         {entityType === EntityType.Folder && (
-          <h4 className="modal-title">Edit Folder <span className="editEntity-name">{key.label}</span></h4>
+          <h4 className="modal-title">Edit Folder <span className="editEntity-name">{entityLabel}</span></h4>
         )}
 
         {entityType === EntityType.Component && (
-          <h4 className="modal-title">Edit Component <span className="editEntity-name">{key.label}</span></h4>
+          <h4 className="modal-title">Edit Component <span className="editEntity-name">{entityLabel}</span></h4>
         )}
         <button
           type="button"

@@ -156,14 +156,29 @@ export const updateKey = async (data: IUpdateKey): Promise<IKey | IKeyUpdateErro
   }
 };
 
-interface IDuplicateEntity {
+interface IDuplicateEntities {
   projectId: string;
   entityIds: string[];
 }
 
-export const duplicateEntities = async (data: IDuplicateEntity) => {
+export const duplicateEntities = async (data: IDuplicateEntities) => {
   try {
     return (await apiClient.post('/duplicateEntities', data)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+interface IMoveEntities {
+  projectId: string;
+  userId: string;
+  destinationEntityId: string;
+  entityIds: string[];
+}
+
+export const moveEntities = async (data: IMoveEntities) => {
+  try {
+    return (await apiClient.post('/moveEntities', data)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }
@@ -191,6 +206,20 @@ interface IGetMultipleEntitiesDataByParentId {
 export const getMultipleEntitiesDataByParentId = async ({ projectId, parentId }: IGetMultipleEntitiesDataByParentId) => {
   try {
     return (await apiClient.get(`getMultipleEntitiesDataByParentId?projectId=${projectId}&parentId=${parentId}`)).data;
+  } catch (error: any) {
+    return error.response && error.response.data;
+  }
+};
+
+interface IGetEntitiesChildrenByIds {
+  projectId: string,
+  userId: string,
+  ids: string[]
+}
+
+export const getEntitiesChildrenByIds = async (data: IGetEntitiesChildrenByIds) => {
+  try {
+    return (await apiClient.post('getEntitiesChildrenByIds', data)).data;
   } catch (error: any) {
     return error.response && error.response.data;
   }

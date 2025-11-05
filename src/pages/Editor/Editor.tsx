@@ -36,6 +36,7 @@ import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateEntity from 'components/CreateEntity';
 import EditEntity from 'components/EditEntity';
 import EditProjectLanguage from 'components/EditProjectLanguage';
+import MoveEntity from 'components/MoveEntity';
 import Tooltip from 'components/Tooltip';
 import Modal from 'components/Modal';
 import Breadcrumbs from 'components/Breadcrumbs';
@@ -148,6 +149,7 @@ export default function Editor() {
   const [project, setProject] = useState<IProject | null>(null);
 
   const [isCreateKeyModalVisible, setIsCreateKeyModalVisible] = useState<boolean>(false);
+
   const [newEntityParentId, setNewEntityParentId] = useState<string>();
   const [newEntityType, setNewEntityType] = useState<EntityType>();
   const [newEntityPath, setNewEntityPath] = useState<string>();
@@ -252,6 +254,7 @@ export default function Editor() {
   const [inEditKeyId, setInEditKeyId] = useState<string>();
   const [inEditEntityType, setInEditEntityType] = useState<EntityType>();
   const [isEditKeyModalVisible, setIsEditKeyModalVisible] = useState<boolean>(false);
+  const [isMoveEntityModalVisible, setIsMoveEntityModalVisible] = useState<boolean>(false);
 
   const onKeyNameClick = (keyId: string) => {
     setInEditKeyId(keyId);
@@ -642,7 +645,9 @@ export default function Editor() {
     setSelectionMenuVisible(false);
   };
 
-  const handleToggleSelectedVisibility = () => {};
+  const handleMoveSelected = () => {
+    setIsMoveEntityModalVisible(true);
+  };
 
   const handleDeleteSelectedClick = async () => {
     const result = await deleteProjectEntities({
@@ -768,6 +773,15 @@ export default function Editor() {
             setIsEditKeyModalVisible(false);
           }}
           onSave={onKeyEditSave}
+        />
+      )}
+
+      {isMoveEntityModalVisible && (
+        <MoveEntity
+          projectId={currentProjectId}
+          onClose={() => { setIsMoveEntityModalVisible(false); }}
+          onCancel={() => { setIsMoveEntityModalVisible(false); }}
+          onConfirm={() => { setIsMoveEntityModalVisible(false); }}
         />
       )}
 
@@ -1161,11 +1175,11 @@ export default function Editor() {
             />
           </div>
 
-          {selectedEntities.length > 0 && (
+          <div className={clsx('editorBatchOps-controlsBox', { isActive: selectedEntities.length > 0 })}>
             <div className="editorBatchOps-controls">
               <i
-                className="editorBatchOps-control editorBatchOps-control_hide"
-                onClick={handleToggleSelectedVisibility}
+                className="editorBatchOps-control editorBatchOps-control_move"
+                onClick={handleMoveSelected}
               />
               <i
                 className="editorBatchOps-control editorBatchOps-control_copy"
@@ -1176,7 +1190,7 @@ export default function Editor() {
                 onClick={handleDeleteSelectedClick}
               />
             </div>
-          )}
+          </div>
         </div>
         <div className="editorSearch">
           <input

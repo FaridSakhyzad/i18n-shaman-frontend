@@ -168,15 +168,13 @@ export default function FolderComponent({
               aria-label="Copy"
             />
 
-            {/*
-              <button
-                type="button"
-                className="_entity-move buttonInline keyHeader-control keyHeader-move"
-                data-click-target="moveEntity"
-                data-id={id}
-                aria-label="Move"
-              />
-            */}
+            <button
+              type="button"
+              className="_entity-move buttonInline keyHeader-control keyHeader-move"
+              data-click-target="moveEntity"
+              data-id={id}
+              aria-label="Move"
+            />
           </div>
 
           <div className="keyHeader-controlsGroup">

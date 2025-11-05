@@ -37,7 +37,7 @@ export default function ItemsList({
   path,
   pathCache,
   iteration = 0,
-  page = 13,
+  page = 0,
   totalCount = 0,
   itemsPerPage = DEFAULT_ITEMS_PER_PAGE,
   navigationData = {},

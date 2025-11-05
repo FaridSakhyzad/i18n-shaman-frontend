@@ -216,6 +216,11 @@ input:-webkit-autofill:focus {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+
+  .radio {
+    margin-top: 2px;
+    margin-bottom: auto;
+  }
 }
 
 .radioControl-text {
@@ -805,6 +810,27 @@ input:-webkit-autofill:focus {
   &.isActive {
     color: white;
     background-color: #388ff3;
+  }
+}
+
+.buttonsListMk1 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+}
+
+.buttonsListMk1-item {}
+
+.buttonsListMk1-button {
+  width: 100%;
+  text-align: left;
+  padding: 9px 24px 7px 24px;
+  background-color: transparent;
+
+  &:hover {
+    background-color: rgba(56, 143, 242, 0.15);
+    text-decoration: none;
   }
 }
 
