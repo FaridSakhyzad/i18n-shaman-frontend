@@ -38,6 +38,10 @@
     margin-right: 12px;
 }
 
+.entitiesList-itemControl_root {
+    font-weight: bold;
+}
+
 .entitiesList-openButton {
     height: 31px;
     margin-left: auto;

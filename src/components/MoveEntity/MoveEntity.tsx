@@ -48,9 +48,10 @@ export default function MoveEntity(props: IProps) {
   const [childrenByParentIds, setChildrenByParentIds] = useState<IChildrenStatistics>({});
 
   const [destinationFolderId, setDestinationFolderId] = useState<string>();
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState<boolean>(false);
 
   const getChildrenByParentIds = (children: IKey[]): IChildrenStatistics => {
-    const result: IChildrenStatistics = {}
+    const result: IChildrenStatistics = {};
 
     children.forEach((entity: IKey) => {
       if (!result[entity.parentId]) {
@@ -131,6 +132,8 @@ export default function MoveEntity(props: IProps) {
       setProject(result);
     }
 
+    setDestinationFolderId(undefined);
+
     setLoading(false);
   };
 
@@ -156,6 +159,8 @@ export default function MoveEntity(props: IProps) {
       setProject(result);
     }
 
+    setDestinationFolderId(undefined);
+
     setLoading(false);
   };
 
@@ -171,7 +176,15 @@ export default function MoveEntity(props: IProps) {
     onCancel();
   };
 
-  const handleConfirmClick = async () => {
+  const handleMoveClick = async () => {
+    if (!userId || !destinationFolderId || !selectedEntities || selectedEntities.length < 1) {
+      return;
+    }
+
+    setShowConfirmationDialog(true);
+  };
+
+  const onMoveConfirmation = async () => {
     if (!userId || !destinationFolderId || !selectedEntities || selectedEntities.length < 1) {
       return;
     }
@@ -191,91 +204,149 @@ export default function MoveEntity(props: IProps) {
   };
 
   return (
-    <Modal
-      onEscapeKeyPress={onClose}
-      customClassNames="modal_withBottomButtons modal_moveEntities"
-    >
-      {loading && (
-        <div className="loading modal-loading" />
-      )}
-      <div className="modal-header">
-        <h4 className="modal-title">Move to</h4>
+    <>
+      <Modal
+        onEscapeKeyPress={onClose}
+        customClassNames="modal_withBottomButtons modal_moveEntities"
+      >
+        {loading && (
+          <div className="loading modal-loading" />
+        )}
+        <div className="modal-header">
+          <h4 className="modal-title">Move to...</h4>
 
-        <button
-          type="button"
-          className="modal-closeButton"
-          onClick={handleCloseButtonClick}
-          aria-label="Close modal"
-        />
-      </div>
-
-      <div className="modal-content">
-        {(project && project.subfolder) && (
           <button
             type="button"
-            className="button secondary"
-            onClick={handleBackClick}
-          >
-            &lt; Back
-          </button>
-        )}
+            className="modal-closeButton"
+            onClick={handleCloseButtonClick}
+            aria-label="Close modal"
+          />
+        </div>
 
-        <div className="entitiesList">
-          {project?.keys.map((key: IKey) => {
-            if (key.type === 'string') {
-              return null;
-            }
+        <div className="modal-content">
+          {(project && project.subfolder) && (
+            <button
+              type="button"
+              className="button secondary"
+              onClick={handleBackClick}
+            >
+              &lt; Back
+            </button>
+          )}
 
-            return (
-              <div
-                className="entitiesList-item"
-                key={key.id}
-              >
-                <label
-                  className="radioControl entitiesList-itemControl"
-                >
+          <div className="entitiesList">
+            {(project && !project.subfolder) && (
+              <div className="entitiesList-item">
+                <label className="radioControl entitiesList-itemControl entitiesList-itemControl_root">
                   <input
                     type="radio"
                     className="radio"
-                    value={key.id}
-                    checked={key.id === destinationFolderId}
-                    onChange={() => handleDestinationFolderChange(key.id)}
+                    value={project?.projectId}
+                    checked={project?.projectId === destinationFolderId}
+                    onChange={() => handleDestinationFolderChange(project?.projectId as string)}
                   />
-                  <span className="radioControl-text">{key.label}</span>
+                  <span className="radioControl-text">Root</span>
                 </label>
-
-                {childrenByParentIds[key.id] && childrenByParentIds[key.id].folders > 0 && (
-                  <button
-                    type="button"
-                    className="button ghost entitiesList-openButton"
-                    onClick={() => handleOpenEntityClick(key.id)}
-                  >
-                    Open
-                  </button>
-                )}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            )}
 
-      <div className="modal-buttonBox">
-        <button
-          type="button"
-          className="button secondary modal-button"
-          onClick={handleCancelClick}
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          className="button primary modal-button"
-          onClick={handleConfirmClick}
-          disabled={!destinationFolderId}
-        >
-          Move to selected
-        </button>
-      </div>
-    </Modal>
+            {project?.keys.map((key: IKey) => {
+              if (key.type === 'string') {
+                return null;
+              }
+
+              return (
+                <div
+                  className="entitiesList-item"
+                  key={key.id}
+                >
+                  <label
+                    className="radioControl entitiesList-itemControl"
+                  >
+                    <input
+                      type="radio"
+                      className="radio"
+                      value={key.id}
+                      checked={key.id === destinationFolderId}
+                      onChange={() => handleDestinationFolderChange(key.id)}
+                    />
+                    <span className="radioControl-text">{key.label}</span>
+                  </label>
+
+                  {childrenByParentIds[key.id] && childrenByParentIds[key.id].folders > 0 && (
+                    <button
+                      type="button"
+                      className="button ghost entitiesList-openButton"
+                      onClick={() => handleOpenEntityClick(key.id)}
+                    >
+                      Open
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="modal-buttonBox">
+          <button
+            type="button"
+            className="button secondary modal-button"
+            onClick={handleCancelClick}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="button primary modal-button"
+            onClick={handleMoveClick}
+            disabled={!destinationFolderId}
+          >
+            Move to selected
+          </button>
+        </div>
+      </Modal>
+
+      {showConfirmationDialog && (
+        <Modal customClassNames="dialogModal">
+          <div className="modal-header">
+            <h4 className="modal-title">Confirm Moving Entities</h4>
+
+            <button
+              type="button"
+              className="modal-closeButton"
+              onClick={() => {
+                setShowConfirmationDialog(false);
+              }}
+              aria-label="Close modal"
+            />
+          </div>
+          <div className="modal-content">
+            <div className="dialogModal-content">
+            <i className="dialogBadge question danger dialogModal-badge" />
+              <div className="dialogModal-contentText">
+                <p className="dialogModal-contentPara">Are you sure you want move Selected Entities?</p>
+              </div>
+            </div>
+          </div>
+          <div className="modal-buttonBox">
+            <button
+              type="button"
+              className="button secondary dialogModal-button"
+              onClick={() => { setShowConfirmationDialog(false); }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="button warning dialogModal-button"
+              onClick={onMoveConfirmation}
+            >
+              Yes, Move
+            </button>
+          </div>
+        </Modal>
+      )}
+    </>
   );
 }

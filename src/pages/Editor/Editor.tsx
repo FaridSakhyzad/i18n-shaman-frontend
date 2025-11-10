@@ -649,7 +649,15 @@ export default function Editor() {
     setIsMoveEntityModalVisible(true);
   };
 
+  const [isDeleteSelectedConfirmVisible, setIsDeleteSelectedConfirmVisible] = useState<boolean>(false);
+
   const handleDeleteSelectedClick = async () => {
+    setIsDeleteSelectedConfirmVisible(true);
+  };
+
+  const onDeleteSelectedConfirm = async () => {
+    setLoading(true);
+
     const result = await deleteProjectEntities({
       projectId: currentProjectId,
       entityIds: selectedEntities,
@@ -663,6 +671,12 @@ export default function Editor() {
     } else {
       fetchProjectData();
     }
+
+    dispatch(setSelectedEntities([]));
+
+    setIsDeleteSelectedConfirmVisible(false);
+
+    setLoading(false);
   };
 
   const handleDuplicateSelectedClick = async () => {
@@ -677,6 +691,14 @@ export default function Editor() {
 
     fetchProjectData();
 
+    setLoading(false);
+  };
+
+  const onMoveConfirm = async () => {
+    dispatch(setSelectedEntities([]));
+    setIsMoveEntityModalVisible(false);
+    setLoading(true);
+    await fetchProjectData();
     setLoading(false);
   };
 
@@ -781,7 +803,7 @@ export default function Editor() {
           projectId={currentProjectId}
           onClose={() => { setIsMoveEntityModalVisible(false); }}
           onCancel={() => { setIsMoveEntityModalVisible(false); }}
-          onConfirm={() => { setIsMoveEntityModalVisible(false); }}
+          onConfirm={onMoveConfirm}
         />
       )}
 
@@ -898,6 +920,38 @@ export default function Editor() {
       )}
 
       {isEntityDeleteConfirmVisible && renderDeleteConfirmationModal()}
+
+      {isDeleteSelectedConfirmVisible && (
+        <Modal customClassNames="dialogModal">
+          <div className="modal-header">
+            <h4 className="modal-title">Confirm Deleting Selected Entities</h4>
+          </div>
+          <div className="modal-content">
+            <div className="dialogModal-content">
+              <i className="dialogBadge question danger dialogModal-badge" />
+              <div className="dialogModal-contentText">
+                <p className="dialogModal-contentPara">Are you sure you want move Selected Entities?</p>
+              </div>
+            </div>
+          </div>
+          <div className="modal-buttonBox">
+            <button
+              type="button"
+              className="button secondary dialogModal-button"
+              onClick={() => { setIsDeleteSelectedConfirmVisible(false); }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="button danger dialogModal-button"
+              onClick={onDeleteSelectedConfirm}
+            >
+              Yes, delete selected
+            </button>
+          </div>
+        </Modal>
+      )}
 
       <Header mode={EHeaderModes.EDITOR} project={project} />
 
@@ -1132,7 +1186,7 @@ export default function Editor() {
 
       {selectionMenuVisible && (
         <Dropdown
-          anchor="._button-seelction"
+          anchor="._button-selection"
           onOutsideClick={() => setSelectionMenuVisible(false)}
           classNames="editorEntitiesSelectDropdown"
         >
@@ -1169,7 +1223,7 @@ export default function Editor() {
             />
             <button
               type="button"
-              className="editorBatchOps-menuButton _button-seelction"
+              className="editorBatchOps-menuButton _button-selection"
               aria-label="Selection Menu"
               onClick={handleSelectionButtonClick}
             />

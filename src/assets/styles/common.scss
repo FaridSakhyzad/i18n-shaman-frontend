@@ -133,7 +133,8 @@ input:-webkit-autofill:focus {
     margin: 2px 0 2px 2px;
     width: 9px;
     height: 9px;
-    background: url("../images/icon--checkbox-checkmark.svg") center left no-repeat;
+    mask: url("../images/icon--checkbox-checkmark.svg") right center no-repeat;
+    background-color: #295fcc;
     transition: opacity 0.15s ease;
     opacity: 0;
   }
@@ -242,6 +243,9 @@ input:-webkit-autofill:focus {
   text-align: center;
   font-family: var(--main-font-family);
 
+  appearance: none;
+  -webkit-appearance: none;
+
   &.primary {
     color: white;
     background-color: #388ff3;
@@ -349,7 +353,34 @@ input:-webkit-autofill:focus {
     &.disabled,
     &[disabled] {
       cursor: default;
-      background-image: linear-gradient( 90deg, rgb(150,18,28) 0%, rgb(196,28,39) 55%, rgb(241,38,49) 100%);
+      background-image: linear-gradient(0deg, rgb(150,18,28) 0%, rgb(196,28,39) 55%, rgb(241,38,49) 100%);
+      color: rgba(255 255 255 / 0.5);
+    }
+  }
+
+  &.warning {
+    color: white;
+    background-image: linear-gradient(0deg, rgb(237,106,40) 0%, rgb(241,128,39) 55%, rgb(244,150,37) 100%);
+    box-shadow: 0 10px 20px 0 rgba(237, 106, 40, 0.5);
+
+    &:hover {
+      background-image: linear-gradient(0deg, rgb(222,95,31) 0%, rgb(230,113,28) 55%, rgb(237,130,24) 100%);
+    }
+
+    &:focus-visible {
+      outline: 1px solid #ed6b28;
+      outline-offset: 2px;
+    }
+
+    &:active:not([disabled], .disabled) {
+      box-shadow: 0 5px 15px 0 rgba(237, 106, 40, 0.5);
+      transform: translateY(1px);
+    }
+
+    &.disabled,
+    &[disabled] {
+      cursor: default;
+      background-image: linear-gradient(0deg, rgb(242,151,104) 0%, rgb(245,166,103) 55%, rgb(247,181,102) 100%);
       color: rgba(255 255 255 / 0.5);
     }
   }
