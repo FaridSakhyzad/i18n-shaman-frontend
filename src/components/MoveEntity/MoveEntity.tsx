@@ -203,6 +203,8 @@ export default function MoveEntity(props: IProps) {
     onConfirm();
   };
 
+  console.log('selectedEntities', selectedEntities);
+
   return (
     <>
       <Modal
@@ -252,6 +254,10 @@ export default function MoveEntity(props: IProps) {
 
             {project?.keys.map((key: IKey) => {
               if (key.type === 'string') {
+                return null;
+              }
+
+              if (selectedEntities.includes(key.id)) {
                 return null;
               }
 

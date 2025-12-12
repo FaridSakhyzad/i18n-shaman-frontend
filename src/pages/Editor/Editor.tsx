@@ -425,6 +425,12 @@ export default function Editor() {
       setLoading(false);
     }
 
+    if (elName === 'moveEntity') {
+      dispatch(setSelectedEntities([dataset.id as string]));
+
+      setIsMoveEntityModalVisible(true);
+    }
+
     if (elName === 'pagePrev') {
       goToPage(page - 1);
     }
@@ -1215,7 +1221,7 @@ export default function Editor() {
             <input
               type="checkbox"
               onChange={handleSelectAllCheckboxChange}
-              checked={selectedEntities.length === project?.keys.length}
+              checked={selectedEntities.length > 0 && selectedEntities.length === project?.keys.length}
               className={clsx({
                 'checkbox editorBatchOps-select': true,
                 'editorBatchOps-select_partially': selectedEntities.length > 0 && selectedEntities.length !== project?.keys.length,
