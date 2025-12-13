@@ -7,13 +7,13 @@ import { DEFAULT_SYSTEM_MESSAGE_DURATION } from 'constants/app';
 import {
   EContentType,
   EMessageType,
-  IMessage,
-  removeSystemMessage,
+  INotification,
+  removeSystemNotification,
 } from 'store/systemNotifications';
 
-import { getComponent } from './ComponentRegistry';
+import { getComponent } from './SystemNotificationsRegistry';
 
-export default function Notification(props: IMessage) {
+export default function Notification(props: INotification) {
   const {
     id,
     type,
@@ -27,7 +27,7 @@ export default function Notification(props: IMessage) {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleCloseClick = (notificationId: string) => {
-    dispatch(removeSystemMessage(notificationId));
+    dispatch(removeSystemNotification(notificationId));
   };
 
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -45,7 +45,7 @@ export default function Notification(props: IMessage) {
 
     if (duration !== 'infinity') {
       const timer = setTimeout(() => {
-        dispatch(removeSystemMessage(id));
+        dispatch(removeSystemNotification(id));
         clearTimeout(timer);
       }, duration);
     }

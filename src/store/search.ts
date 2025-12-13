@@ -1,5 +1,5 @@
-import { asyncThunkCreator, buildCreateSlice } from '@reduxjs/toolkit';
 import { IKey, IKeyValue } from '../interfaces';
+import { createAppSlice } from './helpers';
 
 interface IValuesMap {
   [ keyId: string ]: {
@@ -18,10 +18,6 @@ const initialState: IInitialState = {
   keyValues: null,
   loading: false,
 };
-
-export const createAppSlice = buildCreateSlice({
-  creators: { asyncThunk: asyncThunkCreator },
-});
 
 const searchSlice = createAppSlice({
   name: 'search',

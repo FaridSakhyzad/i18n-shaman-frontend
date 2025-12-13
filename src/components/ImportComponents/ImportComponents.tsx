@@ -16,7 +16,7 @@ import {
 import 'components/ImportLocales/ImportLocales.scss';
 import './ImportComponents.scss';
 import { importComponentsToProject } from '../../api/projects';
-import { createSystemMessage, EMessageType } from '../../store/systemNotifications';
+import { createSystemNotification, EMessageType } from '../../store/systemNotifications';
 import QuickLanguageAdd from '../QuickLanguageAdd';
 
 interface IProps {
@@ -123,12 +123,12 @@ export default function ImportComponents(props: IProps) {
     const result: IResponse | IError = await importComponentsToProject(formDataInState);
 
     if (result.statusCode === EStatusCode.OK) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Success!',
         type: EMessageType.Success,
       }));
     } else {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error Importing Components',
         type: EMessageType.Error,
       }));

@@ -7,7 +7,9 @@ import clsx from 'clsx';
 import { AppDispatch, IRootState } from 'store';
 import { getProjects, updateProject } from 'store/projects';
 import { setSelectedEntities } from 'store/editorPage';
-import { createSystemMessage, EMessageType } from 'store/systemNotifications';
+import { createGlobalMessage } from 'store/globalMessages';
+
+import { createSystemNotification, EContentType, EMessageType } from 'store/systemNotifications';
 
 import { DEFAULT_ITEMS_PER_PAGE, ROOT } from 'constants/app';
 
@@ -30,18 +32,20 @@ import {
 
 import Header from 'components/Header';
 import { EHeaderModes } from 'components/Header/Header';
-
 import ProjectLanguages from 'components/ProjectLanguages';
 import AddProjectLanguage from 'components/AddProjectLanguage';
 import CreateEntity from 'components/CreateEntity';
 import EditEntity from 'components/EditEntity';
 import EditProjectLanguage from 'components/EditProjectLanguage';
 import MoveEntity from 'components/MoveEntity';
+import Breadcrumbs from 'components/Breadcrumbs';
+import Footer from 'components/Footer';
+
+import Dropdown from 'components/Dropdown';
 import Tooltip from 'components/Tooltip';
 import Modal from 'components/Modal';
-import Breadcrumbs from 'components/Breadcrumbs';
-import Dropdown from 'components/Dropdown';
-import Footer from 'components/Footer';
+import CookieMessage from 'components/CookieMessage';
+import { registerSystemMessageComponent } from 'components/SystemBar/SystemMessageRegistry';
 
 import ItemsList from './ItemsList';
 import EditProject from '../Projects/EditProject';
@@ -282,7 +286,7 @@ export default function Editor() {
     });
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error Deleting Entity',
         type: EMessageType.Error,
       }));
@@ -670,7 +674,7 @@ export default function Editor() {
     });
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error Deleting Entity',
         type: EMessageType.Error,
       }));

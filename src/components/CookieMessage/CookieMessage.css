@@ -1,0 +1,27 @@
+.cookieMessageWrapper {
+    background-color: rgba(0 0 0 / 0.3);
+    height: 100dvh;
+}
+
+.cookieMessage {
+    width: 100%;
+    background-color: #fff;
+}
+
+.cookieMessage-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.cookieMessage-para {
+    margin: 0 0 18px 0;
+    text-align: center;
+    text-wrap: balance
+}
+
+.cookieMessage-button {
+    min-width: 100px;
+    margin: 0 auto;
+    display: block;
+}

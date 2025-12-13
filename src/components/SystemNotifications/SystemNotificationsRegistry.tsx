@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 
 interface IMessageComponents {
   [componentName: string]: ComponentType<any>;

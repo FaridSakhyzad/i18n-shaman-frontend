@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { createSystemMessage, EMessageType } from 'store/systemNotifications';
+import { createSystemNotification, EMessageType } from 'store/systemNotifications';
 
 import {
   IProjectLanguage,
@@ -96,7 +96,7 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await setMultipleLanguagesVisibility(project.projectId, visibilityData);
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error updating All Project Languages visibility',
         type: EMessageType.Error,
       }));
@@ -115,7 +115,7 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, false);
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error updating Project Language visibility',
         type: EMessageType.Error,
       }));
@@ -134,7 +134,7 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await setLanguageVisibility(project.projectId, langId, true);
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error updating Project Language information',
         type: EMessageType.Error,
       }));
@@ -163,7 +163,7 @@ export default function ProjectLanguages({
     const result: IProject | IProjectUpdateError = await deleteLanguage(project.projectId, langId);
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error Deleting Project Language',
         type: EMessageType.Error,
       }));
@@ -221,12 +221,12 @@ export default function ProjectLanguages({
     });
 
     if (resultProject.error) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: resultProject.message || 'Error Adding Project Language',
         type: EMessageType.Error,
       }));
     } else {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: 'Language Added Successfully',
         type: EMessageType.Success,
       }));

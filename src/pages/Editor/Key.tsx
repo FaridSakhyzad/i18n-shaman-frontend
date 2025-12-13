@@ -8,7 +8,7 @@ import React, {
 import { EntityType, IKeyValue, IProjectLanguage } from 'interfaces';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { createSystemMessage, EMessageType } from 'store/systemNotifications';
+import { createSystemNotification, EMessageType } from 'store/systemNotifications';
 
 import { updateKey } from 'api/projects';
 import { IRootState } from 'store';
@@ -103,14 +103,14 @@ export default function Key(props: IProps) {
     });
 
     if ('error' in result) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: 'Error While Saving Key',
         type: EMessageType.Error,
       }));
     } else {
       setValues(result.values);
 
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: 'Key Saved Successfully',
         type: EMessageType.Success,
       }));

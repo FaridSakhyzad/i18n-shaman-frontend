@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { buildCreateSlice, asyncThunkCreator, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import { verifyUser, setLanguage } from 'api/user';
 import { IUserPreferences, IUserSettings } from '../interfaces/user';
+import { createAppSlice } from './helpers';
 
 interface IInitialState {
   id: string | null;
@@ -22,10 +23,6 @@ const initialState: IInitialState = {
     projectsOrder: [],
   },
 };
-
-export const createAppSlice = buildCreateSlice({
-  creators: { asyncThunk: asyncThunkCreator },
-});
 
 export const restoreSession = createAsyncThunk(
   'user/restoreSession',

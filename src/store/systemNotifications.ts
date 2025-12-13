@@ -1,5 +1,5 @@
-import { createAppSlice } from './user';
 import { DEFAULT_SYSTEM_MESSAGE_DURATION } from '../constants/app';
+import { createAppSlice } from './helpers';
 
 export enum EMessageType {
   Default = 'default',
@@ -17,7 +17,7 @@ export enum EContentType {
   Component = 'component',
 }
 
-export interface IMessage {
+export interface INotification {
   id: string;
   type: EMessageType;
   duration?: number | 'infinity',
@@ -28,41 +28,38 @@ export interface IMessage {
 }
 
 interface IInitialState {
-  messages: IMessage[],
+  notifications: INotification[],
 }
 
 const initialState: IInitialState = {
-  messages: [],
+  notifications: [],
 };
 
 const systemNotificationsSlice = createAppSlice({
   name: 'systemNotifications',
   initialState,
   reducers: {
-    createSystemMessage: (state, action: { payload: any, type: string }) => {
+    createSystemNotification: (state, action: { payload: any, type: string }) => {
       const { payload } = action;
 
       const id = Math.random().toString(16).substring(2);
 
-      state.messages.push({
+      state.notifications.push({
         id,
         type: EMessageType.Default,
         contentType: EContentType.Text,
         duration: DEFAULT_SYSTEM_MESSAGE_DURATION,
         ...payload,
       });
-
-      // eslint-disable-next-line no-param-reassign
-      action.payload.id = id;
     },
-    removeSystemMessage: (state, { payload }) => {
-      const index = state.messages.findIndex(({ id }) => id === payload);
+    removeSystemNotification: (state, { payload }) => {
+      const index = state.notifications.findIndex(({ id }) => id === payload);
 
-      state.messages.splice(index, 1);
+      state.notifications.splice(index, 1);
     },
   },
 });
 
-export const { createSystemMessage, removeSystemMessage } = systemNotificationsSlice.actions;
+export const { createSystemNotification, removeSystemNotification } = systemNotificationsSlice.actions;
 
 export default systemNotificationsSlice.reducer;

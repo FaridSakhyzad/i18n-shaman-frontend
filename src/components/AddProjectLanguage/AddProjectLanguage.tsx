@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import Modal from 'components/Modal';
 
-import { createSystemMessage, EMessageType } from 'store/systemNotifications';
+import { createSystemNotification, EMessageType } from 'store/systemNotifications';
 
 import { ILanguage, IProjectLanguage, IUserLanguagesMapItem } from 'interfaces';
 import { addMultipleLanguages, getAppLanguagesData } from 'api/languages';
@@ -132,12 +132,12 @@ export default function AddProjectLanguage({
     });
 
     if (result.error) {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: result.message || 'Error Adding Project Language',
         type: EMessageType.Error,
       }));
     } else {
-      dispatch(createSystemMessage({
+      dispatch(createSystemNotification({
         content: 'Language Added Successfully',
         type: EMessageType.Success,
       }));

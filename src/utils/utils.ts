@@ -9,3 +9,13 @@ export const debounce = (callback: Function, wait: number) => {
     }, wait);
   };
 };
+
+type TCookieItem = [string, string];
+
+type ICookieArray = Array<TCookieItem>;
+
+export const parseCookie = (data: string) => {
+  const parsed: ICookieArray = data.split('; ').map((item) => item.split('=') as TCookieItem);
+
+  return new Map<string, string>(parsed);
+};

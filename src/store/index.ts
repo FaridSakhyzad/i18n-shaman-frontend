@@ -5,6 +5,7 @@ import userReducer from './user';
 import projectsReducer from './projects';
 import searchReducer from './search';
 import systemNotificationsSlice from './systemNotifications';
+import globalMessagesSlice from './globalMessages';
 
 import editorPageSlice from './editorPage';
 
@@ -15,6 +16,7 @@ export const store = configureStore({
     projects: projectsReducer,
     search: searchReducer,
     systemNotifications: systemNotificationsSlice,
+    globalMessages: globalMessagesSlice,
     editorPage: editorPageSlice,
   },
 });
